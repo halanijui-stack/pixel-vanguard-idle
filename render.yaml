@@ -1,0 +1,15 @@
+# Blueprint do Render — cria o serviço automaticamente.
+# No Render: New > Blueprint > aponte para o repositório com este arquivo.
+services:
+  - type: web
+    name: pixel-vanguard-idle
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false          # você define no painel (secreto por segurança)
+      - key: SUPABASE_ANON_KEY
+        sync: false          # você define no painel

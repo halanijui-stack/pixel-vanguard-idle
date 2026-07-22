@@ -1,0 +1,17 @@
+{
+  "name": "pixel-vanguard-idle-server",
+  "version": "1.0.0",
+  "description": "Servidor do jogo Pixel Vanguard Idle com chat global via Supabase Realtime",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5"
+  }
+}
