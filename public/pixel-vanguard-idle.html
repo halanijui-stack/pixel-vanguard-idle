@@ -8,9 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Hash de senha (bcryptjs para front-end) -->
 <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
-<!-- Config injetada pelo servidor Node. Em ambiente sem servidor, fica vazia
-     e o chat usa o fallback local automaticamente. -->
-<script>/*PV_CONFIG_PLACEHOLDER*/</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
@@ -2071,13 +2068,17 @@ function renderSettings(){
 }
 
 /* ============ AUTENTICAÇÃO COM SUPABASE ============ */
+// Credenciais do Supabase (públicas — anon key)
+const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_56kLXURDUCaLJg_GzJQHoQ_SIyx5oDQ';
+
 let supaAuth=null;  // cliente Supabase para autenticação
-const AUTH_ENABLED = !!(typeof window!=='undefined' && window.PV_CONFIG && window.PV_CONFIG.SUPABASE_URL && typeof bcrypt!=='undefined');
+const AUTH_ENABLED = !!(SUPABASE_URL && SUPABASE_ANON_KEY && typeof window!=='undefined' && typeof bcrypt!=='undefined');
 
 async function supaAuthInit(){
   if(!AUTH_ENABLED) return false;
   try{
-    supaAuth = window.supabase.createClient(window.PV_CONFIG.SUPABASE_URL, window.PV_CONFIG.SUPABASE_ANON_KEY);
+    supaAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return true;
   }catch(e){ console.warn('Supabase auth init falhou:', e.message); return false; }
 }
@@ -2529,8 +2530,8 @@ let chatCache=[];
 let chatChannel=null;
 let supa=null;            // cliente Supabase
 let supaReady=false;      // conexão realtime ativa
-const PV_CFG = (typeof window!=='undefined' && window.PV_CONFIG) ? window.PV_CONFIG : {};
-const hasSupabase = !!(PV_CFG.SUPABASE_URL && PV_CFG.SUPABASE_ANON_KEY && typeof window!=='undefined' && window.supabase);
+// Credenciais fixas do Supabase (definidas acima)
+const hasSupabase = !!(SUPABASE_URL && SUPABASE_ANON_KEY && typeof window!=='undefined' && typeof window.supabase!=='undefined');
 const hasShared = typeof window!=='undefined' && window.storage && typeof window.storage.get==='function';
 
 function esc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
@@ -2539,7 +2540,7 @@ function esc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','
 async function supaInit(){
   if(!hasSupabase) return false;
   try{
-    supa = window.supabase.createClient(PV_CFG.SUPABASE_URL, PV_CFG.SUPABASE_ANON_KEY);
+    supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     // carrega histórico recente
     const { data, error } = await supa
       .from('messages').select('*')
