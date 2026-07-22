@@ -2103,17 +2103,23 @@ async function supaLogin(nick, password){
   if(!password || password.length<4) return {ok:false, msg:'Senha deve ter min. 4 caracteres'};
   
   // validar que o nick NÃO começa com prefixos reservados (ADM, CM, GM)
+  // EXCEÇÃO: ADM-SOUL é permitido (conta oficial de admin)
   const upperNick = nick.toUpperCase();
-  if(upperNick.startsWith('ADM') || upperNick.startsWith('CM') || upperNick.startsWith('GM')){
+  if((upperNick.startsWith('ADM') || upperNick.startsWith('CM') || upperNick.startsWith('GM')) && upperNick !== 'ADM-SOUL'){
     return {ok:false, msg:'Nicknames com prefixos ADM,<br>CM ou GM são reservados!'};
   }
   
   try{
-    // procurar usuário existente
+    // 1) BUSCAR O USUÁRIO NO SUPABASE PELO NICK
     const {data:users, error:errFind} = await supaAuth.from('users').select('id,password,game_data').eq('nick',nick).single();
     
     if(errFind && errFind.code==='PGRST116'){
-      // usuário não existe: criar novo
+      // usuário não existe: criar novo (SOMENTE para nicks não-staff)
+      // ADM-SOUL não pode ser criado aqui — deve ser criado manualmente no SQL
+      if(upperNick === 'ADM-SOUL'){
+        return {ok:false, msg:'Usuário ADM-SOUL não encontrado.<br>Deve ser criado pelo administrador.'};
+      }
+      
       const pwdHash = await hashPassword(password);
       if(!pwdHash) return {ok:false, msg:'Erro ao criptografar senha'};
       
@@ -2127,11 +2133,26 @@ async function supaLogin(nick, password){
       return {ok:false, msg:'Erro ao buscar usuário: '+errFind.message};
     }
     
-    // usuário existe: validar senha
-    const ok = await verifyPassword(password, users.password);
-    if(!ok) return {ok:false, msg:'Senha incorreta'};
+    // 2) USUÁRIO EXISTE: VALIDAR SENHA COM BCRYPT.COMPARE()
+    // RIGOROSO: sem exceções, sem hardcoded, sem senha vazia
+    // Todos os usuários (inclusive ADM-SOUL) precisam da senha correta
+    if(!users.password){
+      // nenhum usuário deve existir sem hash de senha
+      return {ok:false, msg:'Erro: usuário inválido (sem senha)'};
+    }
     
+    // 3) USAR bcrypt.compare PARA VALIDAR A SENHA
+    // isto retorna TRUE apenas se a senha digitada corresponde ao hash
+    const senhaValida = await verifyPassword(password, users.password);
+    if(!senhaValida){
+      // RECUSAR IMEDIATAMENTE: senha incorreta
+      // nenhuma exceção para ADM-SOUL ou qualquer outro
+      return {ok:false, msg:'Senha incorreta'};
+    }
+    
+    // 4) SUCESSO: RETORNAR USUÁRIO COM DADOS
     return {ok:true, user:users, isNew:false};
+    
   }catch(e){
     console.warn('Supabase login erro:', e.message);
     return {ok:false, msg:'Erro na autenticação (cloud): '+e.message};
