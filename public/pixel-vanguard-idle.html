@@ -2367,15 +2367,15 @@ function spawnMonster(){
   const isBoss = S.wave>=10; // >= evita wave infinita caso algo pule o 10
   // Gold Goblin: chance ultra rara em qualquer wave normal (não substitui boss)
   const isGoblin = !isBoss && Math.random() < GOBLIN_SPAWN_CHANCE;
-  const mult = Math.pow(1.18, S.stage-1) * (1 + (S.wave-1)*0.08);
+  const mult = Math.pow(1.35, S.stage-1) * (1 + (S.wave-1)*0.08);
 
   if(isGoblin){
     const g=GOLD_GOBLIN;
     M = {
       nm:'✨ '+g.nm, spr:g.spr,
       hp: Math.round(g.hp*mult), maxhp: Math.round(g.hp*mult),
-      atk: Math.round(g.atk*Math.pow(1.18,S.stage-1)),
-      def: Math.round(g.def*Math.pow(1.14,S.stage-1)),
+      atk: Math.round(g.atk*Math.pow(1.35,S.stage-1)),
+      def: Math.round(g.def*Math.pow(1.28,S.stage-1)),
       spd: g.spd + Math.floor(S.stage/2),
       gold: Math.round(g.gold*Math.pow(1.3,S.stage-1)),
       boss:false, goblin:true,
@@ -2398,8 +2398,8 @@ function spawnMonster(){
   M = {
     nm: (isBoss?'👑 ':'')+(er.label?'['+er.label+'] ':'')+base.nm, spr:base.spr,
     hp: Math.round(base.hp*mult*rm), maxhp: Math.round(base.hp*mult*rm),
-    atk: Math.round(base.atk*Math.pow(1.18,S.stage-1)*rm),
-    def: Math.round(base.def*Math.pow(1.14,S.stage-1)*rm),
+    atk: Math.round(base.atk*Math.pow(1.35,S.stage-1)*rm),
+    def: Math.round(base.def*Math.pow(1.28,S.stage-1)*rm),
     spd: base.spd + Math.floor(S.stage/2),
     gold: Math.round(base.gold*Math.pow(1.3,S.stage-1)*rm),
     boss:isBoss,
@@ -2920,9 +2920,9 @@ function monsterDefeated(){
   M.dead=true;
   const er=enemyRar(M.rarity||'Comum');
   const g=M.gold;
-  // XP desacoplado do HP: cresce ~1.18/stage (bem mais suave que o HP 1.35/stage),
+  // XP desacoplado do HP: cresce ~1.25/stage (bem mais suave que o HP 1.35/stage),
   // com bônus por wave, boss, raridade do inimigo e booster de EXP.
-  const stageXp = 8 * Math.pow(1.18, S.stage-1) * (1+(S.wave-1)*0.05);
+  const stageXp = 8 * Math.pow(1.25, S.stage-1) * (1+(S.wave-1)*0.05);
   const bossBonus = M.boss?4:(M.goblin?6:1);
   const xp = Math.max(1, Math.round(stageXp * bossBonus * expMult() * er.exp));
   S.gold+=g; S.kills++;
@@ -3035,9 +3035,9 @@ function spawnChallengeGoblin(){
   // Alvo: ~1,3x o HP e ~0,85x o ATK de um monstro forte do stage — desafiador mas justo.
   // (o Gold Goblin tem base baixa por ser normalmente um alvo frágil que foge;
   //  no desafio ele precisa ser um oponente de respeito, pois o prêmio é o melhor loot.)
-  const hpMult  = Math.pow(1.18,S.stage-1)*2.6;
-  const atkMult = Math.pow(1.18,S.stage-1)*2.0;
-  const defMult = Math.pow(1.14,S.stage-1)*1.5;
+  const hpMult  = Math.pow(1.35,S.stage-1)*2.6;
+  const atkMult = Math.pow(1.35,S.stage-1)*2.0;
+  const defMult = Math.pow(1.28,S.stage-1)*1.5;
   M = {
     nm:'🏆 '+g.nm+' (DESAFIO)', spr:g.spr,
     hp: Math.round(g.hp*hpMult), maxhp: Math.round(g.hp*hpMult),
