@@ -4155,33 +4155,33 @@ el('btn-start').onclick=async ()=>{
     return toast('Este nickname é restrito<br>ou reservado pela Staff!');
   }
   
-  // tentar login na nuvem se Supabase está disponível
-  if(AUTH_ENABLED && supaAuth){
-    btn.disabled=true; btn.textContent='Autenticando...';
-    const res = await supaLogin(nick, pwd);
-    if(!res.ok){
-      btn.disabled=false; btn.textContent='Entrar na Dungeon';
-      return toast(res.msg);
-    }
-    // sucesso: carregar dados da nuvem ou criar novo
-    const cloudData = res.isNew ? {} : res.user.game_data;
-    S = cloudData && Object.keys(cloudData).length>0 ? cloudData : defaultState(nick);
-    S.userId = res.user.id;  // guardar ID do usuário para salvar depois
-    if(res.isNew){
-      toast('Novo herói criado!<br>Bem-vindo, '+nick+'!');
-    }else{
-      toast('Bem-vindo de volta,<br>'+nick+'!');
-    }
+  // SUPABASE É OBRIGATÓRIO — sem fallback local
+  if(!AUTH_ENABLED || !supaAuth){
+    return toast('Erro de conexão:<br>Servidor não respondeu.<br>Tente novamente!');
+  }
+  
+  // Autenticar obrigatoriamente no Supabase
+  btn.disabled=true; btn.textContent='Autenticando...';
+  const res = await supaLogin(nick, pwd);
+  btn.disabled=false; btn.textContent='Entrar na Dungeon';
+  
+  if(!res.ok){
+    // Erro na autenticação — BLOQUEIA O ACESSO
+    return toast(res.msg);
+  }
+  
+  // sucesso: carregar dados da nuvem ou criar novo
+  const cloudData = res.isNew ? {} : res.user.game_data;
+  S = cloudData && Object.keys(cloudData).length>0 ? cloudData : defaultState(nick);
+  S.userId = res.user.id;  // guardar ID do usuário para salvar depois
+  if(res.isNew){
+    toast('Novo herói criado!<br>Bem-vindo, '+nick+'!');
   }else{
-    // fallback: login local (sem nuvem)
-    const prev=load();
-    S = (prev && prev.nick===nick) ? prev : defaultState(nick);
-    if(prev && prev.nick===nick) toast('Bem-vindo de volta,<br>'+nick+'! (local)');
+    toast('Bem-vindo de volta,<br>'+nick+'!');
   }
   
   save();
   startGame();
-  btn.disabled=false; btn.textContent='Entrar na Dungeon';
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
 el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
