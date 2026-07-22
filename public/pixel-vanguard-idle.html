@@ -4128,6 +4128,12 @@ el('btn-start').onclick=async ()=>{
   if(nick.length<2) return toast('Nickname precisa de<br>pelo menos 2 letras!');
   if(pwd.length<4) return toast('Senha precisa de<br>min. 4 caracteres!');
   
+  // Validação estrita de nicks protegidos da Staff
+  const upperNick = nick.toUpperCase();
+  if ((upperNick.includes('ADM') || upperNick.includes('GM') || upperNick.includes('CM')) && upperNick !== 'ADM-SOUL') {
+    return toast('Este nickname é restrito<br>ou reservado pela Staff!');
+  }
+  
   // tentar login na nuvem se Supabase está disponível
   if(AUTH_ENABLED && supaAuth){
     btn.disabled=true; btn.textContent='Autenticando...';
