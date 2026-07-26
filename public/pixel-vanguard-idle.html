@@ -327,12 +327,10 @@
         // ============================================================
         // CONFIGURAÇÃO SUPABASE
         // ============================================================
-        const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
-        const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window.supaClient = supaClient;
-
-
+const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
+const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.supaClient = supaClient;
         // ============================================================
         // ELEMENTOS DO DOM
         // ============================================================
@@ -484,3 +482,240 @@
                     ...gameState,
                     level: userData.level || 1,
                     exp: userData.exp || 0,
+                    expToLevel: userData.exp_to_level || 100,
+                    gold: userData.gold || 0,
+                    stage: userData.stage || 1,
+                    atkSpd: userData.atk_spd || 1.0,
+                    playerHp: userData.player_hp || 100,
+                    playerMaxHp: userData.player_max_hp || 100,
+                    playerAtk: userData.player_atk || 10,
+                    playerDef: userData.player_def || 2,
+                    hpPotions: userData.hp_potions || 0,
+                    mpPotions: userData.mp_potions || 0
+                };
+            }
+
+            // Esconder login e mostrar jogo
+            loginScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            playerNickDisplay.textContent = `Jogador: ${gameState.nick}`;
+
+            // Inicializar monstro e UI
+            gerarMonstro();
+            atualizarUI();
+            adicionarMensagemChat('system', `${gameState.nick} entrou na dungeon!`);
+
+            // Iniciar loop do idle
+            setInterval(executarTurno, 1000);
+        }
+
+        // ============================================================
+        // LÓGICA DO JOGO (Idle / Auto-Battle)
+        // ============================================================
+        function gerarMonstro() {
+            const baseHp = 30 * Math.pow(1.35, gameState.stage - 1);
+            const baseAtk = 5 * Math.pow(1.35, gameState.stage - 1);
+            const baseDef = 1 * Math.pow(1.28, gameState.stage - 1);
+
+            gameState.monsterMaxHp = Math.ceil(baseHp);
+            gameState.monsterHp = gameState.monsterMaxHp;
+            gameState.monsterAtk = Math.ceil(baseAtk);
+            gameState.monsterDef = Math.ceil(baseDef);
+        }
+
+        function executarTurno() {
+            if (gameState.paused || gameState.playerHp <= 0) return;
+
+            const playerAttacks = Math.max(1, Math.floor(gameState.atkSpd));
+            const monsterAttacks = 1;
+
+            // Jogador ataca
+            for (let i = 0; i < playerAttacks; i++) {
+                const dano = Math.max(1, gameState.playerAtk - gameState.monsterDef + Math.random() * 5);
+                gameState.monsterHp -= dano;
+                adicionarMensagemChat('system', `${gameState.nick} causou ${dano.toFixed(0)} de dano!`);
+
+                if (gameState.monsterHp <= 0) {
+                    vencerBatalha();
+                    return;
+                }
+            }
+
+            // Monstro ataca
+            const danoMonstro = Math.max(1, gameState.monsterAtk - gameState.playerDef + Math.random() * 5);
+            gameState.playerHp -= danoMonstro;
+
+            if (gameState.playerHp < 0) gameState.playerHp = 0;
+
+            adicionarMensagemChat('system', `Monstro causou ${danoMonstro.toFixed(0)} de dano!`);
+
+            if (gameState.playerHp <= 0) {
+                perderBatalha();
+            }
+
+            atualizarUI();
+        }
+
+        function vencerBatalha() {
+            const expGanho = Math.ceil(50 * Math.pow(1.25, gameState.stage - 1));
+            const goldGanho = Math.ceil(10 * Math.pow(1.25, gameState.stage - 1));
+
+            gameState.exp += expGanho;
+            gameState.gold += goldGanho;
+
+            adicionarMensagemChat('system', `✨ Vitória! +${expGanho} EXP, +${goldGanho} GOLD`);
+
+            if (gameState.exp >= gameState.expToLevel) {
+                subirLevel();
+            }
+
+            // Regenerar para próxima batalha
+            gameState.playerHp = gameState.playerMaxHp;
+            gerarMonstro();
+            atualizarUI();
+            salvarProgresso();
+        }
+
+        function perderBatalha() {
+            adicionarMensagemChat('system', '💀 Você foi derrotado!');
+            gameState.playerHp = gameState.playerMaxHp;
+            gerarMonstro();
+            atualizarUI();
+            salvarProgresso();
+        }
+
+        function subirLevel() {
+            gameState.level++;
+            gameState.exp = 0;
+            gameState.expToLevel = Math.ceil(100 * Math.pow(1.1, gameState.level - 1));
+            gameState.playerMaxHp += 20;
+            gameState.playerHp = gameState.playerMaxHp;
+            gameState.playerAtk += 5;
+            gameState.playerDef += 1;
+
+            adicionarMensagemChat('system', `🎉 LEVEL UP! Agora você é nível ${gameState.level}!`);
+            atualizarUI();
+            salvarProgresso();
+        }
+
+        function atualizarUI() {
+            document.getElementById('levelDisplay').textContent = gameState.level;
+            document.getElementById('expDisplay').textContent = `${gameState.exp}/${gameState.expToLevel}`;
+            document.getElementById('goldDisplay').textContent = gameState.gold;
+            document.getElementById('stageDisplay').textContent = gameState.stage;
+            document.getElementById('atkSpdDisplay').textContent = gameState.atkSpd.toFixed(1);
+
+            // Player
+            document.getElementById('playerHpFill').style.width = `${(gameState.playerHp / gameState.playerMaxHp) * 100}%`;
+            document.getElementById('playerHpText').textContent = `${Math.ceil(gameState.playerHp)}/${gameState.playerMaxHp} HP`;
+            document.getElementById('playerAtkDisplay').textContent = gameState.playerAtk;
+            document.getElementById('playerDefDisplay').textContent = gameState.playerDef;
+
+            // Monster
+            document.getElementById('monsterHpFill').style.width = `${(gameState.monsterHp / gameState.monsterMaxHp) * 100}%`;
+            document.getElementById('monsterHpText').textContent = `${Math.ceil(gameState.monsterHp)}/${gameState.monsterMaxHp} HP`;
+            document.getElementById('monsterAtkDisplay').textContent = gameState.monsterAtk;
+            document.getElementById('monsterDefDisplay').textContent = gameState.monsterDef;
+
+            // Inventário
+            document.getElementById('hpPotionQty').textContent = gameState.hpPotions;
+            document.getElementById('mpPotionQty').textContent = gameState.mpPotions;
+        }
+
+        // ============================================================
+        // CONTROLES DO JOGO
+        // ============================================================
+        document.getElementById('autoFightBtn').addEventListener('click', () => {
+            gameState.autoFight = !gameState.autoFight;
+            document.getElementById('autoFightBtn').style.opacity = gameState.autoFight ? '1' : '0.6';
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pauseBtn').style.opacity = gameState.paused ? '1' : '0.6';
+        });
+
+        document.getElementById('nextStageBtn').addEventListener('click', () => {
+            gameState.stage++;
+            gameState.playerHp = gameState.playerMaxHp;
+            gerarMonstro();
+            atualizarUI();
+            salvarProgresso();
+        });
+
+        // ============================================================
+        // CHAT GLOBAL
+        // ============================================================
+        sendChatBtn.addEventListener('click', enviarMensagem);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') enviarMensagem();
+        });
+
+        async function enviarMensagem() {
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+
+            chatInput.value = '';
+
+            try {
+                await supaClient
+                    .from('chat_messages')
+                    .insert([
+                        {
+                            nick: gameState.nick,
+                            message: msg,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                adicionarMensagemChat('player', `${gameState.nick}: ${msg}`);
+            } catch (err) {
+                console.error('Erro ao enviar mensagem:', err);
+            }
+        }
+
+        function adicionarMensagemChat(tipo, msg) {
+            const msgEl = document.createElement('div');
+            msgEl.className = `chat-message ${tipo}`;
+            msgEl.textContent = msg;
+            chatArea.appendChild(msgEl);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // ============================================================
+        // PERSISTÊNCIA DE DADOS
+        // ============================================================
+        async function salvarProgresso() {
+            if (!currentUser) return;
+
+            try {
+                await supaClient
+                    .from('users')
+                    .update({
+                        level: gameState.level,
+                        exp: gameState.exp,
+                        exp_to_level: gameState.expToLevel,
+                        gold: gameState.gold,
+                        stage: gameState.stage,
+                        atk_spd: gameState.atkSpd,
+                        player_hp: gameState.playerHp,
+                        player_max_hp: gameState.playerMaxHp,
+                        player_atk: gameState.playerAtk,
+                        player_def: gameState.playerDef,
+                        hp_potions: gameState.hpPotions,
+                        mp_potions: gameState.mpPotions
+                    })
+                    .eq('nick', gameState.nick);
+            } catch (err) {
+                console.error('Erro ao salvar progresso:', err);
+            }
+        }
+
+        // Salvar progresso a cada 30 segundos
+        setInterval(salvarProgresso, 30000);
+
+        // Salvar ao sair
+        window.addEventListener('beforeunload', salvarProgresso);
+    </script>
+</body>
+</html>
