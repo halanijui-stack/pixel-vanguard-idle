@@ -330,6 +330,8 @@
         const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
         const supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supaClient = supaClient;
+
 
         // ============================================================
         // ELEMENTOS DO DOM
