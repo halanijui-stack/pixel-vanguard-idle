@@ -4200,20 +4200,18 @@ document.querySelectorAll('#modal-market .tab').forEach(t=>{
 
 async function renderMarket(){
   const list = el('market-list'); 
+  if(!list) return;
   list.innerHTML = '';
   el('market-filters').classList.toggle('open', marketTab === 'buy');
   
   if(marketTab === 'buy'){
     try {
-      const {data: listings, error} = await supaAuth
+      const { data: listings, error } = await supaAuth
         .from('market_listings')
         .select('*')
-        .order('created_at', {ascending: false});
+        .order('created_at', { ascending: false });
       
-      if(error) {
-        list.innerHTML='<div class="empty-note">Erro ao carregar mercado.</div>';
-        return;
-      }
+      if(error) throw error;
       
       let allListings = listings || [];
       
@@ -4241,7 +4239,7 @@ async function renderMarket(){
       }
       
       if(!allListings || allListings.length === 0) {
-        list.innerHTML='<div class="empty-note">Sem ofertas disponíveis.</div>';
+        list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
         return;
       }
       
@@ -4261,110 +4259,42 @@ async function renderMarket(){
         list.appendChild(row);
       });
     } catch(e) {
-      list.innerHTML='<div class="empty-note">Erro ao carregar mercado.</div>';
+      console.error('Erro ao renderizar mercado:', e);
+      list.innerHTML = '<div class="empty-note">Erro ao carregar mercado.<br>Verifique sua conexão.</div>';
     }
   }
   else if(marketTab === 'sell'){
-    // Mantém a sua lógica atual de itens para vender
-    let any=false;
-    S.inv.forEach(inst=>{
+    let any = false;
+    S.inv.forEach(inst => {
       if(Object.values(S.eq).includes(inst.uid)) return;
-      if(S.listings.some(l=>l.uid===inst.uid && l.kind==='eq')) return;
-      any=true;
-      const b=eqBase(inst.type,inst.baseId);
-      const val=eqInstValue(inst);
-      const row=document.createElement('div'); 
-      row.className='item-row';
-      row.innerHTML=`<div class="info"><div class="nm">${eqName(inst)}</div><div class="st">Sugerido ◈ ${val}</div></div>
+      if(S.listings.some(l => l.uid === inst.uid && l.kind === 'eq')) return;
+      any = true;
+      const b = eqBase(inst.type, inst.baseId);
+      const val = eqInstValue(inst);
+      const row = document.createElement('div'); 
+      row.className = 'item-row';
+      row.innerHTML = `<div class="info"><div class="nm">${eqName(inst)}</div><div class="st">Sugerido ◈ ${val}</div></div>
         <button class="btn small">Anunciar</button>`;
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'eq',uid:inst.uid,nm:b.nm,sug:val,type:inst.type,baseId:inst.baseId,rarity:inst.rarity||'Comum',icon:b.icon});
+      row.querySelector('button').onclick = () => openSellPanel({kind:'eq', uid:inst.uid, nm:b.nm, sug:val, type:inst.type, baseId:inst.baseId, rarity:inst.rarity||'Comum', icon:b.icon});
       list.appendChild(row);
     });
-    if(!any) list.innerHTML='<div class="empty-note">Nada disponível para vender.</div>';
+    if(!any) list.innerHTML = '<div class="empty-note">Nada disponível para vender.</div>';
   }
   else {
-    if(!S.listings.length){ list.innerHTML='<div class="empty-note">Nenhum anúncio ativo.</div>'; return; }
-    S.listings.forEach(l=>{
-      const row=document.createElement('div'); 
-      row.className='item-row';
-      row.innerHTML=`<div class="info"><div class="nm">${l.nm}</div><div class="st">Preço: ${l.price}</div></div>
-        <button class="btn red small">Retirar</button>`;
-      row.querySelector('button').onclick=()=>cancelListing(l.id);
-      list.appendChild(row);
-    });
-  }
-}
-    } catch(e) {
-      console.error('Erro ao renderizar mercado:', e);
-      list.innerHTML='<div class="empty-note">Erro ao carregar mercado.<br>Verifique sua conexão.</div>';
-    }
-  }
-  else if(marketTab==='sell'){
-    let any=false;
-    S.inv.forEach(inst=>{
-      // Verificar se está equipado OU anunciado
-      if(Object.values(S.eq).includes(inst.uid)) return;
-      if(S.listings.some(l=>l.uid===inst.uid && l.kind==='eq')) return; // ← NÃO MOSTRAR SE JÁ ANUNCIADO
-      any=true;
-      const b=eqBase(inst.type,inst.baseId);
-      const val=eqInstValue(inst);
-      const row=document.createElement('div'); 
-      row.className='item-row rar-b-'+(inst.rarity||'Comum');
-      row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
-        <div class="info"><div class="nm">${eqName(inst)}</div><div class="st">${eqFmtInst(inst)} · Sugerido ◈ ${val}</div></div>
-        <button class="btn small">Anunciar</button>`;
-      drawSprite(row.querySelector('canvas'),b.icon);
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'eq',uid:inst.uid,nm:b.nm+(inst.rarity!=='Comum'?' ['+rarLabel(inst.rarity)+']':''),sug:val,type:inst.type,baseId:inst.baseId,rarity:inst.rarity||'Comum',affix:inst.affix||null,icon:b.icon});
-      list.appendChild(row);
-    });
-    S.pets.forEach(p=>{
-      // Verificar se é o pet ativo OU anunciado
-      if(p.uid===S.activePetUid) return;
-      if(S.listings.some(l=>l.uid===p.uid && l.kind==='pet')) return; // ← NÃO MOSTRAR SE JÁ ANUNCIADO
-      any=true;
-      const b=petBase(p);
-      const row=document.createElement('div'); 
-      row.className='item-row rar-b-'+p.rarity;
-      row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
-        <div class="info"><div class="nm">${b.nm} <span class="rar-${p.rarity}">[${rarLabel(p.rarity)}]</span></div>
-        <div class="st">Lv.${p.lvl} · Sugerido ◈ ${petValue(p)}</div></div>
-        <button class="btn small">Anunciar</button>`;
-      drawSprite(row.querySelector('canvas'),b.spr);
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'pet',uid:p.uid,nm:b.nm+' ['+rarLabel(p.rarity)+']',sug:petValue(p),petId:p.petId,rarity:p.rarity,lvl:p.lvl,icon:b.spr});
-      list.appendChild(row);
-    });
-    if(S.gold>=200){
-      any=true;
-      const amt=Math.min(S.gold, Math.max(200,Math.round(S.gold*0.5)));
-      const row=document.createElement('div'); 
-      row.className='item-row';
-      row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
-        <div class="info"><div class="nm">Pacote de Gold</div>
-        <div class="st">Anuncia ◈ ${amt} por ♦ VIP Coin<br>Sugerido: ♦ ${Math.max(1,Math.round(amt/250))}</div></div>
-        <button class="btn teal small">Anunciar</button>`;
-      drawSprite(row.querySelector('canvas'),'goldpile');
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'gold',amount:amt,nm:'Pacote ◈ '+amt,sug:Math.max(1,Math.round(amt/250)),vipOnly:true,icon:'goldpile'});
-      list.appendChild(row);
-    }
-    if(!any) list.innerHTML='<div class="empty-note">Nada disponível para vender.<br>Itens equipados e o pet ativo<br>não podem ser anunciados.</div>';
-  }
-  else { 
     if(!S.listings.length){ 
-      list.innerHTML='<div class="empty-note">Você não tem anúncios ativos.<br>Use a aba Vender!</div>'; 
+      list.innerHTML = '<div class="empty-note">Nenhum anúncio ativo.</div>'; 
       return; 
     }
-    S.listings.forEach(l=>{
-      const row=document.createElement('div'); 
-      row.className='item-row';
-      row.innerHTML=`<div class="info"><div class="nm">${l.nm}</div>
-        <div class="st">Preço: ${l.cur==='vip'?'♦':'◈'} ${l.price} · você recebe ${l.cur==='vip'?'♦':'◈'} ${Math.floor(l.price*(1-MARKET_FEE))}<br>Status: aguardando comprador...</div></div>
+    S.listings.forEach(l => {
+      const row = document.createElement('div'); 
+      row.className = 'item-row';
+      row.innerHTML = `<div class="info"><div class="nm">${l.nm}</div><div class="st">Preço: ${l.price}</div></div>
         <button class="btn red small">Retirar</button>`;
-      row.querySelector('button').onclick=()=>{ cancelListing(l.id); };
+      row.querySelector('button').onclick = () => cancelListing(l.id);
       list.appendChild(row);
     });
   }
 }
-
 
 
 
