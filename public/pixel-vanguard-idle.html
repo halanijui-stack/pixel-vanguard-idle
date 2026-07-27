@@ -4860,7 +4860,6 @@ async function confirmListing(cur){
   const t = sellTarget;
   let fair = t.sug;
   
-  // Remove item do inventário
   if(t.kind === 'eq'){
     S.inv = S.inv.filter(i => i.uid !== t.uid);
   } else if(t.kind === 'pet'){
@@ -4872,23 +4871,20 @@ async function confirmListing(cur){
   
   if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
   
-  // Salvar localmente SEMPRE
   const localId = newUid();
   S.listings.push({id: localId, ...t, cur, price, fair, ts: Date.now()});
   
-  toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
   closeSellPanel(); 
   updBars(); 
   save(); 
   renderMarket();
   
-  // Tentar sincronizar com Supabase em background de forma segura
   try {
     if(supaAuth) {
       const { data: { user } } = await supaAuth.auth.getUser();
       const userId = user ? user.id : (S.userId || null);
 
-      await supaAuth
+      const { error } = await supaAuth
         .from('market_listings')
         .insert([{
           id: localId,
@@ -4904,9 +4900,16 @@ async function confirmListing(cur){
           currency: cur === 'vip' ? 'vip' : 'gold',
           price: price
         }]);
+        
+      if(error) {
+        console.error('Erro detalhado do Supabase:', error);
+        toast('Erro ao sincronizar com nuvem: ' + error.message);
+      } else {
+        toast('Anúncio publicado na nuvem com sucesso!');
+      }
     }
   } catch(e) {
-    console.warn('Supabase market sync falhou (anúncio salvo localmente):', e.message);
+    console.error('Falha crítica no market sync:', e);
   }
 }
 
