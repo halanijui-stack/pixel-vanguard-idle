@@ -656,6 +656,64 @@ canvas{image-rendering:pixelated;}
   margin: 4px 0;
 }
 
+.pvp-accumulated-rewards {
+  background: linear-gradient(135deg, rgba(255, 215, 94, 0.1), rgba(125, 232, 216, 0.1));
+  padding: 15px;
+  border-radius: 5px;
+  border: 2px solid var(--amber);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.pvp-accumulated-rewards h3 {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pvp-rewards-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background: var(--stone);
+  border-radius: 3px;
+  border-left: 3px solid var(--amber);
+}
+
+.reward-item canvas {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.reward-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reward-amount-value {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--gold);
+  text-shadow: 0 0 2px rgba(255, 215, 94, 0.5);
+}
+
+.reward-amount-label {
+  font-size: 9px;
+  color: #999;
+  text-transform: uppercase;
+}
+
 .pvp-bracket-view {
   width: 100%;
 }
@@ -2528,6 +2586,7 @@ function defaultState(nick){
     tickets:0,       // ingressos de desafio do Gold Goblin
     autopot:{hpOn:true, hpPct:40, mpOn:true, mpPct:20},
     listings:[],   // anúncios do jogador
+    tournamentRewards:{gold:0, vip:0},  // 10% das taxas do mercado semanal
     boosters:{exp:0, drop:0}, // timestamp de expiração (ms). 0 = inativo
     mastery:0,       // pontos de maestria disponíveis
     talents:{},      // { talentId: rank }
@@ -4766,6 +4825,15 @@ async function buyListing(listing){
     const fee = Math.floor(listing.price * MARKET_FEE);
     const netReceived = listing.price - fee;
     
+    // Acumular 10% da taxa para recompensas do torneio
+    if(!S.tournamentRewards) S.tournamentRewards={gold:0,vip:0};
+    const tournamentTax = Math.floor(fee * 0.10);
+    if(listing.currency === 'vip'){
+      S.tournamentRewards.vip += tournamentTax;
+    } else {
+      S.tournamentRewards.gold += tournamentTax;
+    }
+    
     await supaAuth
       .from('market_history')
       .insert([{
@@ -4970,7 +5038,27 @@ function renderPVPModal(){
   container.innerHTML = '';
   
   if(!currentTournament) {
-    container.innerHTML = `
+    const accRewards = S.tournamentRewards || {gold:0, vip:0};
+    const rewardsHTML = `
+      <div class="pvp-accumulated-rewards">
+        <h3>💰 Recompensas do Mercado (10% das Taxas)</h3>
+        <div class="pvp-rewards-display">
+          <div class="reward-item">
+            <canvas id="reward-gold-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+            <div class="reward-amount">
+              <div class="reward-amount-value">${accRewards.gold}</div>
+              <div class="reward-amount-label">Gold</div>
+            </div>
+          </div>
+          <div class="reward-item">
+            <canvas id="reward-vip-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+            <div class="reward-amount">
+              <div class="reward-amount-value">${accRewards.vip}</div>
+              <div class="reward-amount-label">VIP Coin</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="pvp-empty">
         <h3>⚔️ ${t('pvp_title')}</h3>
         <p>${t('pvp_no_tournament')}</p>
@@ -4978,6 +5066,13 @@ function renderPVPModal(){
         <p style="font-size: 12px; color: #999;">${t('pvp_battles')}</p>
       </div>
     `;
+    container.innerHTML = rewardsHTML;
+    setTimeout(() => {
+      const goldCanvas = document.getElementById('reward-gold-icon');
+      const vipCanvas = document.getElementById('reward-vip-icon');
+      if(goldCanvas) drawSprite(goldCanvas, 'goldpile');
+      if(vipCanvas) drawSprite(vipCanvas, 'vipcoin');
+    }, 0);
     return;
   }
   
@@ -4992,6 +5087,39 @@ function renderPVPModal(){
   `;
   
   container.innerHTML += tabsHTML;
+  
+  // Renderizar recompensas acumuladas do mercado (10% das taxas)
+  const accRewards = S.tournamentRewards || {gold:0, vip:0};
+  const rewardsHTML = `
+    <div class="pvp-accumulated-rewards">
+      <h3>💰 Recompensas do Mercado (10% das Taxas)</h3>
+      <div class="pvp-rewards-display">
+        <div class="reward-item">
+          <canvas id="reward-gold-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+          <div class="reward-amount">
+            <div class="reward-amount-value">${accRewards.gold}</div>
+            <div class="reward-amount-label">Gold</div>
+          </div>
+        </div>
+        <div class="reward-item">
+          <canvas id="reward-vip-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+          <div class="reward-amount">
+            <div class="reward-amount-value">${accRewards.vip}</div>
+            <div class="reward-amount-label">VIP Coin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  container.innerHTML += rewardsHTML;
+  
+  // Desenhar ícones de ouro e VIP coin
+  setTimeout(() => {
+    const goldCanvas = document.getElementById('reward-gold-icon');
+    const vipCanvas = document.getElementById('reward-vip-icon');
+    if(goldCanvas) drawSprite(goldCanvas, 'goldpile');
+    if(vipCanvas) drawSprite(vipCanvas, 'vipcoin');
+  }, 0);
   
   document.querySelectorAll('.pvp-tab').forEach(tab => {
     tab.onclick = () => {
@@ -5399,17 +5527,6 @@ const TRANSLATIONS = {
     'rank_loading': 'Carregando ranking...',
     'rank_error': 'Erro ao carregar ranking. Tente novamente.',
     'lang_label': 'Idioma / Language',
-    'pvp_no_tournament': 'Nenhum torneio ativo no momento.',
-    'pvp_info': '⚔️ Top 10 jogadores do ranking participam do torneio semanal!',
-    'pvp_battles': '🏆 Vença para conquistar Gold e VIP Coins!',
-    'pvp_status': 'Status:',
-    'pvp_pool': 'Prêmios em Disputa:',
-    'pvp_brackets': 'Chaves',
-    'pvp_history': 'Histórico',
-    'pvp_rewards': 'Prêmios',
-    'pvp_semifinals': 'Semi-finais',
-    'pvp_final': 'Final',
-    'pvp_third_place': '3º Lugar',
   },
   en: {
     'ranking': 'ranking',
@@ -5443,17 +5560,6 @@ const TRANSLATIONS = {
     'rank_loading': 'Loading ranking...',
     'rank_error': 'Error loading ranking. Try again.',
     'lang_label': 'Language / Idioma',
-    'pvp_no_tournament': 'No active tournament at the moment.',
-    'pvp_info': '⚔️ Top 10 ranking players participate in the weekly tournament!',
-    'pvp_battles': '🏆 Win to earn Gold and VIP Coins!',
-    'pvp_status': 'Status:',
-    'pvp_pool': 'Prize Pool:',
-    'pvp_brackets': 'Brackets',
-    'pvp_history': 'History',
-    'pvp_rewards': 'Rewards',
-    'pvp_semifinals': 'Semifinals',
-    'pvp_final': 'Final',
-    'pvp_third_place': '3rd Place',
   }
 };
 
