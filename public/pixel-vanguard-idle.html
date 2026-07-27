@@ -4216,14 +4216,15 @@ async function renderMarket(){
   el('market-filters').classList.toggle('open', marketTab === 'buy');
   
   if(marketTab === 'buy'){
-    try {
-      const { data: listings, error } = await supaAuth
-        .from('market_listings')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if(error) throw error;
-      
+try {
+  const { data: listings, error } = await supaAuth
+    .from('market_listings')
+    .select('*')
+    .neq('seller_nick', S.nick)
+    .order('created_at', { ascending: false });
+
+  if(error) throw error;
+       
       let allListings = listings || [];
       
       if(S.listings && S.listings.length > 0) {
@@ -4322,13 +4323,27 @@ el('sell-cancel').onclick=closeSellPanel;
 el('sell-gold-btn').onclick=()=>confirmListing('gold');
 el('sell-vip-btn').onclick=()=>confirmListing('vip');
 
-function cancelListing(id){
-  const l=S.listings.find(x=>x.id===id);
+async function cancelListing(id){
+  const l = s.listings.find(x => x.id === id);
   if(!l) return;
-  S.listings=S.listings.filter(x=>x.id!==id);
+
+  s.listings = s.listings.filter(x => x.id !== id);
   restoreListing(l);
   toast('Anúncio retirado.<br>Item devolvido ao inventário.');
   updBars(); save(); renderMarket();
+
+  try {
+    const { error } = await supaAuth
+      .from('market_listings')
+      .delete()
+      .eq('id', id);
+      
+    if(error) {
+      console.error('Erro ao remover anúncio do servidor:', error);
+    }
+  } catch(e) {
+    console.error('Falha ao conectar com o Supabase para exclusão:', e);
+  }
 }
 function restoreListing(l){
   if(l.kind==='eq') S.inv.push({uid:l.uid,type:l.type||inferType(l),baseId:l.baseId||l._b, ...(l.invData||{})});
