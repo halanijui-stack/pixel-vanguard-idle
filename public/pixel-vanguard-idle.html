@@ -4301,42 +4301,34 @@ function restoreListing(l){
 
 /* ---------- RANKING ---------- */
 async function renderRank(){
-  const list=el('rank-list'); 
-  list.innerHTML='<div class="empty-note">Carregando ranking...</div>';
+  const list = el('rank-list'); 
+  if (!list) return;
+  
+  list.innerHTML = `<div class="empty-note">${t('rank_loading')}</div>`;
   
   try {
-    const {data: users, error} = await supaAuth
+    const { data: users, error } = await supaAuth
       .from('users')
-      .select('nick, level, gold')
-      .order('level', {ascending: false})
-      .order('gold', {ascending: false});
-    
-    if(error) {
-      console.error('Erro ao carregar ranking:', error);
-      list.innerHTML='<div class="empty-note">Erro ao carregar ranking.<br>Tente novamente.</div>';
+      .select('nick, level, stage')
+      .order('stage', { ascending: false })
+      .order('level', { ascending: false });
+    if (error) throw error;
+    list.innerHTML = '';
+    if (!users || users.length === 0) {
+      list.innerHTML = `<div class="empty-note">${t('no_heroes')}</div>`;
       return;
     }
-    
-    if(!users || users.length === 0) {
-      list.innerHTML='<div class="empty-note">Sem jogadores cadastrados<br>no ranking ainda.</div>';
-      return;
-    }
-    
-    list.innerHTML='';
-    
-    users.forEach((r, i) => {
-      const isCurrentPlayer = r.nick === S.nick;
-      const row = document.createElement('div');
-      row.className = 'item-row' + (isCurrentPlayer ? ' equipped' : '');
-      row.innerHTML = `<div class="tag">#${i+1}</div>
-        <div class="info"><div class="nm">${r.nick}</div>
-        <div class="st">Nível: ${r.level} · Ouro: ◈ ${r.gold}</div></div>`;
-      list.appendChild(row);
+    users.forEach((u, index) => {
+      const item = document.createElement('div');
+      item.className = 'item-row' + (u.nick === S.nick ? ' equipped' : '');
+      item.innerHTML = `<div class="tag">#${index + 1}</div>
+        <div class="info"><div class="nm">${u.nick}</div>
+        <div class="st">${t('level')}: ${u.level || 1} · ${t('stage')}: ${u.stage || 1}</div></div>`;
+      list.appendChild(item);
     });
-    
-  } catch(e) {
-    console.error('Erro ao renderizar ranking:', e);
-    list.innerHTML='<div class="empty-note">Erro ao carregar ranking.<br>Verifique sua conexão.</div>';
+  } catch (err) {
+    console.error("Erro ao carregar ranking:", err);
+    list.innerHTML = `<div class="empty-note">${t('rank_error')}</div>`;
   }
 }
 
@@ -4980,10 +4972,10 @@ function renderPVPModal(){
   if(!currentTournament) {
     container.innerHTML = `
       <div class="pvp-empty">
-        <h3>⚔️ Torneio PVP</h3>
-        <p>Nenhum torneio ativo no momento.</p>
-        <p style="font-size: 12px; color: #999;">Torneio é gerado toda sexta às 23h com o top 10 do ranking de stages.</p>
-        <p style="font-size: 12px; color: #999;">Batalhas automáticas ocorrem no sábado às 12h.</p>
+        <h3>⚔️ ${t('pvp_title')}</h3>
+        <p>${t('pvp_no_tournament')}</p>
+        <p style="font-size: 12px; color: #999;">${t('pvp_info')}</p>
+        <p style="font-size: 12px; color: #999;">${t('pvp_battles')}</p>
       </div>
     `;
     return;
@@ -4993,9 +4985,9 @@ function renderPVPModal(){
   
   const tabsHTML = `
     <div class="pvp-tabs">
-      <button class="pvp-tab ${pvpHistoryTab === 'brackets' ? 'on' : ''}" data-tab="brackets">Chaves</button>
-      <button class="pvp-tab ${pvpHistoryTab === 'matches' ? 'on' : ''}" data-tab="matches">Histórico</button>
-      <button class="pvp-tab ${pvpHistoryTab === 'rewards' ? 'on' : ''}" data-tab="rewards">Prêmios</button>
+      <button class="pvp-tab ${pvpHistoryTab === 'brackets' ? 'on' : ''}" data-tab="brackets">${t('pvp_brackets')}</button>
+      <button class="pvp-tab ${pvpHistoryTab === 'matches' ? 'on' : ''}" data-tab="matches">${t('pvp_history')}</button>
+      <button class="pvp-tab ${pvpHistoryTab === 'rewards' ? 'on' : ''}" data-tab="rewards">${t('pvp_rewards')}</button>
     </div>
   `;
   
@@ -5032,10 +5024,10 @@ function renderPVPBrackets(tournament, container){
   const html = `
     <div class="pvp-bracket-view">
       <div class="pvp-info-header">
-        <h3>⚔️ Torneio Semanal</h3>
-        <div class="pvp-status">Status: <span class="badge-${tournament.status}">${tournament.status}</span></div>
+        <h3>⚔️ ${currentLanguage === 'en' ? 'Weekly Tournament' : 'Torneio Semanal'}</h3>
+        <div class="pvp-status">${t('pvp_status')} <span class="badge-${tournament.status}">${tournament.status}</span></div>
         <div class="pvp-pool">
-          <p>💰 Pool de Prêmios:</p>
+          <p>${t('pvp_pool')}</p>
           <p>◈ ${goldPool} Gold</p>
           <p>♦ ${vipPool} VIP Coin</p>
         </div>
@@ -5043,18 +5035,18 @@ function renderPVPBrackets(tournament, container){
       
       <div class="pvp-brackets-container">
         <div class="pvp-round">
-          <h4>🏆 Semifinais</h4>
+          <h4>${t('pvp_semifinals')}</h4>
           <div class="pvp-matches-grid" id="semifinals-grid"></div>
         </div>
         
         ${tournament.status !== 'scheduled' && tournament.final_match ? `
           <div class="pvp-round">
-            <h4>👑 Final</h4>
+            <h4>${t('pvp_final')}</h4>
             <div class="pvp-matches-grid" id="final-grid"></div>
           </div>
           
           <div class="pvp-round">
-            <h4>🥉 3º Lugar</h4>
+            <h4>${t('pvp_third_place')}</h4>
             <div class="pvp-matches-grid" id="third-place-grid"></div>
           </div>
         ` : ''}
@@ -5369,6 +5361,308 @@ async function viewPVPMatchDetails(matchId){
     toast('Erro ao carregar detalhes da batalha.');
   }
 }
+
+// ============================================================
+// SISTEMA DE TRADUÇÃO (I18N - PORTUGUÊS/INGLÊS)
+// ============================================================
+
+const TRANSLATIONS = {
+  pt: {
+    // MENU PRINCIPAL E INTERFACE
+    'ranking': 'ranking',
+    'pvp': 'pvp',
+    'config': 'config',
+    'poções': 'poções',
+    'mercado': 'mercado',
+    'maestria': 'maestria',
+    'desafio': 'desafio',
+    'vip': 'vip',
+    
+    // MODAIS E TÍTULOS
+    'ranking_title': 'RANKING GLOBAL',
+    'pvp_title': '🏆 TORNEIO PVP',
+    'settings_title': 'CONFIGURAÇÕES',
+    'market_title': 'MERCADO GLOBAL',
+    'shop_title': 'LOJA DE POÇÕES',
+    'equip_title': 'EQUIPAMENTOS',
+    'pets_title': 'MEUS PETS',
+    'synth_title': 'SÍNTESE',
+    'talents_title': 'MAESTRIA',
+    'challenge_title': 'DESAFIOS',
+    'vip_title': 'LOJA VIP',
+    
+    // ABAS DO JOGO
+    'tab_buy': 'Comprar',
+    'tab_sell': 'Vender',
+    'tab_my_listings': 'Meus Anúncios',
+    'tab_brackets': 'Chaves',
+    'tab_matches': 'Histórico',
+    'tab_rewards': 'Prêmios',
+    
+    // INFORMAÇÕES DE JOGADOR
+    'level': 'Nível',
+    'stage': 'Stage',
+    'gold': 'Ouro',
+    'vip_coin': 'VIP Coin',
+    'hp': 'HP',
+    'mp': 'MP',
+    'atk': 'ATK',
+    'def': 'DEF',
+    'battle': 'Batalha',
+    'idle': 'Inativo',
+    
+    // MENSAGENS DE AÇÃO
+    'buy': 'Comprar',
+    'sell': 'Vender',
+    'submit': 'Enviar',
+    'cancel': 'Cancelar',
+    'confirm': 'Confirmar',
+    'close': 'Fechar',
+    'loading': 'Carregando...',
+    'error': 'Erro',
+    'success': 'Sucesso',
+    
+    // RANKING
+    'no_heroes': 'Nenhum herói encontrado.',
+    'rank_loading': 'Carregando ranking...',
+    'rank_error': 'Erro ao carregar ranking. Tente novamente.',
+    
+    // PVP
+    'pvp_no_tournament': 'Nenhum torneio ativo no momento.',
+    'pvp_info': 'Torneio é gerado toda sexta às 23h com o top 10 do ranking de stages.',
+    'pvp_battles': 'Batalhas automáticas ocorrem no sábado às 12h.',
+    'pvp_pool': '💰 Pool de Prêmios:',
+    'pvp_semifinals': '🏆 Semifinais',
+    'pvp_final': '👑 Final',
+    'pvp_third_place': '🥉 3º Lugar',
+    'pvp_brackets': 'Chaves',
+    'pvp_history': 'Histórico',
+    'pvp_rewards': 'Prêmios',
+    'pvp_status': 'Status:',
+    'pvp_damage': 'Dano:',
+    'pvp_turns': 'Turnos:',
+    'pvp_winner': '🏆',
+    'pvp_awaiting': 'Aguardando...',
+    'pvp_battle_log': '📜 Log da Batalha (Últimos 20 turnos)',
+    'pvp_no_battles': 'Nenhuma batalha realizada ainda.',
+    'pvp_standings': '🏆 Colocação Final',
+    'pvp_first': '🥇 1º Lugar',
+    'pvp_second': '🥈 2º Lugar',
+    'pvp_third': '🥉 3º Lugar',
+    'pvp_history_rewards': '📋 Histórico de Prêmios',
+    'pvp_claimed': '✓ Resgatado',
+    'pvp_waiting': 'Aguardando',
+    
+    // MERCADO
+    'market_empty': 'Sem ofertas disponíveis.<br>Seja o primeiro a anunciar!<br>Use a aba Vender.',
+    'market_no_filter': 'Nenhuma oferta com esses filtros.<br>Ajuste os filtros acima ou aguarde novas ofertas.',
+    'market_nothing': 'Nada disponível para vender.<br>Itens equipados e o pet ativo<br>não podem ser anunciados.',
+    'market_no_listings': 'Você não tem anúncios ativos.<br>Use a aba Vender!',
+    'market_error': 'Erro ao carregar mercado.<br>Tente novamente.',
+    'market_connection': 'Erro ao carregar mercado.<br>Verifique sua conexão.',
+    'market_seller': 'Vendedor:',
+    'market_type': 'Tipo:',
+    'market_equipment': 'Equipamento',
+    'market_pet': 'Pet',
+    'market_gold_pack': 'Ouro',
+    'market_price': 'Preço:',
+    'market_suggested': 'Sugerido:',
+    'market_announce': 'Anunciar',
+    'market_view_details': 'Ver Detalhes',
+    'market_withdraw': 'Retirar',
+    'market_status': 'Status: aguardando comprador...',
+    'market_get': 'você recebe',
+    'market_published': 'Anúncio publicado!<br>Taxa de 10% será cobrada na venda.',
+    'market_withdrawn': 'Anúncio retirado.<br>Item devolvido ao inventário.',
+    'market_insufficient_gold': 'Ouro insuficiente!',
+    'market_insufficient_vip': '♦ VIP Coins insuficientes!<br>Venda itens por VIP para ganhar.',
+    
+    // IDIOMA
+    'lang_label': 'Idioma / Language',
+    'lang_pt': 'Português',
+    'lang_en': 'English',
+    
+    // OUTRAS MENSAGENS
+    'no_hero': 'Nenhum herói encontrado.',
+    'loading_rank': 'Carregando ranking...',
+    'error_rank': 'Erro ao carregar ranking.',
+    'connection_error': 'Erro de conexão.',
+  },
+  
+  en: {
+    // MENU PRINCIPAL E INTERFACE
+    'ranking': 'ranking',
+    'pvp': 'pvp',
+    'config': 'config',
+    'poções': 'potions',
+    'mercado': 'market',
+    'maestria': 'mastery',
+    'desafio': 'challenge',
+    'vip': 'vip',
+    
+    // MODAIS E TÍTULOS
+    'ranking_title': 'GLOBAL RANKING',
+    'pvp_title': '🏆 PVP TOURNAMENT',
+    'settings_title': 'SETTINGS',
+    'market_title': 'GLOBAL MARKET',
+    'shop_title': 'POTION SHOP',
+    'equip_title': 'EQUIPMENT',
+    'pets_title': 'MY PETS',
+    'synth_title': 'SYNTHESIS',
+    'talents_title': 'MASTERY',
+    'challenge_title': 'CHALLENGES',
+    'vip_title': 'VIP SHOP',
+    
+    // ABAS DO JOGO
+    'tab_buy': 'Buy',
+    'tab_sell': 'Sell',
+    'tab_my_listings': 'My Listings',
+    'tab_brackets': 'Brackets',
+    'tab_matches': 'History',
+    'tab_rewards': 'Rewards',
+    
+    // INFORMAÇÕES DE JOGADOR
+    'level': 'Level',
+    'stage': 'Stage',
+    'gold': 'Gold',
+    'vip_coin': 'VIP Coin',
+    'hp': 'HP',
+    'mp': 'MP',
+    'atk': 'ATK',
+    'def': 'DEF',
+    'battle': 'Battle',
+    'idle': 'Idle',
+    
+    // MENSAGENS DE AÇÃO
+    'buy': 'Buy',
+    'sell': 'Sell',
+    'submit': 'Submit',
+    'cancel': 'Cancel',
+    'confirm': 'Confirm',
+    'close': 'Close',
+    'loading': 'Loading...',
+    'error': 'Error',
+    'success': 'Success',
+    
+    // RANKING
+    'no_heroes': 'No heroes found.',
+    'rank_loading': 'Loading ranking...',
+    'rank_error': 'Error loading ranking. Try again.',
+    
+    // PVP
+    'pvp_no_tournament': 'No active tournament at the moment.',
+    'pvp_info': 'Tournament is generated every Friday at 11 PM with the top 10 stage ranking.',
+    'pvp_battles': 'Automatic battles occur on Saturday at 12 PM.',
+    'pvp_pool': '💰 Prize Pool:',
+    'pvp_semifinals': '🏆 Semifinals',
+    'pvp_final': '👑 Final',
+    'pvp_third_place': '🥉 3rd Place',
+    'pvp_brackets': 'Brackets',
+    'pvp_history': 'History',
+    'pvp_rewards': 'Rewards',
+    'pvp_status': 'Status:',
+    'pvp_damage': 'Damage:',
+    'pvp_turns': 'Turns:',
+    'pvp_winner': '🏆',
+    'pvp_awaiting': 'Awaiting...',
+    'pvp_battle_log': '📜 Battle Log (Last 20 turns)',
+    'pvp_no_battles': 'No battles performed yet.',
+    'pvp_standings': '🏆 Final Standings',
+    'pvp_first': '🥇 1st Place',
+    'pvp_second': '🥈 2nd Place',
+    'pvp_third': '🥉 3rd Place',
+    'pvp_history_rewards': '📋 Rewards History',
+    'pvp_claimed': '✓ Claimed',
+    'pvp_waiting': 'Waiting',
+    
+    // MERCADO
+    'market_empty': 'No offers available.<br>Be the first to announce!<br>Use the Sell tab.',
+    'market_no_filter': 'No offers with these filters.<br>Adjust filters above or wait for new offers.',
+    'market_nothing': 'Nothing available to sell.<br>Equipped items and active pet<br>cannot be announced.',
+    'market_no_listings': 'You have no active listings.<br>Use the Sell tab!',
+    'market_error': 'Error loading market.<br>Try again.',
+    'market_connection': 'Error loading market.<br>Check your connection.',
+    'market_seller': 'Seller:',
+    'market_type': 'Type:',
+    'market_equipment': 'Equipment',
+    'market_pet': 'Pet',
+    'market_gold_pack': 'Gold',
+    'market_price': 'Price:',
+    'market_suggested': 'Suggested:',
+    'market_announce': 'Announce',
+    'market_view_details': 'View Details',
+    'market_withdraw': 'Withdraw',
+    'market_status': 'Status: waiting for buyer...',
+    'market_get': 'you get',
+    'market_published': 'Listing published!<br>10% fee will be charged on sale.',
+    'market_withdrawn': 'Listing withdrawn.<br>Item returned to inventory.',
+    'market_insufficient_gold': 'Insufficient Gold!',
+    'market_insufficient_vip': '♦ Insufficient VIP Coins!<br>Sell items for VIP to earn.',
+    
+    // IDIOMA
+    'lang_label': 'Language / Idioma',
+    'lang_pt': 'Português',
+    'lang_en': 'English',
+    
+    // OUTRAS MENSAGENS
+    'no_hero': 'No hero found.',
+    'loading_rank': 'Loading ranking...',
+    'error_rank': 'Error loading ranking.',
+    'connection_error': 'Connection error.',
+  }
+};
+
+// Idioma atual (padrão: português)
+let currentLanguage = localStorage.getItem('pv_language') || 'pt';
+
+// Função para obter tradução
+function t(key) {
+  return TRANSLATIONS[currentLanguage][key] || TRANSLATIONS['pt'][key] || key;
+}
+
+// Função para traduzir elemento HTML
+function translateElement(element) {
+  const key = element.getAttribute('data-i18n');
+  if (key) {
+    element.textContent = t(key);
+  }
+}
+
+// Função para traduzir toda a página
+function translatePage() {
+  document.querySelectorAll('[data-i18n]').forEach(translateElement);
+  
+  // Atualizar textos de PVP
+  updatePVPTranslations();
+}
+
+// Função para mudar idioma
+function setLang(lang) {
+  currentLanguage = lang;
+  localStorage.setItem('pv_language', lang);
+  translatePage();
+  
+  // Atualizar badge da língua
+  document.querySelectorAll('.lang-opt').forEach(opt => {
+    opt.classList.toggle('on', opt.dataset.lang === lang);
+  });
+}
+
+// Função para atualizar textos dinâmicos do PVP
+function updatePVPTranslations() {
+  // Esta função será chamada quando renderizar PVP
+  // Os textos dinâmicos são inseridos via innerHTML, então precisam ser traduzidos lá
+}
+
+// Inicializar tradução ao carregar página
+window.addEventListener('DOMContentLoaded', () => {
+  translatePage();
+  
+  // Marcar idioma selecionado
+  document.querySelectorAll('.lang-opt').forEach(opt => {
+    opt.classList.toggle('on', opt.dataset.lang === currentLanguage);
+  });
+});
 
 </script>
 </body>
