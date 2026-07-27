@@ -1,7 +1,6 @@
 // ============================================================
 // FUNÇÕES SERVERLESS PARA AUTOMAÇÃO DO PVP TOURNAMENT
-// VERSÃO UNIFICADA COM MARKET_POOL
-// Use com: Vercel Functions, Netlify Functions, AWS Lambda, Google Cloud Functions, etc.
+// VERSÃO UNIFICADA, SEGURA E FOCADA EM LEVEL/STAGE
 // ============================================================
 
 const { createClient } = require('@supabase/supabase-js');
@@ -19,10 +18,10 @@ async function generateTournament(){
   console.log('🏆 Gerando novo torneio PVP...');
   
   try {
-    // 1. Buscar top 10 jogadores por STAGE (e LEVEL como critério de desempate)
+    // 1. Buscar top 10 jogadores ordenados por STAGE e LEVEL
     const {data: top10, error: topError} = await supabase
       .from('users')
-      .select('nick, level, stage')
+      .select('nick, level, stage, game_data')
       .order('stage', {ascending: false})
       .order('level', {ascending: false})
       .limit(10);
@@ -58,7 +57,6 @@ async function generateTournament(){
       .single();
     
     if(checkPoolError && checkPoolError.code === 'PGRST116') {
-      // Pool não existe, criar novo (será atualizado automaticamente por trigger)
       const {data: newPool, error: createError} = await supabase
         .from('market_pool')
         .insert([{
@@ -85,8 +83,6 @@ async function generateTournament(){
       pool = existingPool;
     }
     
-    console.log(`Pool encontrado/criado: ${pool.id} (${pool.gold_prize_pool} Gold, ${pool.vip_prize_pool} VIP)`);
-    
     // 4. Gerar chaves aleatórias (shuffle array)
     const shuffled = [...top10].sort(() => Math.random() - 0.5);
     const semifinals = [];
@@ -100,7 +96,7 @@ async function generateTournament(){
       });
     }
     
-    // 5. Criar tournament (referenciando market_pool_id)
+    // 5. Criar tournament
     const {data: tournament, error: insertError} = await supabase
       .from('pvp_tournament')
       .insert([{
@@ -136,7 +132,6 @@ async function executeSemifinals(){
   console.log('⚔️  Executando semifinais...');
   
   try {
-    // 1. Buscar torneio atual (status: brackets_generated)
     const {data: tournament, error: tourneyError} = await supabase
       .from('pvp_tournament')
       .select('*')
@@ -150,14 +145,9 @@ async function executeSemifinals(){
       return {ok: false, error: 'No tournament found'};
     }
     
-    console.log(`Executando semifinais do torneio: ${tournament.id}`);
-    
-    // 2. Executar cada semifinal
     const updatedSemifinals = [];
     
     for(const match of tournament.semifinals) {
-      console.log(`Batalha: ${match.player1_nick} vs ${match.player2_nick}`);
-      
       const result = await simulatePVPBattle(
         match.player1_nick,
         match.player2_nick,
@@ -177,7 +167,6 @@ async function executeSemifinals(){
       });
     }
     
-    // 3. Atualizar tournament status
     const {error: updateError} = await supabase
       .from('pvp_tournament')
       .update({
@@ -191,7 +180,7 @@ async function executeSemifinals(){
       return {ok: false, error: updateError};
     }
     
-    console.log(`✅ Semifinais concluídas! ${updatedSemifinals.length} vencedores.`);
+    console.log(`✅ Semifinais concluídas!`);
     return {ok: true, semifinals: updatedSemifinals};
     
   } catch(error) {
@@ -208,7 +197,6 @@ async function executeFinalsAndRewards(){
   console.log('👑 Executando finals e distribuindo prêmios...');
   
   try {
-    // 1. Buscar torneio (status: finals_running)
     const {data: tournament, error: tourneyError} = await supabase
       .from('pvp_tournament')
       .select('*, market_pool:market_pool_id(gold_prize_pool, vip_prize_pool)')
@@ -222,21 +210,14 @@ async function executeFinalsAndRewards(){
       return {ok: false, error: 'No tournament found'};
     }
     
-    console.log(`Finalizando torneio: ${tournament.id}`);
-    
-    // 2. Pegar os 2 semifinalistas vencedores
     const semifinalResults = tournament.semifinals.filter(m => m.winner_nick);
     if(semifinalResults.length < 2) {
-      console.error('Não há 2 semifinalistas vencedores');
       return {ok: false, error: 'Not enough semifinal winners'};
     }
     
     const finalist1 = semifinalResults[0];
     const finalist2 = semifinalResults[1];
     
-    console.log(`Finals: ${finalist1.winner_nick} vs ${finalist2.winner_nick}`);
-    
-    // 3. Executar final
     const finalResult = await simulatePVPBattle(
       finalist1.winner_nick,
       finalist2.winner_nick,
@@ -245,19 +226,13 @@ async function executeFinalsAndRewards(){
       generateUUID()
     );
     
-    if(!finalResult.ok) {
-      console.error('Erro ao executar final:', finalResult.error);
-      return {ok: false, error: finalResult.error};
-    }
+    if(!finalResult.ok) return {ok: false, error: finalResult.error};
     
     const firstPlace = finalResult.winner;
     const secondPlace = finalist1.winner_nick === firstPlace ? finalist2.winner_nick : finalist1.winner_nick;
     
-    // 4. Executar 3º lugar (semifinalistas perdedores)
     const loser1Nick = finalist1.player1_nick === finalist1.winner_nick ? finalist1.player2_nick : finalist1.player1_nick;
     const loser2Nick = finalist2.player1_nick === finalist2.winner_nick ? finalist2.player2_nick : finalist2.player1_nick;
-    
-    console.log(`3º lugar: ${loser1Nick} vs ${loser2Nick}`);
     
     const thirdResult = await simulatePVPBattle(
       loser1Nick,
@@ -269,24 +244,18 @@ async function executeFinalsAndRewards(){
     
     const thirdPlace = thirdResult.ok ? thirdResult.winner : 'draw';
     
-    // 5. Calcular prêmios (70-20-10 split) usando market_pool
     const poolData = tournament.market_pool || tournament;
     const goldPool = poolData.gold_prize_pool || 0;
     const vipPool = poolData.vip_prize_pool || 0;
     
     const firstGold = Math.floor(goldPool * 0.7);
     const firstVip = Math.floor(vipPool * 0.7);
-    
     const secondGold = Math.floor(goldPool * 0.2);
     const secondVip = Math.floor(vipPool * 0.2);
-    
     const thirdGold = Math.floor(goldPool * 0.1);
     const thirdVip = Math.floor(vipPool * 0.1);
     
-    console.log(`Prêmios - 1º: ${firstGold} Gold/${firstVip} VIP, 2º: ${secondGold} Gold/${secondVip} VIP, 3º: ${thirdGold} Gold/${thirdVip} VIP`);
-    
-    // 6. Criar records de rewards
-    const {error: rewardsError} = await supabase
+    await supabase
       .from('pvp_rewards')
       .insert([
         {tournament_id: tournament.id, nick: firstPlace, placement: 'first', gold_reward: firstGold, vip_reward: firstVip},
@@ -294,53 +263,22 @@ async function executeFinalsAndRewards(){
         {tournament_id: tournament.id, nick: thirdPlace, placement: 'third', gold_reward: thirdGold, vip_reward: thirdVip}
       ]);
     
-    if(rewardsError) {
-      console.error('Erro ao criar rewards:', rewardsError);
-    }
+    const finalMatch = { match_id: generateUUID(), player1_nick: finalist1.winner_nick, player2_nick: finalist2.winner_nick, winner_nick: firstPlace };
+    const thirdPlaceMatch = { match_id: generateUUID(), player1_nick: loser1Nick, player2_nick: loser2Nick, winner_nick: thirdPlace };
     
-    // 7. Atualizar tournament com resultados finais
-    const finalMatch = {
-      match_id: generateUUID(),
-      player1_nick: finalist1.winner_nick,
-      player2_nick: finalist2.winner_nick,
-      winner_nick: firstPlace
-    };
-    
-    const thirdPlaceMatch = {
-      match_id: generateUUID(),
-      player1_nick: loser1Nick,
-      player2_nick: loser2Nick,
-      winner_nick: thirdPlace
-    };
-    
-    const {error: finalUpdateError} = await supabase
+    await supabase
       .from('pvp_tournament')
       .update({
         final_match: finalMatch,
         third_place_match: thirdPlaceMatch,
-        first_place_nick: firstPlace,
-        first_place_gold: firstGold,
-        first_place_vip: firstVip,
-        second_place_nick: secondPlace,
-        second_place_gold: secondGold,
-        second_place_vip: secondVip,
-        third_place_nick: thirdPlace,
-        third_place_gold: thirdGold,
-        third_place_vip: thirdVip,
+        first_place_nick: firstPlace, first_place_gold: firstGold, first_place_vip: firstVip,
+        second_place_nick: secondPlace, second_place_gold: secondGold, second_place_vip: secondVip,
+        third_place_nick: thirdPlace, third_place_gold: thirdGold, third_place_vip: thirdVip,
         status: 'completed'
       })
       .eq('id', tournament.id);
     
-    if(finalUpdateError) {
-      console.error('Erro ao finalizar tournament:', finalUpdateError);
-      return {ok: false, error: finalUpdateError};
-    }
-    
-    console.log(`✅ Tournament finalizado! Prêmios distribuídos.`);
-    console.log(`   1º: ${firstPlace} (${firstGold} Gold, ${firstVip} VIP)`);
-    console.log(`   2º: ${secondPlace} (${secondGold} Gold, ${secondVip} VIP)`);
-    console.log(`   3º: ${thirdPlace} (${thirdGold} Gold, ${thirdVip} VIP)`);
-    
+    console.log(`✅ Tournament finalizado com sucesso!`);
     return {ok: true, tournament: {firstPlace, secondPlace, thirdPlace}};
     
   } catch(error) {
@@ -355,32 +293,34 @@ async function executeFinalsAndRewards(){
 
 async function simulatePVPBattle(player1Nick, player2Nick, tournamentId, round, matchId){
   try {
-    // Buscar dados dos jogadores
     const {data: users, error: userError} = await supabase
       .from('users')
-      .select('nick, level, player_atk, player_def, player_hp, player_max_hp')
+      .select('nick, level, stage, game_data')
       .in('nick', [player1Nick, player2Nick]);
     
     if(userError || !users || users.length < 2) {
-      console.error('Erro ao buscar dados dos jogadores:', userError);
-      return {ok: false, error: userError};
+      return {ok: false, error: userError || 'Players not found'};
     }
     
-    const player1Data = users.find(u => u.nick === player1Nick);
-    const player2Data = users.find(u => u.nick === player2Nick);
+    const p1Raw = users.find(u => u.nick === player1Nick);
+    const p2Raw = users.find(u => u.nick === player2Nick);
+
+    const getAtk = (u) => u.player_atk || (u.game_data && u.game_data.atk) || (u.level * 5) + 10;
+    const getDef = (u) => u.player_def || (u.game_data && u.game_data.def) || (u.level * 2) + 5;
+    const getHp = (u) => u.player_max_hp || (u.game_data && u.game_data.maxHp) || 100;
+
+    const p1Atk = getAtk(p1Raw), p1Def = getDef(p1Raw), p1MaxHp = getHp(p1Raw);
+    const p2Atk = getAtk(p2Raw), p2Def = getDef(p2Raw), p2MaxHp = getHp(p2Raw);
     
-    // Simular batalha
-    let p1HP = player1Data.player_max_hp || 100;
-    let p2HP = player2Data.player_max_hp || 100;
+    let p1HP = p1MaxHp;
+    let p2HP = p2MaxHp;
     const battleLog = [];
     let turn = 0;
-    const maxTurns = 500;
     
-    while(p1HP > 0 && p2HP > 0 && turn < maxTurns) {
+    while(p1HP > 0 && p2HP > 0 && turn < 500) {
       turn++;
-      
-      const p1Damage = Math.max(1, (player1Data.player_atk || 10) - (player2Data.player_def || 2) + Math.random() * 5);
-      const p2Damage = Math.max(1, (player2Data.player_atk || 10) - (player1Data.player_def || 2) + Math.random() * 5);
+      const p1Damage = Math.max(1, p1Atk - (p2Def * 0.5) + Math.random() * 5);
+      const p2Damage = Math.max(1, p2Atk - (p1Def * 0.5) + Math.random() * 5);
       
       p2HP -= p1Damage;
       p1HP -= p2Damage;
@@ -397,33 +337,23 @@ async function simulatePVPBattle(player1Nick, player2Nick, tournamentId, round, 
     }
     
     const winner = p1HP > 0 ? player1Nick : player2Nick;
-    const player1TotalDamage = battleLog.reduce((sum, t) => sum + t.player1_damage, 0);
-    const player2TotalDamage = battleLog.reduce((sum, t) => sum + t.player2_damage, 0);
+    const p1TotalDmg = battleLog.reduce((sum, t) => sum + t.player1_damage, 0);
+    const p2TotalDmg = battleLog.reduce((sum, t) => sum + t.player2_damage, 0);
     
-    // Salvar match
-    const {error: insertError} = await supabase
+    await supabase
       .from('pvp_matches')
       .insert([{
         tournament_id: tournamentId,
         player1_nick: player1Nick,
         player2_nick: player2Nick,
-        player1_data: {level: player1Data.level, atk: player1Data.player_atk, def: player1Data.player_def, hp: player1Data.player_max_hp},
-        player2_data: {level: player2Data.level, atk: player2Data.player_atk, def: player2Data.player_def, hp: player2Data.player_max_hp},
+        player1_data: {level: p1Raw.level, stage: p1Raw.stage, atk: p1Atk, def: p1Def, hp: p1MaxHp},
+        player2_data: {level: p2Raw.level, stage: p2Raw.stage, atk: p2Atk, def: p2Def, hp: p2MaxHp},
         winner_nick: winner,
         battle_log: battleLog,
-        player1_damage_dealt: player1TotalDamage,
-        player2_damage_dealt: player2TotalDamage,
-        player1_turns_survived: battleLog.length,
-        player2_turns_survived: battleLog.length,
+        player1_damage_dealt: p1TotalDmg,
+        player2_damage_dealt: p2TotalDmg,
         round: round
       }]);
-    
-    if(insertError) {
-      console.error('Erro ao salvar match:', insertError);
-      return {ok: false, error: insertError};
-    }
-    
-    console.log(`  ${player1Nick}(${player1TotalDamage} dmg) vs ${player2Nick}(${player2TotalDamage} dmg) -> 🏆 ${winner}`);
     
     return {ok: true, winner, battleLog};
     
@@ -433,10 +363,6 @@ async function simulatePVPBattle(player1Nick, player2Nick, tournamentId, round, 
   }
 }
 
-// ============================================================
-// HELPER: GERAR UUID
-// ============================================================
-
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     const r = Math.random() * 16 | 0;
@@ -445,39 +371,8 @@ function generateUUID() {
   });
 }
 
-// ============================================================
-// EXPORTAR FUNÇÕES PARA SERVERLESS
-// ============================================================
-
 module.exports = {
   generateTournament,
   executeSemifinals,
   executeFinalsAndRewards
 };
-
-// ============================================================
-// EXEMPLO DE USO COM VERCEL CRON
-// ============================================================
-
-// api/pvp/generate-tournament.js
-// export default async function handler(req, res) {
-//   if (req.method !== 'POST') {
-//     return res.status(405).json({ error: 'Method not allowed' });
-//   }
-//   const result = await generateTournament();
-//   return res.status(200).json(result);
-// }
-
-// Adicionar em vercel.json:
-// {
-//   "crons": [{
-//     "path": "/api/pvp/generate-tournament",
-//     "schedule": "0 23 * * FRI"
-//   }, {
-//     "path": "/api/pvp/execute-semifinals",
-//     "schedule": "0 12 * * SAT"
-//   }, {
-//     "path": "/api/pvp/execute-finals",
-//     "schedule": "0 14 * * SAT"
-//   }]
-// }
