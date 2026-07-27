@@ -4915,23 +4915,29 @@ async function confirmListing(cur){
   }
 }
 
-/* ---------- CANCELAR ANÚNCIO ---------- */
-function cancelListing(id){
+/* --------- CANCELAR ANÚNCIO ---------- */
+/* --------- CANCELAR ANÚNCIO ---------- */
+async function cancelListing(id){
   const l = S.listings.find(x => x.id === id);
   if(!l) return;
-  
+
   S.listings = S.listings.filter(x => x.id !== id);
   restoreListing(l);
-  
-  supaAuth
-    .from('market_listings')
-    .delete()
-    .eq('id', id)
-    .catch(e => console.error('Erro ao remover anúncio do servidor:', e));
-  
+
+  try {
+    const { error } = await supaAuth
+      .from('market_listings')
+      .delete()
+      .eq('id', id);
+
+    if(error) throw error;
+  } catch(e) {
+    console.error('Erro ao remover anúncio do servidor:', e);
+  }
+
   toast('Anúncio retirado.<br>Item devolvido ao inventário.');
-  updBars(); 
-  save(); 
+  updBars();
+  save();
   renderMarket();
 }
 
