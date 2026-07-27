@@ -5784,30 +5784,6 @@ const TRANSLATIONS = {
     'gold_goblin_title': 'GOLD GOBLIN CHALLENGE',
     'defeated_quickly': 'Defeat him quickly',
 
-// Idioma atual (padrão: português)
-let currentLanguage = localStorage.getItem('pv_language') || 'en';
-
-// Função para obter tradução
-function t(key) {
-  return TRANSLATIONS[currentLanguage][key] || TRANSLATIONS['pt'][key] || key;
-}
-
-// Função para traduzir elemento HTML
-function translateElement(element) {
-  const key = element.getAttribute('data-i18n');
-  if (key) {
-    element.textContent = t(key);
-  }
-}
-
-// Função para traduzir toda a página
-function translatePage() {
-  document.querySelectorAll('[data-i18n]').forEach(translateElement);
-  
-  // Atualizar textos de PVP
-  updatePVPTranslations();
-}
-
 // Função para mudar idioma
 function setLang(lang) {
   currentLanguage = lang;
@@ -5822,12 +5798,12 @@ function setLang(lang) {
       opt.classList.remove('on');
     }
   });
-}
-  });
-  
-  // Re-render modais abertos
-  if(el('modal-rank').style.display !== 'none') renderRank();
-  if(el('modal-pvp').style.display !== 'none') renderPVPModal();
+
+  // Re-render modais abertos se existirem
+  if(typeof el === 'function') {
+    if(el('modal-rank') && el('modal-rank').style.display !== 'none') renderRank();
+    if(el('modal-pvp') && el('modal-pvp').style.display !== 'none') renderPVPModal();
+  }
 }
 
 // Função para traduzir nomes de skills
@@ -5935,7 +5911,6 @@ window.addEventListener('DOMContentLoaded', () => {
     opt.classList.toggle('on', opt.dataset.lang === currentLanguage);
   });
 });
-
 </script>
 </body>
 </html>
