@@ -4215,22 +4215,22 @@ async function renderMarket(){
   list.innerHTML = '';
   el('market-filters').classList.toggle('open', marketTab === 'buy');
   
-  if(marketTab === 'buy'){
-try {
-  const { data: listings, error } = await supaAuth
-    .from('market_listings')
-    .select('*')
-    .neq('seller_nick', S.nick)
-    .order('created_at', { ascending: false });
+ if(marketTab === 'buy'){
+  try {
+    const { data: listings, error } = await supaAuth
+      .from('market_listings')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if(error) throw error;
-       
-let allListings = listings || [];
+    if(error) throw error;
 
-  if(!allListings || allListings.length === 0) {
-    list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
-    return;
-  }
+    // Filtra para remover os seus próprios anúncios usando o nick
+    let allListings = (listings || []).filter(item => item.seller_nick !== S.nick);
+
+    if(!allListings || allListings.length === 0) {
+      list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
+      return;
+    }
       
       allListings.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
       
