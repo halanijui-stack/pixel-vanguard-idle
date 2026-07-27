@@ -4199,11 +4199,11 @@ document.querySelectorAll('#modal-market .tab').forEach(t=>{
 });
 
 async function renderMarket(){
-  const list=el('market-list'); 
-  list.innerHTML='';
-  el('market-filters').classList.toggle('open', marketTab==='buy');
+  const list = el('market-list'); 
+  list.innerHTML = '';
+  el('market-filters').classList.toggle('open', marketTab === 'buy');
   
-  if(marketTab==='buy'){
+  if(marketTab === 'buy'){
     try {
       const {data: listings, error} = await supaAuth
         .from('market_listings')
@@ -4211,24 +4211,20 @@ async function renderMarket(){
         .order('created_at', {ascending: false});
       
       if(error) {
-        console.error('Erro ao carregar mercado:', error);
-        list.innerHTML='<div class="empty-note">Erro ao carregar mercado.<br>Tente novamente.</div>';
+        list.innerHTML='<div class="empty-note">Erro ao carregar mercado.</div>';
         return;
       }
       
-      // Combinar anúncios do Supabase + anúncios locais não sincronizados
       let allListings = listings || [];
       
-      // Adicionar anúncios locais que ainda não foram sincronizados
       if(S.listings && S.listings.length > 0) {
         const supaIds = new Set((listings || []).map(l => l.id || ''));
         S.listings.forEach(local => {
-          // Se o ID local não está no Supabase, adicionar
           if(!supaIds.has(local.id)) {
             allListings.push({
               id: local.id,
               seller_nick: S.nick,
-              seller_id: currentUser?.id,
+              seller_id: S.userId,
               kind: local.kind,
               item_name: local.nm,
               item_data: {
@@ -4245,35 +4241,59 @@ async function renderMarket(){
       }
       
       if(!allListings || allListings.length === 0) {
-        list.innerHTML='<div class="empty-note">Sem ofertas disponíveis.<br>Seja o primeiro a anunciar!<br>Use a aba Vender.</div>';
+        list.innerHTML='<div class="empty-note">Sem ofertas disponíveis.</div>';
         return;
       }
       
-      // Ordenar por data (mais novos primeiro)
       allListings.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
       
-      marketListings = allListings;
-      const shown = allListings.filter(offerMatchesFilter);
-      
-      if(!shown.length) {
-        list.innerHTML='<div class="empty-note">Nenhuma oferta com esses filtros.<br>Ajuste os filtros acima ou aguarde novas ofertas.</div>';
-        return;
-      }
-      
-      shown.forEach(o => {
+      allListings.forEach(o => {
         const rarity = o.item_data.rarity || 'Comum';
         const row = document.createElement('div');
         row.className = 'item-row' + (rarity !== 'Comum' ? ' rar-b-' + rarity : '');
         row.innerHTML = `<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
-          <div class="info"><div class="nm">${o.item_name}${rarity !== 'Comum' ? '<br><span class="rar-' + rarity + '">[' + rarLabel(rarity) + ']</span>' : ''}</div>
-          <div class="st">Vendedor: ${o.seller_nick}<br>Tipo: ${o.kind === 'eq' ? 'Equipamento' : o.kind === 'pet' ? 'Pet' : 'Ouro'}</div></div>
+          <div class="info"><div class="nm">${o.item_name}</div>
+          <div class="st">Vendedor: ${o.seller_nick}</div></div>
           <div class="acts"><div class="tag ${o.currency === 'vip' ? 'vip' : ''}">${o.currency === 'vip' ? '♦' : '◈'} ${o.price}</div>
           <button class="btn ${o.currency === 'vip' ? 'teal ' : ''}small">Comprar</button></div>`;
-        const icon = o.item_data.icon || (o.kind === 'eq' ? 'weapon' : o.kind === 'pet' ? 'pet' : 'goldpile');
-        drawSprite(row.querySelector('canvas'), icon);
+        drawSprite(row.querySelector('canvas'), o.item_data.icon || 'weapon');
         row.querySelector('button').onclick = () => buyListing(o);
         list.appendChild(row);
       });
+    } catch(e) {
+      list.innerHTML='<div class="empty-note">Erro ao carregar mercado.</div>';
+    }
+  }
+  else if(marketTab === 'sell'){
+    // Mantém a sua lógica atual de itens para vender
+    let any=false;
+    S.inv.forEach(inst=>{
+      if(Object.values(S.eq).includes(inst.uid)) return;
+      if(S.listings.some(l=>l.uid===inst.uid && l.kind==='eq')) return;
+      any=true;
+      const b=eqBase(inst.type,inst.baseId);
+      const val=eqInstValue(inst);
+      const row=document.createElement('div'); 
+      row.className='item-row';
+      row.innerHTML=`<div class="info"><div class="nm">${eqName(inst)}</div><div class="st">Sugerido ◈ ${val}</div></div>
+        <button class="btn small">Anunciar</button>`;
+      row.querySelector('button').onclick=()=>openSellPanel({kind:'eq',uid:inst.uid,nm:b.nm,sug:val,type:inst.type,baseId:inst.baseId,rarity:inst.rarity||'Comum',icon:b.icon});
+      list.appendChild(row);
+    });
+    if(!any) list.innerHTML='<div class="empty-note">Nada disponível para vender.</div>';
+  }
+  else {
+    if(!S.listings.length){ list.innerHTML='<div class="empty-note">Nenhum anúncio ativo.</div>'; return; }
+    S.listings.forEach(l=>{
+      const row=document.createElement('div'); 
+      row.className='item-row';
+      row.innerHTML=`<div class="info"><div class="nm">${l.nm}</div><div class="st">Preço: ${l.price}</div></div>
+        <button class="btn red small">Retirar</button>`;
+      row.querySelector('button').onclick=()=>cancelListing(l.id);
+      list.appendChild(row);
+    });
+  }
+}
     } catch(e) {
       console.error('Erro ao renderizar mercado:', e);
       list.innerHTML='<div class="empty-note">Erro ao carregar mercado.<br>Verifique sua conexão.</div>';
@@ -4412,62 +4432,69 @@ async function renderRank(){
 
 /* ---------- LOJA VIP ---------- */
 let vipTab='donate';
-document.querySelectorAll('#modal-vip .tab').forEach(t=>{
-  t.onclick=()=>{
+document.querySelectorAll('#modal-vip .tab').forEach(tab=>{
+  tab.onclick=()=>{
     document.querySelectorAll('#modal-vip .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on'); vipTab=t.dataset.viptab;
-    el('vip-donate').style.display = vipTab==='donate'?'':'none';
-    el('vip-booster').style.display = vipTab==='booster'?'':'none';
+    tab.classList.add('on'); vipTab=tab.dataset.viptab;
+    const don = el('vip-donate'), boo = el('vip-booster');
+    if(don) don.style.display = vipTab==='donate'?'':'none';
+    if(boo) boo.style.display = vipTab==='booster'?'':'none';
   };
 });
 function usd(n){ return '$'+n.toFixed(2).replace('.',','); }
 function renderVip(){
-  el('vip-balance').textContent=S.vip;
+  const vb = el('vip-balance'); if(vb) vb.textContent=S.vip;
   // DONATE
-  const dl=el('donate-list'); dl.innerHTML='';
-  DONATE_PACKS.forEach(p=>{
-    const total=p.coins+p.bonus;
-    const price=p.coins*VIP_COIN_PRICE;
-    const row=document.createElement('div'); row.className='item-row';
-    row.innerHTML=`<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
-      <div class="info"><div class="nm"><span class="donate-amt">♦ ${total} VIP Coin</span></div>
-      <div class="st">${p.coins} coins${p.bonus?' <span class="donate-amt">+'+p.bonus+' bônus</span>':''} · ${VIP_COIN_PRICE.toFixed(2).replace('.',',')} por coin</div></div>
-      <button class="btn teal small">${usd(price)}</button>`;
-    drawSprite(row.querySelector('canvas'),'vipcoin');
-    row.querySelector('button').onclick=()=>doDonate(p);
-    dl.appendChild(row);
-  });
+  const dl=el('donate-list'); if(dl){ dl.innerHTML='';
+    DONATE_PACKS.forEach(p=>{
+      const total=p.coins+p.bonus;
+      const price=p.coins*VIP_COIN_PRICE;
+      const row=document.createElement('div'); row.className='item-row';
+      row.innerHTML=`<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
+        <div class="info"><div class="nm"><span class="donate-amt">♦ ${total} VIP Coin</span></div>
+        <div class="st">${p.coins} coins${p.bonus?' <span class="donate-amt">+'+p.bonus+' bônus</span>':''} · ${VIP_COIN_PRICE.toFixed(2).replace('.',',')} por coin</div></div>
+        <button class="btn teal small">${usd(price)}</button>`;
+      drawSprite(row.querySelector('canvas'),'vipcoin');
+      row.querySelector('button').onclick=()=>doDonate(p);
+      dl.appendChild(row);
+    });
+  }
   // BOOSTERS ativos
-  const ba=el('booster-active'); ba.innerHTML='';
-  Object.values(BOOSTERS).forEach(b=>{
-    if(boosterActive(b.id)){
-      const badge=document.createElement('div'); badge.className='booster-badge';
-      const cv=document.createElement('canvas'); cv.width=16;cv.height=16;cv.style.width='22px';cv.style.height='22px';
-      drawSprite(cv, b.id==='exp'?'special':'goldpile');
-      badge.appendChild(cv);
-      const sp=document.createElement('span'); sp.textContent=b.nm+' ATIVO';
-      badge.appendChild(sp);
-      const d=document.createElement('span'); d.className='days'; d.textContent=boosterDaysLeft(b.id)+' dias restantes';
-      badge.appendChild(d);
-      ba.appendChild(badge);
-    }
-  });
+  const ba=el('booster-active'); 
+  if(ba){
+    ba.innerHTML='';
+    Object.values(BOOSTERS).forEach(b=>{
+      if(boosterActive(b.id)){
+        const badge=document.createElement('div'); badge.className='booster-badge';
+        const cv=document.createElement('canvas'); cv.width=16;cv.height=16;cv.style.width='22px';cv.style.height='22px';
+        drawSprite(cv, b.id==='exp'?'special':'goldpile');
+        badge.appendChild(cv);
+        const sp=document.createElement('span'); sp.textContent=b.nm+' ATIVO';
+        badge.appendChild(sp);
+        const d=document.createElement('span'); d.className='days'; d.textContent=boosterDaysLeft(b.id)+' dias restantes';
+        badge.appendChild(d);
+        ba.appendChild(badge);
+      }
+    });
+  }
   // BOOSTERS loja
-  const bl=el('booster-list'); bl.innerHTML='';
-  Object.values(BOOSTERS).forEach(b=>{
-    const active=boosterActive(b.id);
-    const row=document.createElement('div'); row.className='item-row';
-    row.innerHTML=`<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
-      <div class="info"><div class="nm">${b.nm}</div>
-      <div class="st">${b.desc}${active?'<br><span style="color:var(--xp)">Ativo: '+boosterDaysLeft(b.id)+' dias — comprar soma +30d</span>':''}</div></div>
-      <button class="btn teal small">♦ ${b.cost}</button>`;
-    drawSprite(row.querySelector('canvas'), b.id==='exp'?'special':'goldpile');
-    row.querySelector('button').onclick=()=>buyBooster(b);
-    bl.appendChild(row);
-  });
+  const bl=el('booster-list'); 
+  if(bl){
+    bl.innerHTML='';
+    Object.values(BOOSTERS).forEach(b=>{
+      const active=boosterActive(b.id);
+      const row=document.createElement('div'); row.className='item-row';
+      row.innerHTML=`<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
+        <div class="info"><div class="nm">${b.nm}</div>
+        <div class="st">${b.desc}${active?'<br><span style="color:var(--xp)">Ativo: '+boosterDaysLeft(b.id)+' dias — comprar soma +30d</span>':''}</div></div>
+        <button class="btn teal small">♦ ${b.cost}</button>`;
+      drawSprite(row.querySelector('canvas'), b.id==='exp'?'special':'goldpile');
+      row.querySelector('button').onclick=()=>buyBooster(b);
+      bl.appendChild(row);
+    });
+  }
 }
 function doDonate(p){
-  // "doação" simulada — em produção conectaria a um gateway de pagamento
   const total=p.coins+p.bonus;
   S.vip+=total;
   toast('💜 Obrigado pela doação!<br>+♦ '+total+' VIP Coin<br>('+usd(p.coins*VIP_COIN_PRICE)+')',2600);
