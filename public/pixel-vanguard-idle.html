@@ -1469,7 +1469,7 @@ canvas{image-rendering:pixelated;}
   <div class="modal" id="modal-challenge">
     <div class="box">
       <div class="close-x" data-close>✕</div>
-      <h2>DESAFIO DO GOLD GOBLIN</h2>
+      <h2 data-i18n="gold_goblin_title">DESAFIO DO GOLD GOBLIN</h2>
       <div class="sub">Todo monstro derrotado tem <b>1%</b> de dropar um 🎟️ Ticket.<br>
         Gaste <b>1 ticket</b> para enfrentar um Gold Goblin numa luta única.</div>
       <div id="challenge-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0;">
@@ -2904,7 +2904,7 @@ function castAbility(id, silent){
     esquivaUntil=now+ABILITIES.esquiva.dur;
     S.abilCd.esquiva=now+ABILITIES.esquiva.cd;
     floatText(el('knight-cv').parentElement,'ESQUIVA!','mana');
-    if(!silent) toast('💨 MESTRE ESQUIVÃO!<br>100% de esquiva por 10s');
+    if(!silent) toast(t('evasion_activated'));
   }
   updBars(); save(); renderAbilityBar();
 }
@@ -2944,7 +2944,7 @@ function spawnMonster(){
     el('monster-cv').classList.add('goblin-glow');
     el('monster-name').style.color='';
     el('monster-name').textContent = M.nm+' HP';
-    toast('✨ GOLD GOBLIN APARECEU! ✨<br>Derrote-o rápido — ele foge com<br>o melhor loot do jogo!',2800);
+    toast(t('gold_goblin_appeared'),2800);
     updBars();
     return;
   }
@@ -3493,7 +3493,7 @@ function monsterDefeated(){
     if(d.kind==='eq'){ S.inv.push(d.inst); } else { S.pets.push(d.inst); }
     floatText(el('monster-wrap'),'✨ LOOT! ✨','loot');
     const tipo = d.kind==='eq'?'EQUIPAMENTO':'PET';
-    toast((wasChallenge?'🏆 DESAFIO VENCIDO! ✨<br>':'✨ GOLD GOBLIN DERROTADO! ✨<br>')+tipo+': '+d.name+'<br><span style="color:'+
+    toast((wasChallenge?t('challenge_won'):t('gold_goblin_defeated'))+tipo+': '+d.name+'<br><span style="color:'+
       (d.rarity==='PixelMaster'?'#ffd75e':d.rarity==='Lendário'?'#ff8c1a':d.rarity==='Épico'?'#b06fe8':'#6fb3e8')+
       '">['+rarLabel(d.rarity)+' '+rarMult(d.rarity)+'x]</span>',3800);
     announceRareDrop(d.name, d.rarity);
@@ -3556,7 +3556,7 @@ function partyDefeated(){
   el('monster-cv').getContext('2d').clearRect(0,0,16,16);
   clearTimeout(deadTimer);
   if(wasChallenge){
-    toast('💀 Você perdeu o desafio!<br>O ticket foi consumido.<br>Recuperando a dupla...',3000);
+    toast(t('challenge_lost'),3000);
     deadTimer=setTimeout(()=>{
       S.k.hp=kMaxHP(); S.k.mp=Math.round(kMaxMP()*0.6);
       S.petHp=petStats(activePet()).hp;
@@ -3564,7 +3564,7 @@ function partyDefeated(){
     }, 2600);
     return;
   }
-  toast('💀 A dupla caiu!<br>Recuando para a wave 1...');
+  toast(t('duo_died'));
   deadTimer=setTimeout(()=>{
     S.wave=1;
     S.k.hp=kMaxHP(); S.k.mp=Math.round(kMaxMP()*0.6);
@@ -3574,7 +3574,7 @@ function partyDefeated(){
 }
 // inicia o desafio do Gold Goblin gastando 1 ticket
 function startChallenge(){
-  if((S.tickets||0)<=0){ toast('Você não tem tickets!<br>Derrote monstros (1% de chance).'); return; }
+  if((S.tickets||0)<=0){ toast(t('no_tickets')); return; }
   S.tickets--;
   inChallenge=true;
   updTicketBtn();
@@ -4469,7 +4469,7 @@ function buyTalent(tid){
 }
 function resetTalents(){
   const spent=masterySpent();
-  if(spent<=0) return toast('Você ainda não gastou<br>nenhum ponto.');
+  if(spent<=0) return toast(t('no_points_spent'));
   S.mastery=(S.mastery||0)+spent;
   S.talents={};
   S.abilCd={corte:0,ira:0,esquiva:0};
@@ -4704,7 +4704,7 @@ document.querySelectorAll('.lang-opt').forEach(opt=>{
   opt.onclick=()=>setLang(opt.dataset.lang);
 });
 el('open-talents').onclick=()=>{renderTalents();openModal('modal-talents');};
-el('open-challenge').onclick=()=>{ if(inChallenge){ toast('Você já está num desafio!'); return; } renderChallenge();openModal('modal-challenge');};
+el('open-challenge').onclick=()=>{ if(inChallenge){ toast(t('already_in_challenge')); return; } renderChallenge();openModal('modal-challenge');};
 el('challenge-start').onclick=()=>startChallenge();
 el('talent-reset').onclick=()=>resetTalents();
 el('open-vip').onclick=()=>{vipTab='donate';
@@ -5477,23 +5477,108 @@ const TRANSLATIONS = {
     'market_insufficient_gold': 'Ouro insuficiente!',
     'market_insufficient_vip': '♦ VIP Coins insuficientes!<br>Venda itens por VIP para ganhar.',
     
+    // EQUIPAMENTOS
+    'equipment': 'Equipamentos',
+    'weapon': 'Arma',
+    'armor': 'Armadura',
+    'shield': 'Escudo',
+    'accessory': 'Acessório',
+    'equip': 'Equipar',
+    'unequip': 'Desequipar',
+    'equipped': 'Equipado',
+    'stats': 'Status',
+    'rarity': 'Raridade',
+    'common': 'Comum',
+    'uncommon': 'Incomum',
+    'rare': 'Raro',
+    'epic': 'Épico',
+    'legendary': 'Lendário',
+    
+    // PETS
+    'pets': 'Pets',
+    'pet': 'Pet',
+    'my_pets': 'Meus Pets',
+    'active_pet': 'Pet Ativo',
+    'pet_level': 'Nível do Pet',
+    'pet_exp': 'Experiência',
+    'pet_stats': 'Status do Pet',
+    'feed_pet': 'Alimentar',
+    'pet_food': 'Comida de Pet',
+    'auto_potions': 'Poções Automáticas',
+    'potions_auto': 'As poções são usadas automaticamente...',
+    'hp_potion': 'Poção de HP',
+    'mp_potion': 'Poção de MP',
+    
+    // SÍNTESE
+    'synthesis': 'Síntese',
+    'synthesizer': 'Sintetizador',
+    'synth_items': 'Itens para Sintetizar',
+    'synth_result': 'Resultado',
+    'create': 'Criar',
+    
+    // MAESTRIA/SKILLS
+    'mastery': 'Maestria',
+    'skills': 'Habilidades',
+    'talent': 'Talento',
+    'skill_points': 'Pontos de Habilidade',
+    'active_skills': 'Habilidades Ativas',
+    'passive_skills': 'Habilidades Passivas',
+    
+    // NAMES DE SKILLS (TRADUÇÕES ESPECÍFICAS)
+    'cruel_cut': 'Corte Cruel',
+    'pixel_master_rage': 'Ira do Pixel Master',
+    'master_equivao': 'Mestre Equivão',
+    'master_of_evasion': 'Mestre Equivão',
+    'evasion_activated': '💨 MESTRE EQUIVÃO!<br>100% de esquiva por 10s',
+    'slaughter': 'Carnificina',
+    'fire_strike': 'Golpe de Fogo',
+    'ice_strike': 'Golpe de Gelo',
+    'thunder_strike': 'Golpe Trovejante',
+    
+    // PERSONAGEM E PET
+    'character': 'Personagem',
+    'character_pet': 'Personagem & Pet',
+    'knight': 'Cavaleiro',
+    'warrior': 'Guerreiro',
+    'mage': 'Mago',
+    'archer': 'Arqueiro',
+    
     // IDIOMA
     'lang_label': 'Idioma / Language',
     'lang_pt': 'Português',
     'lang_en': 'English',
+    'settings_note': 'Nota de Configurações',
     
     // OUTRAS MENSAGENS
     'no_hero': 'Nenhum herói encontrado.',
     'loading_rank': 'Carregando ranking...',
     'error_rank': 'Erro ao carregar ranking.',
     'connection_error': 'Erro de conexão.',
+    'auto_battle': 'BATALHA AUTOMÁTICA',
+    'global_chat': 'CHAT GLOBAL',
+    'player_level': 'Nível do Jogador',
+    'type': 'Tipo',
+    'details': 'Detalhes',
+    'use': 'Usar',
+    'drop': 'Soltar',
+    'sell_item': 'Vender Item',
+    'buy_item': 'Comprar Item',
+    'back': 'Voltar',
+    'drop': 'Drop',
+    'dropped': 'Caiu',
+    'gold_goblin_appeared': '✨ GOLD GOBLIN APARECEU! ✨<br>Derrote-o rápido — ele foge com<br>o melhor loot do jogo!',
+    'gold_goblin_defeated': '✨ GOLD GOBLIN DERROTADO! ✨<br>',
+    'challenge_won': '🏆 DESAFIO VENCIDO! ✨<br>',
+    'duo_died': '💀 A dupla caiu!<br>Recuando para a wave 1...',
+    'monster_defeated': 'derrotado',
+    'gold_goblin_title': 'DESAFIO DO GOLD GOBLIN',
   },
   
   en: {
     // MENU PRINCIPAL E INTERFACE
     'ranking': 'ranking',
     'pvp': 'pvp',
-    'config': 'config',
+    'config': 'settings',
     'poções': 'potions',
     'mercado': 'market',
     'maestria': 'mastery',
@@ -5599,18 +5684,105 @@ const TRANSLATIONS = {
     'market_insufficient_gold': 'Insufficient Gold!',
     'market_insufficient_vip': '♦ Insufficient VIP Coins!<br>Sell items for VIP to earn.',
     
+    // EQUIPAMENTOS
+    'equipment': 'Equipment',
+    'weapon': 'Weapon',
+    'armor': 'Armor',
+    'shield': 'Shield',
+    'accessory': 'Accessory',
+    'equip': 'Equip',
+    'unequip': 'Unequip',
+    'equipped': 'Equipped',
+    'stats': 'Stats',
+    'rarity': 'Rarity',
+    'common': 'Common',
+    'uncommon': 'Uncommon',
+    'rare': 'Rare',
+    'epic': 'Epic',
+    'legendary': 'Legendary',
+    
+    // PETS
+    'pets': 'Pets',
+    'pet': 'Pet',
+    'my_pets': 'My Pets',
+    'active_pet': 'Active Pet',
+    'pet_level': 'Pet Level',
+    'pet_exp': 'Experience',
+    'pet_stats': 'Pet Stats',
+    'feed_pet': 'Feed',
+    'pet_food': 'Pet Food',
+    'auto_potions': 'Auto Potions',
+    'potions_auto': 'Potions are used automatically...',
+    'hp_potion': 'HP Potion',
+    'mp_potion': 'MP Potion',
+    
+    // SÍNTESE
+    'synthesis': 'Synthesis',
+    'synthesizer': 'Synthesizer',
+    'synth_items': 'Items to Synthesize',
+    'synth_result': 'Result',
+    'create': 'Create',
+    
+    // MAESTRIA/SKILLS
+    'mastery': 'Mastery',
+    'skills': 'Skills',
+    'talent': 'Talent',
+    'skill_points': 'Skill Points',
+    'active_skills': 'Active Skills',
+    'passive_skills': 'Passive Skills',
+    
+    // NAMES DE SKILLS (TRADUÇÕES ESPECÍFICAS)
+    'cruel_cut': 'Cruel Cut',
+    'pixel_master_rage': 'Pixel Master Rage',
+    'master_equivao': 'Master of Evasion',
+    'master_of_evasion': 'Master of Evasion',
+    'evasion_activated': '💨 MASTER OF EVASION!<br>100% evasion for 10s',
+    'slaughter': 'Slaughter',
+    'fire_strike': 'Fire Strike',
+    'ice_strike': 'Ice Strike',
+    'thunder_strike': 'Thunder Strike',
+    
+    // PERSONAGEM E PET
+    'character': 'Character',
+    'character_pet': 'Character & Pet',
+    'knight': 'Knight',
+    'warrior': 'Warrior',
+    'mage': 'Mage',
+    'archer': 'Archer',
+    
     // IDIOMA
     'lang_label': 'Language / Idioma',
     'lang_pt': 'Português',
     'lang_en': 'English',
+    'settings_note': 'Settings Note',
     
     // OUTRAS MENSAGENS
     'no_hero': 'No hero found.',
     'loading_rank': 'Loading ranking...',
     'error_rank': 'Error loading ranking.',
     'connection_error': 'Connection error.',
-  }
-};
+    'auto_battle': 'AUTOMATIC BATTLE',
+    'global_chat': 'GLOBAL CHAT',
+    'player_level': 'Player Level',
+    'type': 'Type',
+    'details': 'Details',
+    'use': 'Use',
+    'drop': 'Drop',
+    'sell_item': 'Sell Item',
+    'buy_item': 'Buy Item',
+    'drop': 'Drop',
+    'dropped': 'Dropped',
+    'gold_goblin_appeared': '✨ GOLD GOBLIN APPEARED! ✨<br>Defeat him quickly — he flees with<br>the best loot in the game!',
+    'gold_goblin_defeated': '✨ GOLD GOBLIN DEFEATED! ✨<br>',
+    'challenge_won': '🏆 CHALLENGE WON! ✨<br>',
+    'duo_died': '💀 The duo fell!<br>Retreating to wave 1...',
+    'challenge_lost': '💀 You lost the challenge!<br>The ticket was consumed.<br>Recovering the duo...',
+    'no_tickets': 'You have no tickets!<br>Defeat monsters (1% chance).',
+    'already_in_challenge': 'You are already in a challenge!',
+    'no_points_spent': 'You haven\'t spent<br>any points yet.',
+    'monster_defeated': 'defeated',
+    'gold_goblin_title': 'GOLD GOBLIN CHALLENGE',
+    'defeated_quickly': 'Defeat him quickly',
 
 // Idioma atual (padrão: português)
 let currentLanguage = localStorage.getItem('pv_language') || 'pt';
@@ -5642,16 +5814,117 @@ function setLang(lang) {
   localStorage.setItem('pv_language', lang);
   translatePage();
   
-  // Atualizar badge da língua
+  // Atualizar visual dos buttons de idioma
   document.querySelectorAll('.lang-opt').forEach(opt => {
-    opt.classList.toggle('on', opt.dataset.lang === lang);
+    if(opt.dataset.lang === lang) {
+      opt.classList.add('on');
+    } else {
+      opt.classList.remove('on');
+    }
   });
+  
+  // Re-render modais abertos
+  if(el('modal-rank').style.display !== 'none') renderRank();
+  if(el('modal-pvp').style.display !== 'none') renderPVPModal();
 }
 
-// Função para atualizar textos dinâmicos do PVP
-function updatePVPTranslations() {
-  // Esta função será chamada quando renderizar PVP
-  // Os textos dinâmicos são inseridos via innerHTML, então precisam ser traduzidos lá
+// Função para traduzir nomes de skills
+function translateSkillName(skillName) {
+  const skillMap = {
+    'Corte Cruel': { en: 'Cruel Cut', pt: 'Corte Cruel' },
+    'Ira do Pixel Master': { en: 'Pixel Master Rage', pt: 'Ira do Pixel Master' },
+    'Mestre Equivão': { en: 'Master of Evasion', pt: 'Mestre Equivão' },
+    'Mestre Esquivão': { en: 'Master of Evasion', pt: 'Mestre Esquivão' },
+    'Carnificina': { en: 'Slaughter', pt: 'Carnificina' },
+    'Golpe de Fogo': { en: 'Fire Strike', pt: 'Golpe de Fogo' },
+    'Golpe de Gelo': { en: 'Ice Strike', pt: 'Golpe de Gelo' },
+    'Golpe Trovejante': { en: 'Thunder Strike', pt: 'Golpe Trovejante' },
+  };
+  
+  if(skillMap[skillName]) {
+    return skillMap[skillName][currentLanguage] || skillName;
+  }
+  return skillName;
+}
+
+// Função para traduzir tipos de equipamento
+function translateEquipmentType(type) {
+  const typeMap = {
+    'Arma': { en: 'Weapon', pt: 'Arma' },
+    'Armadura': { en: 'Armor', pt: 'Armadura' },
+    'Escudo': { en: 'Shield', pt: 'Escudo' },
+    'Acessório': { en: 'Accessory', pt: 'Acessório' },
+  };
+  
+  if(typeMap[type]) {
+    return typeMap[type][currentLanguage] || type;
+  }
+  return type;
+}
+
+// Função para traduzir raridade
+function translateRarity(rarity) {
+  const rarityMap = {
+    'Comum': { en: 'Common', pt: 'Comum' },
+    'Incomum': { en: 'Uncommon', pt: 'Incomum' },
+    'Raro': { en: 'Rare', pt: 'Raro' },
+    'Épico': { en: 'Epic', pt: 'Épico' },
+    'Lendário': { en: 'Legendary', pt: 'Lendário' },
+  };
+  
+  if(rarityMap[rarity]) {
+    return rarityMap[rarity][currentLanguage] || rarity;
+  }
+  return rarity;
+}
+
+// Função para traduzir nomes de pets
+function translatePetName(petName) {
+  const petMap = {
+    'Slime': { en: 'Slime', pt: 'Slime' },
+    'Dragão': { en: 'Dragon', pt: 'Dragão' },
+    'Fênix': { en: 'Phoenix', pt: 'Fênix' },
+    'Lobo': { en: 'Wolf', pt: 'Lobo' },
+  };
+  
+  if(petMap[petName]) {
+    return petMap[petName][currentLanguage] || petName;
+  }
+  return petName;
+}
+
+// Função para traduzir nomes de branches de talento
+function translateBranchName(branchName) {
+  const branchMap = {
+    '🛡 BALUARTE → Mestre Esquivão': { en: '🛡 BASTION → Master of Evasion', pt: '🛡 BALUARTE → Mestre Esquivão' },
+    '⚔ FÚRIA → Corte Cruel': { en: '⚔ FURY → Cruel Cut', pt: '⚔ FÚRIA → Corte Cruel' },
+    '⚡ ÍMPETO → Ira do Pixel Master': { en: '⚡ IMPULSE → Pixel Master Rage', pt: '⚡ ÍMPETO → Ira do Pixel Master' },
+  };
+  
+  if(branchMap[branchName]) {
+    return branchMap[branchName][currentLanguage] || branchName;
+  }
+  return branchName;
+}
+
+// Função para traduzir mensagens dinâmicas
+function translateDynamic(text) {
+  if(!text) return text;
+  
+  // Substituir textos comuns
+  const replacements = {
+    'As poções são usadas automaticamente': { en: 'Potions are used automatically', pt: 'As poções são usadas automaticamente' },
+    'Equipamentos do cavaleiro': { en: 'Knight Equipment', pt: 'Equipamentos do cavaleiro' },
+    'Sintetizador': { en: 'Synthesizer', pt: 'Sintetizador' },
+  };
+  
+  for(const [pt, trans] of Object.entries(replacements)) {
+    if(text.includes(pt)) {
+      return text.replace(pt, trans[currentLanguage] || pt);
+    }
+  }
+  
+  return text;
 }
 
 // Inicializar tradução ao carregar página
