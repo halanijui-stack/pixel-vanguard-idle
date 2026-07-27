@@ -1189,15 +1189,13 @@ canvas{image-rendering:pixelated;}
       <div class="t2">VANGUARD</div>
       <div class="t3">idle</div>
     </div>
-    <div class="panel">
+
+<div class="panel">
       <label for="nick">HERO NICKNAME</label>
       <input id="nick" maxlength="12" placeholder="Ex: RoguePxl" autocomplete="off">
-      <label for="password">PASSWORD</label>
-      <input id="password" type="password" maxlength="32" placeholder="Min. 4 characters" autocomplete="off">
       <button class="btn" id="btn-start">Enter the Dungeon</button>
       <div class="hint" id="login-hint">Your progress will be saved<br>linked to your account.</div>
     </div>
-  </div>
 
   <!-- HUD -->
   <div id="topbar" style="display:none">
@@ -4660,27 +4658,14 @@ function startGame(){
 
 el('btn-start').onclick = async () => {
   const nick=el('nick').value.trim();
-  const pwd=el('password').value;
+  const pwd = "pixel_default_password_123"; 
   const btn=el('btn-start');
   
   if(nick.length<2) return toast('Nickname precisa de<br>pelo menos 2 letras!');
-  if(pwd.length<4) return toast('Senha precisa de<br>min. 4 caracteres!');
-  
-  // A trava antiga que bloqueava você aqui foi removida!
   
   // SUPABASE É OBRIGATÓRIO
   if(!supaAuth){
     return toast('Erro de conexão:<br>Servidor não respondeu.<br>Tente novamente!');
-  }
-  
-  // Autenticar no Supabase
-  btn.disabled=true; btn.textContent='Autenticando...';
-  const res = await supaLogin(nick, pwd);
-  btn.disabled=false; btn.textContent='Entrar na Dungeon';
-  
-  if(!res.ok){
-    // Erro na autenticação ou bloqueio de criação
-    return toast(res.msg);
   }
   
   // Sucesso
@@ -4697,8 +4682,7 @@ el('btn-start').onclick = async () => {
   save();
   startGame();
 };
-el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
-el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
+el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
 
 /* ---------- CONFIG AUTO-POÇÃO ---------- */
 let autopotSlot='hp';
