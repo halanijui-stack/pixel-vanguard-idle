@@ -4610,14 +4610,22 @@ function ensureEquipped(){
 "use strict";
 
 function startGame(){
-  el('topbar').style.display='';
-  el('game').style.display='flex';
-  el('login').style.display='none';
+  const topbar = el('topbar');
+  if(topbar) topbar.style.display='';
   
-  // Toca a música de fundo
-  document.getElementById('bg-music').play().catch(e => console.log("Áudio bloqueado:", e));
+  const game = el('game');
+  if(game) game.style.display='flex';
+  
+  const login = el('login');
+  if(login) login.style.display='none';
+  
+  // Toca a música de fundo com segurança
+  const bgMusic = document.getElementById('bg-music');
+  if(bgMusic) {
+    bgMusic.play().catch(e => console.log("Áudio bloqueado:", e));
+  }
 
-  uidSeq=S.uidSeq||10;
+  uidSeq = S.uidSeq || 10;
   if(!S.autopot) S.autopot={hpOn:true,hpPct:40,mpOn:true,mpPct:20};
   if(!S.boosters) S.boosters={exp:0,drop:0}; // migração: boosters VIP
   ['amulet','ring','bracelet','belt'].forEach(s=>{ if(!(s in S.eq)) S.eq[s]=null; }); // migração: acessórios
