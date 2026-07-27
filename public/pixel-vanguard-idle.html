@@ -2790,8 +2790,13 @@ async function supaSaveGameData(userId, gameData){
   if(!supaAuth || !userId) return false;
   try{
     const {error} = await supaAuth.from('users')
-      .update({game_data:gameData, updated_at:'now()'})
-      .eq('id',userId);
+      .update({
+        game_data: gameData, 
+        level: gameData.k.lvl,        // Atualizar coluna level diretamente
+        stage: gameData.stage,        // Atualizar coluna stage diretamente
+        updated_at: 'now()'
+      })
+      .eq('id', userId);
     return !error;
   }catch(e){ return false; }
 }
