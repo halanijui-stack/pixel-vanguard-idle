@@ -2731,13 +2731,8 @@ async function supaSaveGameData(userId, gameData){
   if(!supaAuth || !userId) return false;
   try{
     const {error} = await supaAuth.from('users')
-      .update({
-        game_data: gameData, 
-        level: gameData.k.lvl,        // Atualizar coluna level diretamente
-        stage: gameData.stage,        // Atualizar coluna stage diretamente
-        updated_at: 'now()'
-      })
-      .eq('id', userId);
+      .update({game_data:gameData, updated_at:'now()'})
+      .eq('id',userId);
     return !error;
   }catch(e){ return false; }
 }
@@ -5404,6 +5399,17 @@ const TRANSLATIONS = {
     'rank_loading': 'Carregando ranking...',
     'rank_error': 'Erro ao carregar ranking. Tente novamente.',
     'lang_label': 'Idioma / Language',
+    'pvp_no_tournament': 'Nenhum torneio ativo no momento.',
+    'pvp_info': '⚔️ Top 10 jogadores do ranking participam do torneio semanal!',
+    'pvp_battles': '🏆 Vença para conquistar Gold e VIP Coins!',
+    'pvp_status': 'Status:',
+    'pvp_pool': 'Prêmios em Disputa:',
+    'pvp_brackets': 'Chaves',
+    'pvp_history': 'Histórico',
+    'pvp_rewards': 'Prêmios',
+    'pvp_semifinals': 'Semi-finais',
+    'pvp_final': 'Final',
+    'pvp_third_place': '3º Lugar',
   },
   en: {
     'ranking': 'ranking',
@@ -5437,6 +5443,17 @@ const TRANSLATIONS = {
     'rank_loading': 'Loading ranking...',
     'rank_error': 'Error loading ranking. Try again.',
     'lang_label': 'Language / Idioma',
+    'pvp_no_tournament': 'No active tournament at the moment.',
+    'pvp_info': '⚔️ Top 10 ranking players participate in the weekly tournament!',
+    'pvp_battles': '🏆 Win to earn Gold and VIP Coins!',
+    'pvp_status': 'Status:',
+    'pvp_pool': 'Prize Pool:',
+    'pvp_brackets': 'Brackets',
+    'pvp_history': 'History',
+    'pvp_rewards': 'Rewards',
+    'pvp_semifinals': 'Semifinals',
+    'pvp_final': 'Final',
+    'pvp_third_place': '3rd Place',
   }
 };
 
