@@ -1130,12 +1130,12 @@ canvas{image-rendering:pixelated;}
       <div class="t3">idle</div>
     </div>
     <div class="panel">
-      <label for="nick">NICKNAME DO HERÓI</label>
+      <label for="nick">HERO NICKNAME</label>
       <input id="nick" maxlength="12" placeholder="Ex: RoguePxl" autocomplete="off">
-      <label for="password">SENHA</label>
-      <input id="password" type="password" maxlength="32" placeholder="Min. 4 caracteres" autocomplete="off">
-      <button class="btn" id="btn-start">Entrar na Dungeon</button>
-      <div class="hint" id="login-hint">Seu progresso será salvo<br>vinculado à sua conta.</div>
+      <label for="password">PASSWORD</label>
+      <input id="password" type="password" maxlength="32" placeholder="Min. 4 characters" autocomplete="off">
+      <button class="btn" id="btn-start">Enter the Dungeon</button>
+      <div class="hint" id="login-hint">Your progress will be saved<br>linked to your account.</div>
     </div>
   </div>
 
@@ -5785,7 +5785,7 @@ const TRANSLATIONS = {
     'defeated_quickly': 'Defeat him quickly',
 
 // Idioma atual (padrão: português)
-let currentLanguage = localStorage.getItem('pv_language') || 'pt';
+let currentLanguage = localStorage.getItem('pv_language') || 'en';
 
 // Função para obter tradução
 function t(key) {
