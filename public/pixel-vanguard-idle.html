@@ -5907,11 +5907,9 @@ function translateBranchName(branchName) {
   return branchName;
 }
 
-// Função para traduzir mensagens dinâmicas
 function translateDynamic(text) {
   if(!text) return text;
   
-  // Substituir textos comuns
   const replacements = {
     'As poções são usadas automaticamente': { en: 'Potions are used automatically', pt: 'As poções são usadas automaticamente' },
     'Equipamentos do cavaleiro': { en: 'Knight Equipment', pt: 'Equipamentos do cavaleiro' },
@@ -5931,7 +5929,6 @@ function translateDynamic(text) {
 window.addEventListener('DOMContentLoaded', () => {
   translatePage();
   
-  // Marcar idioma selecionado
   document.querySelectorAll('.lang-opt').forEach(opt => {
     opt.classList.toggle('on', opt.dataset.lang === currentLanguage);
   });
