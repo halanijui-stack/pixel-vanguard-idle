@@ -4798,65 +4798,13 @@ el('open-vip').onclick=()=>{vipTab='donate';
   renderVip();openModal('modal-vip');};
 
 drawSprite(el('crest-cv'),'crest');
-/* ---------- CONFIRMAR ANÚNCIO (CORRIGIDO PARA O SEU JOGO) ---------- */
-async function confirmListing(cur){
-  if(!sellTarget) return;
+(async function(){
+  // inicializar autenticação Supabase (agora obrigatória)
+  await supaAuthInit();
   
-  const price = Math.max(1, Math.floor(Number(el('sell-price').value) || 0));
-  if(price < 1) return toast('Defina um preço válido!');
-  
-  const t = sellTarget;
-  let fair = t.sug;
-  
-  // Remove o item do inventário local do seu jogo
-  if(t.kind === 'eq'){
-    S.inv = S.inv.filter(i => i.uid !== t.uid);
-  } else if(t.kind === 'pet'){
-    S.pets = S.pets.filter(p => p.uid !== t.uid);
-  } else {
-    if(S.gold < t.amount) return toast('Ouro insuficiente!');
-    S.gold -= t.amount;
-  }
-  
-  if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
-  
-  // Salva localmente para garantir o registro imediato
-  const localId = newUid();
-  S.listings.push({id: localId, ...t, cur, price, fair, ts: Date.now()});
-  
-  toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
-  closeSellPanel(); 
-  updBars(); 
-  save(); 
-  renderMarket();
-  
-  // Envia para a tabela global do Supabase para que outros jogadores vejam
-  try {
-    if(supaAuth) {
-      const { data: { user } } = await supaAuth.auth.getUser();
-      const userId = user ? user.id : (S.userId || null);
-
-      await supaAuth
-        .from('market_listings')
-        .insert([{
-          id: localId,
-          seller_nick: S.nick,
-          seller_id: userId,
-          kind: t.kind,
-          item_name: t.nm,
-          item_data: {
-            type: t.type, baseId: t.baseId, rarity: t.rarity,
-            affix: t.affix, petId: t.petId, lvl: t.lvl,
-            amount: t.amount, icon: t.icon
-          },
-          currency: cur === 'vip' ? 'vip' : 'gold',
-          price: price
-        }]);
-    }
-  } catch(e) {
-    console.warn('Supabase market sync falhou (anúncio salvo localmente):', e.message);
-  }
-}
+  // carregar último nick usado localmente
+  const prev=load();
+  if(prev && prev.nick) el('nick').value=prev.nick;
 })();
 // ============================================================
 // NOVAS FUNÇÕES DE MERCADO — SUPABASE REAL
@@ -4940,7 +4888,7 @@ async function buyListing(listing){
   }
 }
 
-/* ---------- CONFIRMAR ANÚNCIO ---------- */
+/* ---------- CONFIRMAR ANÚNCIO (CORRIGIDO) ---------- */
 async function confirmListing(cur){
   if(!sellTarget) return;
   
@@ -4962,7 +4910,7 @@ async function confirmListing(cur){
   
   if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
   
-  // Salvar localmente SEMPRE (funciona mesmo sem Supabase)
+  // Salvar localmente SEMPRE
   const localId = newUid();
   S.listings.push({id: localId, ...t, cur, price, fair, ts: Date.now()});
   
@@ -4972,14 +4920,18 @@ async function confirmListing(cur){
   save(); 
   renderMarket();
   
-  // Tentar sincronizar com Supabase em background (não bloqueia)
+  // Tentar sincronizar com Supabase em background de forma segura
   try {
-    if(supaAuth && currentUser?.id) {
+    if(supaAuth) {
+      const { data: { user } } = await supaAuth.auth.getUser();
+      const userId = user ? user.id : (S.userId || null);
+
       await supaAuth
         .from('market_listings')
         .insert([{
+          id: localId,
           seller_nick: S.nick,
-          seller_id: currentUser.id,
+          seller_id: userId,
           kind: t.kind,
           item_name: t.nm,
           item_data: {
