@@ -4784,7 +4784,10 @@ drawSprite(el('crest-cv'),'crest');
 /* ---------- COMPRAR ANÚNCIO ---------- */
 async function buyListing(listing){
   const bal = listing.currency === 'vip' ? S.vip : S.gold;
-  
+  // Impede comprar o próprio item
+  if (listing.seller_nick === S.nick) {
+    return toast('Você não pode comprar o seu próprio anúncio!');
+  }
   if(bal < listing.price) {
     return toast(listing.currency === 'vip' ? 
       '♦ VIP Coins insuficientes!<br>Venda itens por VIP para ganhar.' : 
@@ -4912,10 +4915,8 @@ async function confirmListing(cur){
         
       if(error) {
         console.error('Erro detalhado do Supabase:', error);
-        toast('Erro ao sincronizar com nuvem: ' + error.message);
-      } else {
-        toast('Anúncio publicado na nuvem com sucesso!');
-      }
+         } else {
+              }
     }
   } catch(e) {
     console.error('Falha crítica no market sync:', e);
