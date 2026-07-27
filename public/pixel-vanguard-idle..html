@@ -4224,8 +4224,8 @@ async function renderMarket(){
 
     if(error) throw error;
 
-    // Filtra para remover os seus próprios anúncios usando o nick
-    let allListings = (listings || []).filter(item => item.seller_nick !== S.nick);
+// Filtra para remover seus próprios anúncios usando o ID do usuário
+let allListings = (listings || []).filter(item => item.seller_id !== S.userId);
 
     if(!allListings || allListings.length === 0) {
       list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
