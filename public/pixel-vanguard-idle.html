@@ -558,6 +558,561 @@ canvas{image-rendering:pixelated;}
 .shake{animation:shakeApp .3s;}
 @keyframes shakeApp{0%,100%{transform:translate(0,0);}25%{transform:translate(-4px,2px);}50%{transform:translate(4px,-2px);}75%{transform:translate(-2px,1px);}}
 ::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--wood-dark);} ::-webkit-scrollbar-track{background:#241d2c;}
+
+/* ============================================================
+   ESTILOS DO SISTEMA PVP TOURNAMENT
+   ============================================================ */
+
+.pvp-container {
+  width: 100%;
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.pvp-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.pvp-empty h3 {
+  color: #ffa500;
+  margin-bottom: 20px;
+}
+
+.pvp-empty p {
+  line-height: 1.6;
+  font-size: 11px;
+}
+
+.pvp-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--amber);
+  padding-bottom: 10px;
+}
+
+.pvp-tab {
+  padding: 8px 16px;
+  background: transparent;
+  color: #999;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Press Start 2P', monospace;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.pvp-tab:hover {
+  color: var(--amber);
+}
+
+.pvp-tab.on {
+  color: var(--amber);
+  border-bottom: 3px solid var(--amber);
+  padding-bottom: 5px;
+}
+
+.pvp-content {
+  margin-top: 20px;
+}
+
+.pvp-info-header {
+  background: var(--stone);
+  padding: 15px;
+  border-radius: 5px;
+  border-left: 4px solid var(--amber);
+  margin-bottom: 20px;
+}
+
+.pvp-info-header h3 {
+  color: var(--amber);
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.pvp-status {
+  font-size: 11px;
+  color: #bbb;
+  margin-bottom: 10px;
+}
+
+.badge-scheduled { background: #666; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
+.badge-brackets_generated { background: #4a7c59; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
+.badge-semifinals_running { background: #ffa500; padding: 2px 8px; border-radius: 3px; color: #000; font-size: 9px; }
+.badge-finals_running { background: #ff6b6b; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
+.badge-completed { background: #2f7c31; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
+
+.pvp-pool {
+  font-size: 11px;
+  color: #ffff00;
+  margin-top: 10px;
+}
+
+.pvp-pool p {
+  margin: 4px 0;
+}
+
+.pvp-bracket-view {
+  width: 100%;
+}
+
+.pvp-brackets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.pvp-round {
+  background: var(--stone);
+  padding: 15px;
+  border-radius: 5px;
+  border-left: 3px solid var(--amber);
+}
+
+.pvp-round h4 {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.pvp-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.pvp-match-card {
+  background: var(--stone-dark);
+  border: 1px solid var(--amber);
+  border-radius: 5px;
+  padding: 12px;
+  text-align: center;
+}
+
+.pvp-player {
+  background: var(--stone);
+  padding: 8px;
+  border-radius: 3px;
+  margin: 5px 0;
+  font-size: 11px;
+  color: var(--parchment);
+  word-break: break-word;
+  transition: all 0.3s;
+}
+
+.pvp-player.winner {
+  background: #2f7c31;
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.pvp-match-card .vs {
+  font-size: 10px;
+  color: var(--amber);
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+.pvp-match-result {
+  color: #ffff00;
+  font-size: 11px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.pvp-match-pending {
+  color: #ffa500;
+  font-size: 10px;
+  margin: 10px 0;
+  font-style: italic;
+}
+
+.pvp-match-card button {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 9px;
+}
+
+.pvp-matches-history {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.pvp-match-history-card {
+  background: var(--stone);
+  border: 1px solid var(--amber);
+  border-radius: 5px;
+  padding: 15px;
+}
+
+.pvp-match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pvp-match-header h4 {
+  color: var(--amber);
+  font-size: 12px;
+  margin: 0;
+}
+
+.badge-round {
+  background: var(--amber);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.pvp-match-stats {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px;
+  background: var(--stone-dark);
+  border-radius: 3px;
+}
+
+.pvp-player-stats {
+  text-align: center;
+  font-size: 10px;
+}
+
+.pvp-player-stats p {
+  margin: 4px 0;
+  color: #ccc;
+}
+
+.pvp-player-stats strong {
+  color: var(--amber);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--amber);
+}
+
+.pvp-rewards-view {
+  width: 100%;
+}
+
+.pvp-final-standings {
+  margin-bottom: 30px;
+}
+
+.pvp-final-standings h3 {
+  color: var(--amber);
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.pvp-placement {
+  background: var(--stone);
+  border: 2px solid var(--amber);
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.pvp-placement.first {
+  border-color: #ffff00;
+  background: rgba(255, 255, 0, 0.05);
+}
+
+.pvp-placement.second {
+  border-color: #cccccc;
+  background: rgba(204, 204, 204, 0.05);
+}
+
+.pvp-placement.third {
+  border-color: #cd7f32;
+  background: rgba(205, 127, 50, 0.05);
+}
+
+.placement-badge {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--amber);
+}
+
+.placement-nick {
+  font-size: 13px;
+  color: #ffff00;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.placement-prize {
+  font-size: 11px;
+  color: #ffff00;
+}
+
+.placement-prize p {
+  margin: 4px 0;
+}
+
+.pvp-rewards-list {
+  margin-top: 20px;
+}
+
+.pvp-rewards-list h3 {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.pvp-reward-card {
+  background: var(--stone-dark);
+  border-left: 3px solid var(--amber);
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.reward-nick {
+  flex: 1;
+  color: var(--amber);
+  font-weight: bold;
+}
+
+.reward-placement {
+  background: var(--amber);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: bold;
+  margin: 0 10px;
+}
+
+.reward-amount {
+  text-align: center;
+  font-size: 10px;
+  color: #ffff00;
+  margin: 0 15px;
+}
+
+.reward-amount p {
+  margin: 2px 0;
+}
+
+.reward-status {
+  font-size: 9px;
+  color: #aaa;
+}
+
+.pvp-battle-log {
+  background: var(--stone-dark);
+  border: 1px solid var(--amber);
+  border-radius: 5px;
+  padding: 15px;
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.pvp-battle-log h4 {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.log-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-entry {
+  font-size: 9px;
+  color: #bbb;
+  padding: 6px;
+  background: var(--stone);
+  border-radius: 3px;
+  border-left: 2px solid var(--amber);
+}
+
+.turn-num {
+  color: var(--amber);
+  font-weight: bold;
+}
+
+.p1-action {
+  color: #ffff00;
+}
+
+.p2-action {
+  color: #00ff00;
+}
+
+.divider {
+  color: #666;
+  margin: 0 4px;
+}
+
+.hp-status {
+  font-size: 8px;
+  color: #999;
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.pvp-match-detail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.pvp-match-detail.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pvp-match-detail .modal-content {
+  background: var(--stone-dark);
+  border: 2px solid var(--amber);
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--amber);
+  border: none;
+  color: #000;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.pvp-match-detail h2 {
+  color: var(--amber);
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.pvp-match-detail-info {
+  background: var(--stone);
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.pvp-match-detail-info h3 {
+  color: var(--parchment);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.round-badge {
+  background: var(--amber);
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.pvp-players-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.player-overview {
+  background: var(--stone);
+  padding: 12px;
+  border-radius: 5px;
+  border-left: 3px solid var(--amber);
+}
+
+.player-overview h4 {
+  color: var(--amber);
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.player-overview p {
+  font-size: 9px;
+  color: #bbb;
+  margin: 4px 0;
+}
+
+.pvp-winner-announcement {
+  background: #2f7c31;
+  color: #ffff00;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .pvp-matches-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pvp-players-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .pvp-match-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .vs-divider {
+    margin: 8px 0;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -597,6 +1152,7 @@ canvas{image-rendering:pixelated;}
       <div class="icon-btn" id="open-shop"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="hpPot"></canvas>poções</div>
       <div class="icon-btn" id="open-market"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="scale"></canvas>mercado</div>
       <div class="icon-btn" id="open-rank"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>ranking</div>
+      <div class="icon-btn" id="open-pvp"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>pvp</div>
       <div class="icon-btn" id="open-settings"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="gear"></canvas><span data-i18n="settings">config</span></div>
       <div class="icon-btn" id="open-vip"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="vipcoin"></canvas>vip</div>
     </div>
@@ -842,6 +1398,15 @@ canvas{image-rendering:pixelated;}
       <div class="close-x" data-close>✕</div>
       <h2>RANKING GLOBAL</h2>
       <div id="rank-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL PVP TOURNAMENT -->
+  <div class="modal" id="modal-pvp">
+    <div class="box">
+      <div class="close-x" data-close>✕</div>
+      <h2>🏆 TORNEIO PVP</h2>
+      <div id="pvp-container" class="pvp-container"></div>
     </div>
   </div>
 
@@ -3523,114 +4088,25 @@ function synthFailMsg(extra){
 el('synth-go').onclick=doSynth;
 
 /* =====================================================
-   MERCADO GLOBAL (simulado)
+   MERCADO GLOBAL (REAL - apenas jogadores)
    - taxa 10% em toda negociação
-   - compra: ofertas de "outros jogadores" (bots)
+   - compra: ofertas de JOGADORES REAIS no Supabase
    - venda: anuncia equip / pet / pacote de gold
    ===================================================== */
 let marketTab='buy';
-let botOffers=[];
 let sellTarget=null; // {kind:'eq'|'pet'|'gold', ...}
-
-const BOT_NAMES=['IronWall','PixelMage','LootGoblin','TradeKing','CryptKeeper','SlimeHunter','AFKKnight','FoxLover99','DungeonDweller','RoguePxl'];
-function botName(){ return BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)]; }
-
-// Raridade de item vendido por BOT: NUNCA acima de Épico, e progressiva
-// com o nível do bot. Bots de nível baixo vendem quase só Comum;
-// conforme sobem de nível, ganham chance de raridades melhores (até Épico).
-function rollBotRarity(botLvl){
-  const r=Math.random()*100;
-  // fator de progresso 0..1 conforme o nível do bot (satura ~nível 60)
-  const p=Math.min(1, botLvl/60);
-  // chances de cada raridade sobem com p (Épico é o teto)
-  const epico   = 1 + p*11;      // 1% -> 12%
-  const lendario= 0;             // bots NUNCA vendem acima de Épico
-  const raro    = 5 + p*20;      // 5% -> 25%
-  const incomum = 14 + p*18;     // 14% -> 32%
-  // Comum preenche o resto
-  if(r < epico) return 'Épico';
-  if(r < epico+raro) return 'Raro';
-  if(r < epico+raro+incomum) return 'Incomum';
-  return 'Comum';
-}
-// Tier do item vendido por um bot de nível botLvl: o mesmo tier que um
-// jogador NAQUELE nível teria chance de dropar. Usa a mesma lógica de
-// viés progressivo do rollEquipDrop, mas baseada no nível do bot.
-function botItemFromLevel(type, botLvl){
-  // no jogo, 1 stage ≈ alguns níveis; aproximamos o "stage equivalente"
-  // do bot como botLvl/10, para casar com o teto de tier por stage.
-  const stageEq=Math.max(1, Math.floor(botLvl/10));
-  const pool=ALL_EQ[type].filter(it=>it.tier<=stageEq && it.tier>0);
-  const usePool=pool.length?pool:ALL_EQ[type].filter(it=>it.tier>0);
-  if(!usePool.length) return null;
-  // viés para tiers altos cresce com o nível (igual ao drop do jogador)
-  const tierBias=Math.max(0.25, 0.9 - stageEq*0.02);
-  const idx=Math.min(usePool.length-1, Math.floor(Math.pow(Math.random(),tierBias)*usePool.length));
-  return usePool[idx];
-}
-// nível aleatório de um bot, ancorado no progresso do jogador para dar
-// ofertas relevantes, mas com variação (uns mais fracos, uns mais fortes).
-function randomBotLevel(){
-  const anchor=Math.max(5, (S.k?S.k.lvl:10));
-  // varia de ~40% a ~130% do nível do jogador
-  const lvl=Math.round(anchor*(0.4+Math.random()*0.9));
-  return Math.max(1, lvl);
-}
-
-function genBotOffer(){
-  const roll=Math.random();
-  if(roll<0.5){ // equipamento (todos os tipos, incluindo acessórios)
-    const botLvl=randomBotLevel();
-    const type=DROP_TYPES[Math.floor(Math.random()*DROP_TYPES.length)];
-    const b=botItemFromLevel(type, botLvl);
-    if(!b) return null;
-    const rar=rollBotRarity(botLvl);          // nunca acima de Épico
-    const vip=Math.random()<0.15 && rar==='Épico'; // só Épico pode ser VIP, e raramente
-    const affix=isAccessory(type)?rollAffix(rar):null;
-    let val=b.val*rarMult(rar); if(affix) val*=(1+affix.pct*0.08);
-    const price=Math.round(val*(0.9+Math.random()*0.6));
-    return {id:newUid(),kind:'eq',type,baseId:b.id,rarity:rar,affix,seller:botName(),botLvl,
-      cur:vip?'vip':'gold', price:vip?Math.max(1,Math.round(price/200)):price};
-  }
-  if(roll<0.8){ // pet
-    const botLvl=randomBotLevel();
-    const b=PET_BASES[Math.floor(Math.random()*PET_BASES.length)];
-    const rar=rollBotRarity(botLvl);          // pets de bot também limitados a Épico
-    const vip=Math.random()<0.3 && (rar==='Raro'||rar==='Épico');
-    const base=Math.round(b.val*rarMult(rar)*(1+Math.random()*0.5));
-    return {id:newUid(),kind:'pet',petId:b.id,rarity:rar,seller:botName(),botLvl,
-      cur:vip?'vip':'gold', price:vip?Math.max(2,Math.round(base/180)):base};
-  }
-  const amount=Math.round(300*Math.pow(1.4,S.bestStage-1)*(0.8+Math.random()*0.6));
-  return {id:newUid(),kind:'gold',amount,seller:botName(),
-    cur:'vip', price:Math.max(1,Math.round(amount/250))};
-}
-function refreshBotOffers(){
-  while(botOffers.length<12){
-    const o=genBotOffer();
-    if(o) botOffers.push(o); else break;
-  }
-}
-function offerLabel(o){
-  const lvlTag = o.botLvl ? ' · Nv.'+o.botLvl : '';
-  if(o.kind==='eq'){ const b=eqBase(o.type,o.baseId);
-    let st=eqFmt(o.type,eqInstStats(o));
-    if(o.affix){ st+=' · ◆ '+affixText(o.affix); }
-    return {nm:b.nm, st:st+lvlTag, icon:b.icon, rar:o.rarity!=='Comum'?o.rarity:null}; }
-  if(o.kind==='pet'){ const b=PET_BASES.find(x=>x.id===o.petId);
-    return {nm:b.nm, st:'Pet · '+rarLabel(o.rarity)+' '+rarMult(o.rarity)+'x'+lvlTag, icon:b.spr, rar:o.rarity}; }
-  return {nm:'Pacote de Gold', st:'◈ '+o.amount+' de ouro', icon:'goldpile', rar:null};
-}
-function curTag(o){ return o.cur==='vip' ? '♦ '+o.price : '◈ '+o.price; }
+let marketListings=[]; // cache local dos anúncios do servidor
 
 /* filtros do mercado (só aba Comprar) */
 let mFilter={kind:'all', rar:'all', cur:'all'};
-function offerKind(o){ return o.kind==='eq'? o.type : o.kind; } // weapon/armor/shield/pet/gold
+function offerKind(o){ 
+  return o.kind==='eq' ? o.item_data.type : o.kind; 
+}
 function offerMatchesFilter(o){
   if(mFilter.kind!=='all' && offerKind(o)!==mFilter.kind) return false;
-  if(mFilter.cur!=='all' && o.cur!==mFilter.cur) return false;
+  if(mFilter.cur!=='all' && o.currency!==mFilter.cur) return false;
   if(mFilter.rar!=='all'){
-    const r = (o.kind==='eq'||o.kind==='pet') ? (o.rarity||'Comum') : null;
+    const r = (o.kind==='eq'||o.kind==='pet') ? (o.item_data.rarity||'Comum') : null;
     if(r!==mFilter.rar) return false;
   }
   return true;
@@ -3658,77 +4134,109 @@ document.querySelectorAll('#modal-market .tab').forEach(t=>{
   };
 });
 
-function renderMarket(){
-  const list=el('market-list'); list.innerHTML='';
+async function renderMarket(){
+  const list=el('market-list'); 
+  list.innerHTML='';
   el('market-filters').classList.toggle('open', marketTab==='buy');
+  
   if(marketTab==='buy'){
-    refreshBotOffers();
-    const shown=botOffers.filter(offerMatchesFilter);
-    if(!botOffers.length){ list.innerHTML='<div class="empty-note">Sem ofertas agora.<br>Volte em instantes!</div>'; return; }
-    if(!shown.length){ list.innerHTML='<div class="empty-note">Nenhuma oferta com esses filtros.<br>Ajuste os filtros acima<br>ou aguarde novas ofertas.</div>'; return; }
-    shown.forEach(o=>{
-      const L=offerLabel(o);
-      const row=document.createElement('div');
-      row.className='item-row'+(L.rar?' rar-b-'+L.rar:'');
-      row.innerHTML=`<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
-        <div class="info"><div class="nm">${L.nm}${L.rar?'<br><span class="rar-'+L.rar+'">['+rarLabel(L.rar)+']</span>':''}</div>
-        <div class="st">${L.st}<br>Vendedor: ${o.seller}</div></div>
-        <div class="acts"><div class="tag ${o.cur==='vip'?'vip':''}">${curTag(o)}</div>
-        <button class="btn ${o.cur==='vip'?'teal ':''}small">Comprar</button></div>`;
-      drawSprite(row.querySelector('canvas'),L.icon);
-      row.querySelector('button').onclick=()=>buyOffer(o);
-      list.appendChild(row);
-    });
+    try {
+      const {data: listings, error} = await supaAuth
+        .from('market_listings')
+        .select('*')
+        .order('created_at', {ascending: false});
+      
+      if(error) {
+        console.error('Erro ao carregar mercado:', error);
+        list.innerHTML='<div class="empty-note">Erro ao carregar mercado.<br>Tente novamente.</div>';
+        return;
+      }
+      
+      if(!listings || listings.length === 0) {
+        list.innerHTML='<div class="empty-note">Sem ofertas disponíveis.<br>Seja o primeiro a anunciar!<br>Use a aba Vender.</div>';
+        return;
+      }
+      
+      marketListings = listings;
+      const shown = listings.filter(offerMatchesFilter);
+      
+      if(!shown.length) {
+        list.innerHTML='<div class="empty-note">Nenhuma oferta com esses filtros.<br>Ajuste os filtros acima ou aguarde novas ofertas.</div>';
+        return;
+      }
+      
+      shown.forEach(o => {
+        const rarity = o.item_data.rarity || 'Comum';
+        const row = document.createElement('div');
+        row.className = 'item-row' + (rarity !== 'Comum' ? ' rar-b-' + rarity : '');
+        row.innerHTML = `<canvas width="16" height="16" style="width:36px;height:36px"></canvas>
+          <div class="info"><div class="nm">${o.item_name}${rarity !== 'Comum' ? '<br><span class="rar-' + rarity + '">[' + rarLabel(rarity) + ']</span>' : ''}</div>
+          <div class="st">Vendedor: ${o.seller_nick}<br>Tipo: ${o.kind === 'eq' ? 'Equipamento' : o.kind === 'pet' ? 'Pet' : 'Ouro'}</div></div>
+          <div class="acts"><div class="tag ${o.currency === 'vip' ? 'vip' : ''}">${o.currency === 'vip' ? '♦' : '◈'} ${o.price}</div>
+          <button class="btn ${o.currency === 'vip' ? 'teal ' : ''}small">Comprar</button></div>`;
+        const icon = o.item_data.icon || (o.kind === 'eq' ? 'weapon' : o.kind === 'pet' ? 'pet' : 'goldpile');
+        drawSprite(row.querySelector('canvas'), icon);
+        row.querySelector('button').onclick = () => buyListing(o);
+        list.appendChild(row);
+      });
+    } catch(e) {
+      console.error('Erro ao renderizar mercado:', e);
+      list.innerHTML='<div class="empty-note">Erro ao carregar mercado.<br>Verifique sua conexão.</div>';
+    }
   }
   else if(marketTab==='sell'){
     let any=false;
-    // equipamentos não equipados
     S.inv.forEach(inst=>{
       if(Object.values(S.eq).includes(inst.uid)) return;
       any=true;
       const b=eqBase(inst.type,inst.baseId);
       const val=eqInstValue(inst);
-      const row=document.createElement('div'); row.className='item-row rar-b-'+(inst.rarity||'Comum');
+      const row=document.createElement('div'); 
+      row.className='item-row rar-b-'+(inst.rarity||'Comum');
       row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
         <div class="info"><div class="nm">${eqName(inst)}</div><div class="st">${eqFmtInst(inst)} · Sugerido ◈ ${val}</div></div>
         <button class="btn small">Anunciar</button>`;
       drawSprite(row.querySelector('canvas'),b.icon);
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'eq',uid:inst.uid,nm:b.nm+(inst.rarity!=='Comum'?' ['+rarLabel(inst.rarity)+']':''),sug:val});
+      row.querySelector('button').onclick=()=>openSellPanel({kind:'eq',uid:inst.uid,nm:b.nm+(inst.rarity!=='Comum'?' ['+rarLabel(inst.rarity)+']':''),sug:val,type:inst.type,baseId:inst.baseId,rarity:inst.rarity||'Comum',affix:inst.affix||null,icon:b.icon});
       list.appendChild(row);
     });
-    // pets não ativos
     S.pets.forEach(p=>{
       if(p.uid===S.activePetUid) return;
       any=true;
       const b=petBase(p);
-      const row=document.createElement('div'); row.className='item-row rar-b-'+p.rarity;
+      const row=document.createElement('div'); 
+      row.className='item-row rar-b-'+p.rarity;
       row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
         <div class="info"><div class="nm">${b.nm} <span class="rar-${p.rarity}">[${rarLabel(p.rarity)}]</span></div>
         <div class="st">Lv.${p.lvl} · Sugerido ◈ ${petValue(p)}</div></div>
         <button class="btn small">Anunciar</button>`;
       drawSprite(row.querySelector('canvas'),b.spr);
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'pet',uid:p.uid,nm:b.nm+' ['+rarLabel(p.rarity)+']',sug:petValue(p)});
+      row.querySelector('button').onclick=()=>openSellPanel({kind:'pet',uid:p.uid,nm:b.nm+' ['+rarLabel(p.rarity)+']',sug:petValue(p),petId:p.petId,rarity:p.rarity,lvl:p.lvl,icon:b.spr});
       list.appendChild(row);
     });
-    // pacote de gold (vender gold por VIP)
     if(S.gold>=200){
       any=true;
       const amt=Math.min(S.gold, Math.max(200,Math.round(S.gold*0.5)));
-      const row=document.createElement('div'); row.className='item-row';
+      const row=document.createElement('div'); 
+      row.className='item-row';
       row.innerHTML=`<canvas width="16" height="16" style="width:34px;height:34px"></canvas>
         <div class="info"><div class="nm">Pacote de Gold</div>
         <div class="st">Anuncia ◈ ${amt} por ♦ VIP Coin<br>Sugerido: ♦ ${Math.max(1,Math.round(amt/250))}</div></div>
         <button class="btn teal small">Anunciar</button>`;
       drawSprite(row.querySelector('canvas'),'goldpile');
-      row.querySelector('button').onclick=()=>openSellPanel({kind:'gold',amount:amt,nm:'Pacote ◈ '+amt,sug:Math.max(1,Math.round(amt/250)),vipOnly:true});
+      row.querySelector('button').onclick=()=>openSellPanel({kind:'gold',amount:amt,nm:'Pacote ◈ '+amt,sug:Math.max(1,Math.round(amt/250)),vipOnly:true,icon:'goldpile'});
       list.appendChild(row);
     }
     if(!any) list.innerHTML='<div class="empty-note">Nada disponível para vender.<br>Itens equipados e o pet ativo<br>não podem ser anunciados.</div>';
   }
-  else { // meus anúncios
-    if(!S.listings.length){ list.innerHTML='<div class="empty-note">Você não tem anúncios ativos.<br>Use a aba Vender!</div>'; return; }
+  else { 
+    if(!S.listings.length){ 
+      list.innerHTML='<div class="empty-note">Você não tem anúncios ativos.<br>Use a aba Vender!</div>'; 
+      return; 
+    }
     S.listings.forEach(l=>{
-      const row=document.createElement('div'); row.className='item-row';
+      const row=document.createElement('div'); 
+      row.className='item-row';
       row.innerHTML=`<div class="info"><div class="nm">${l.nm}</div>
         <div class="st">Preço: ${l.cur==='vip'?'♦':'◈'} ${l.price} · você recebe ${l.cur==='vip'?'♦':'◈'} ${Math.floor(l.price*(1-MARKET_FEE))}<br>Status: aguardando comprador...</div></div>
         <button class="btn red small">Retirar</button>`;
@@ -3738,17 +4246,8 @@ function renderMarket(){
   }
 }
 
-function buyOffer(o){
-  const bal=o.cur==='vip'?S.vip:S.gold;
-  if(bal<o.price) return toast(o.cur==='vip'?'♦ VIP Coins insuficientes!<br>Venda itens por VIP para ganhar.':'Ouro insuficiente!');
-  if(o.cur==='vip') S.vip-=o.price; else S.gold-=o.price;
-  if(o.kind==='eq'){ const inst={uid:newUid(),type:o.type,baseId:o.baseId,rarity:o.rarity||'Comum'}; if(o.affix) inst.affix=o.affix; S.inv.push(inst); }
-  else if(o.kind==='pet') S.pets.push({uid:newUid(),petId:o.petId,rarity:o.rarity,lvl:1,xp:0});
-  else S.gold+=o.amount;
-  botOffers=botOffers.filter(x=>x.id!==o.id);
-  toast('Compra realizada!<br>(vendedor pagou 10% de taxa)');
-  updBars(); save(); renderMarket();
-}
+
+
 
 function openSellPanel(target){
   sellTarget=target;
@@ -3799,62 +4298,46 @@ function restoreListing(l){
 }
 
 /* bots compram anúncios do jogador */
-function marketTick(){
-  if(!S) return;
-  // renova ofertas dos bots aos poucos — mas não enquanto o jogador navega
-  const marketOpen = el('modal-market').classList.contains('open');
-  if(!marketOpen && Math.random()<0.4 && botOffers.length>2) botOffers.shift();
-  refreshBotOffers();
-
-  S.listings.forEach(l=>{
-    // chance de venda depende do preço vs justo
-    const ratio=l.price/Math.max(1,l.fair);
-    let chance = ratio<=1?0.5 : ratio<=1.3?0.3 : ratio<=1.8?0.12 : 0.03;
-    if(Math.random()<chance){
-      const gross=l.price;
-      const net=Math.floor(gross*(1-MARKET_FEE));
-      if(l.cur==='vip') S.vip+=net; else S.gold+=net;
-      S.listings=S.listings.filter(x=>x.id!==l.id);
-      toast('💰 VENDIDO!<br>'+l.nm+'<br>'+(l.cur==='vip'?'♦':'◈')+' '+gross+' − 10% taxa = '+(l.cur==='vip'?'♦':'◈')+' '+net,3000);
-      updBars(); save();
-      if(el('modal-market').classList.contains('open')) renderMarket();
-    }
-  });
-}
-
-/* precisa guardar dados completos ao anunciar equip/pet */
-function inferType(l){ return l.type; }
-
-/* patch: guardar snapshot completo no anúncio */
-const _openSellPanel=openSellPanel;
-openSellPanel=function(target){
-  if(target.kind==='eq'){
-    const inst=S.inv.find(i=>i.uid===target.uid);
-    target.type=inst.type; target.baseId=inst.baseId; target.invData={...inst};
-  }
-  if(target.kind==='pet'){
-    const p=S.pets.find(x=>x.uid===target.uid);
-    target.petId=p.petId; target.rarity=p.rarity; target.lvl=p.lvl; target.petData={...p};
-  }
-  _openSellPanel(target);
-};
 
 /* ---------- RANKING ---------- */
-function renderRank(){
-  const list=el('rank-list'); list.innerHTML='';
-  const fake=[
-    ['IronWall',S.bestStage+3],['CryptKeeper',S.bestStage+1],
-    [S.nick,S.bestStage],['SlimeHunter',Math.max(1,S.bestStage-1)],
-    ['AFKKnight',Math.max(1,S.bestStage-2)],
-  ].sort((a,b)=>b[1]-a[1]);
-  fake.forEach((r,i)=>{
-    const row=document.createElement('div');
-    row.className='item-row'+(r[0]===S.nick?' equipped':'');
-    row.innerHTML=`<div class="tag">#${i+1}</div>
-      <div class="info"><div class="nm">${r[0]}</div>
-      <div class="st">Melhor stage: ${r[1]}</div></div>`;
-    list.appendChild(row);
-  });
+async function renderRank(){
+  const list=el('rank-list'); 
+  list.innerHTML='<div class="empty-note">Carregando ranking...</div>';
+  
+  try {
+    const {data: users, error} = await supaAuth
+      .from('users')
+      .select('nick, level, gold')
+      .order('level', {ascending: false})
+      .order('gold', {ascending: false});
+    
+    if(error) {
+      console.error('Erro ao carregar ranking:', error);
+      list.innerHTML='<div class="empty-note">Erro ao carregar ranking.<br>Tente novamente.</div>';
+      return;
+    }
+    
+    if(!users || users.length === 0) {
+      list.innerHTML='<div class="empty-note">Sem jogadores cadastrados<br>no ranking ainda.</div>';
+      return;
+    }
+    
+    list.innerHTML='';
+    
+    users.forEach((r, i) => {
+      const isCurrentPlayer = r.nick === S.nick;
+      const row = document.createElement('div');
+      row.className = 'item-row' + (isCurrentPlayer ? ' equipped' : '');
+      row.innerHTML = `<div class="tag">#${i+1}</div>
+        <div class="info"><div class="nm">${r.nick}</div>
+        <div class="st">Nível: ${r.level} · Ouro: ◈ ${r.gold}</div></div>`;
+      list.appendChild(row);
+    });
+    
+  } catch(e) {
+    console.error('Erro ao renderizar ranking:', e);
+    list.innerHTML='<div class="empty-note">Erro ao carregar ranking.<br>Verifique sua conexão.</div>';
+  }
 }
 
 /* ---------- LOJA VIP ---------- */
@@ -4128,7 +4611,7 @@ function startGame(){
   updTicketBtn();
   if((S.mastery||0)>0){ const dot=el('mastery-dot'); if(dot) dot.style.display='block'; }
   setInterval(combatRound, 1400);
-  setInterval(marketTick, 8000);
+  /* marketTick removido — mercado é agora real com Supabase */
   setInterval(updateAbilityCooldowns, 500); // atualiza recargas das magias
   setInterval(save, 5000);
 }
@@ -4220,9 +4703,10 @@ el('open-market').onclick=()=>{
   marketTab='buy';
   document.querySelectorAll('#modal-market .tab').forEach(x=>x.classList.toggle('on',x.dataset.mtab==='buy'));
   el('market-filters').classList.add('open');
-  refreshBotOffers();renderMarket();openModal('modal-market');
+  renderMarket();openModal('modal-market');
 };
 el('open-rank').onclick=()=>{renderRank();openModal('modal-rank');};
+el('open-pvp').onclick=()=>{openPVPModal();};
 el('open-settings').onclick=()=>{renderSettings();openModal('modal-settings');};
 document.querySelectorAll('.lang-opt').forEach(opt=>{
   opt.onclick=()=>setLang(opt.dataset.lang);
@@ -4245,6 +4729,647 @@ drawSprite(el('crest-cv'),'crest');
   const prev=load();
   if(prev && prev.nick) el('nick').value=prev.nick;
 })();
+// ============================================================
+// NOVAS FUNÇÕES DE MERCADO — SUPABASE REAL
+// ============================================================
+
+/* ---------- COMPRAR ANÚNCIO ---------- */
+async function buyListing(listing){
+  const bal = listing.currency === 'vip' ? S.vip : S.gold;
+  
+  if(bal < listing.price) {
+    return toast(listing.currency === 'vip' ? 
+      '♦ VIP Coins insuficientes!<br>Venda itens por VIP para ganhar.' : 
+      'Ouro insuficiente!'
+    );
+  }
+  
+  try {
+    if(listing.currency === 'vip') S.vip -= listing.price;
+    else S.gold -= listing.price;
+    
+    if(listing.kind === 'eq') {
+      const inst = {
+        uid: newUid(),
+        type: listing.item_data.type,
+        baseId: listing.item_data.baseId,
+        rarity: listing.item_data.rarity || 'Comum'
+      };
+      if(listing.item_data.affix) inst.affix = listing.item_data.affix;
+      S.inv.push(inst);
+    }
+    else if(listing.kind === 'pet') {
+      S.pets.push({
+        uid: newUid(),
+        petId: listing.item_data.petId,
+        rarity: listing.item_data.rarity,
+        lvl: listing.item_data.lvl || 1,
+        xp: 0
+      });
+    }
+    else if(listing.kind === 'gold') {
+      S.gold += listing.item_data.amount;
+    }
+    
+    const fee = Math.floor(listing.price * MARKET_FEE);
+    const netReceived = listing.price - fee;
+    
+    await supaAuth
+      .from('market_history')
+      .insert([{
+        seller_nick: listing.seller_nick,
+        buyer_nick: S.nick,
+        item_name: listing.item_name,
+        currency: listing.currency,
+        price: listing.price,
+        fee_paid: fee,
+        net_received: netReceived
+      }]);
+    
+    await supaAuth
+      .from('market_listings')
+      .delete()
+      .eq('id', listing.id);
+    
+    toast('Compra realizada com sucesso!<br>(vendedor pagou 10% de taxa)');
+    updBars(); 
+    save(); 
+    renderMarket();
+    
+  } catch(e) {
+    console.error('Erro ao comprar anúncio:', e);
+    toast('Erro ao completar compra.<br>Tente novamente.');
+  }
+}
+
+/* ---------- CONFIRMAR ANÚNCIO ---------- */
+async function confirmListing(cur){
+  if(!sellTarget) return;
+  
+  const price = Math.max(1, Math.floor(Number(el('sell-price').value) || 0));
+  if(price < 1) return toast('Defina um preço válido!');
+  
+  const t = sellTarget;
+  let fair = t.sug;
+  
+  try {
+    if(t.kind === 'eq'){
+      S.inv = S.inv.filter(i => i.uid !== t.uid);
+    } else if(t.kind === 'pet'){
+      S.pets = S.pets.filter(p => p.uid !== t.uid);
+    } else {
+      if(S.gold < t.amount) return toast('Ouro insuficiente!');
+      S.gold -= t.amount;
+    }
+    
+    if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
+    
+    const {data: listing, error} = await supaAuth
+      .from('market_listings')
+      .insert([{
+        seller_nick: S.nick,
+        seller_id: currentUser?.id,
+        kind: t.kind,
+        item_name: t.nm,
+        item_data: {
+          type: t.type,
+          baseId: t.baseId,
+          rarity: t.rarity,
+          affix: t.affix,
+          petId: t.petId,
+          lvl: t.lvl,
+          amount: t.amount,
+          icon: t.icon
+        },
+        currency: cur === 'vip' ? 'vip' : 'gold',
+        price: price
+      }])
+      .select()
+      .single();
+    
+    if(error) {
+      console.error('Erro ao anunciar item:', error);
+      if(t.kind === 'eq') S.inv.push({uid: t.uid, type: t.type, baseId: t.baseId, rarity: t.rarity, affix: t.affix});
+      else if(t.kind === 'pet') S.pets.push({uid: t.uid, petId: t.petId, rarity: t.rarity, lvl: t.lvl || 1, xp: 0});
+      else S.gold += t.amount;
+      return toast('Erro ao anunciar item.<br>Tente novamente.');
+    }
+    
+    S.listings.push({
+      id: listing.id,
+      ...t,
+      cur,
+      price,
+      fair,
+      ts: Date.now()
+    });
+    
+    toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
+    closeSellPanel(); 
+    updBars(); 
+    save(); 
+    renderMarket();
+    
+  } catch(e) {
+    console.error('Erro ao anunciar:', e);
+    toast('Erro ao anunciar item.<br>Tente novamente.');
+  }
+}
+
+/* ---------- CANCELAR ANÚNCIO ---------- */
+function cancelListing(id){
+  const l = S.listings.find(x => x.id === id);
+  if(!l) return;
+  
+  S.listings = S.listings.filter(x => x.id !== id);
+  restoreListing(l);
+  
+  supaAuth
+    .from('market_listings')
+    .delete()
+    .eq('id', id)
+    .catch(e => console.error('Erro ao remover anúncio do servidor:', e));
+  
+  toast('Anúncio retirado.<br>Item devolvido ao inventário.');
+  updBars(); 
+  save(); 
+  renderMarket();
+}
+
+/* ---------- RESTAURAR ITEM DO ANÚNCIO ---------- */
+function restoreListing(l){
+  if(l.kind === 'eq') {
+    S.inv.push({
+      uid: l.uid,
+      type: l.type,
+      baseId: l.baseId,
+      rarity: l.rarity || 'Comum',
+      affix: l.affix || null
+    });
+  }
+  else if(l.kind === 'pet') {
+    S.pets.push({
+      uid: l.uid,
+      petId: l.petId,
+      rarity: l.rarity,
+      lvl: l.lvl || 1,
+      xp: 0
+    });
+  }
+  else {
+    S.gold += l.amount;
+  }
+}
+
+// ============================================================
+// OBSERVADORES EM TEMPO REAL (Realtime Subscriptions)
+// ============================================================
+
+if(supaAuth) {
+  supaAuth
+    .channel('public:market_listings')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'market_listings' }, payload => {
+      console.log('Mudança no mercado:', payload);
+      if(el('modal-market').classList.contains('open')) {
+        renderMarket();
+      }
+    })
+    .subscribe();
+}
+
+// ============================================================
+// SISTEMA PVP TOURNAMENT — AUTO-MATCHMAKING E BATALHAS
+// ============================================================
+
+let currentTournament = null;
+let pvpHistoryTab = 'brackets'; // 'brackets' | 'matches' | 'rewards'
+
+async function openPVPModal(){
+  try {
+    const {data: tournaments, error} = await supaAuth
+      .from('pvp_tournament')
+      .select('*, market_pool:market_pool_id(gold_burned, vip_burned, gold_prize_pool, vip_prize_pool)')
+      .order('created_at', {ascending: false})
+      .limit(1);
+    
+    if(error) {
+      console.error('Erro ao carregar torneio:', error);
+      toast('Erro ao carregar PVP.');
+      return;
+    }
+    
+    if(tournaments && tournaments.length > 0) {
+      currentTournament = tournaments[0];
+    } else {
+      currentTournament = null;
+    }
+    
+    renderPVPModal();
+    openModal('modal-pvp');
+    
+  } catch(e) {
+    console.error('Erro ao abrir PVP:', e);
+    toast('Erro ao abrir PVP.');
+  }
+}
+
+function renderPVPModal(){
+  const container = el('pvp-container');
+  container.innerHTML = '';
+  
+  if(!currentTournament) {
+    container.innerHTML = `
+      <div class="pvp-empty">
+        <h3>⚔️ Torneio PVP</h3>
+        <p>Nenhum torneio ativo no momento.</p>
+        <p style="font-size: 12px; color: #999;">Torneio é gerado toda sexta às 23h com o top 10 do ranking de stages.</p>
+        <p style="font-size: 12px; color: #999;">Batalhas automáticas ocorrem no sábado às 12h.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const tournament = currentTournament;
+  
+  const tabsHTML = `
+    <div class="pvp-tabs">
+      <button class="pvp-tab ${pvpHistoryTab === 'brackets' ? 'on' : ''}" data-tab="brackets">Chaves</button>
+      <button class="pvp-tab ${pvpHistoryTab === 'matches' ? 'on' : ''}" data-tab="matches">Histórico</button>
+      <button class="pvp-tab ${pvpHistoryTab === 'rewards' ? 'on' : ''}" data-tab="rewards">Prêmios</button>
+    </div>
+  `;
+  
+  container.innerHTML += tabsHTML;
+  
+  document.querySelectorAll('.pvp-tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.pvp-tab').forEach(t => t.classList.remove('on'));
+      tab.classList.add('on');
+      pvpHistoryTab = tab.dataset.tab;
+      renderPVPModal();
+    };
+  });
+  
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'pvp-content';
+  
+  if(pvpHistoryTab === 'brackets') {
+    renderPVPBrackets(tournament, contentDiv);
+  } else if(pvpHistoryTab === 'matches') {
+    renderPVPMatches(tournament, contentDiv);
+  } else if(pvpHistoryTab === 'rewards') {
+    renderPVPRewards(tournament, contentDiv);
+  }
+  
+  container.appendChild(contentDiv);
+}
+
+function renderPVPBrackets(tournament, container){
+  const poolData = tournament.market_pool || tournament;
+  const goldPool = poolData.gold_prize_pool || tournament.gold_prize_pool || 0;
+  const vipPool = poolData.vip_prize_pool || tournament.vip_prize_pool || 0;
+  
+  const html = `
+    <div class="pvp-bracket-view">
+      <div class="pvp-info-header">
+        <h3>⚔️ Torneio Semanal</h3>
+        <div class="pvp-status">Status: <span class="badge-${tournament.status}">${tournament.status}</span></div>
+        <div class="pvp-pool">
+          <p>💰 Pool de Prêmios:</p>
+          <p>◈ ${goldPool} Gold</p>
+          <p>♦ ${vipPool} VIP Coin</p>
+        </div>
+      </div>
+      
+      <div class="pvp-brackets-container">
+        <div class="pvp-round">
+          <h4>🏆 Semifinais</h4>
+          <div class="pvp-matches-grid" id="semifinals-grid"></div>
+        </div>
+        
+        ${tournament.status !== 'scheduled' && tournament.final_match ? `
+          <div class="pvp-round">
+            <h4>👑 Final</h4>
+            <div class="pvp-matches-grid" id="final-grid"></div>
+          </div>
+          
+          <div class="pvp-round">
+            <h4>🥉 3º Lugar</h4>
+            <div class="pvp-matches-grid" id="third-place-grid"></div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = html;
+  
+  const semifinalsGrid = el('semifinals-grid');
+  if(tournament.semifinals && Array.isArray(tournament.semifinals)) {
+    tournament.semifinals.forEach((match, idx) => {
+      const matchEl = document.createElement('div');
+      matchEl.className = 'pvp-match-card';
+      matchEl.innerHTML = `
+        <div class="pvp-match-players">
+          <div class="pvp-player ${match.winner_nick === match.player1_nick ? 'winner' : ''}">
+            ${match.player1_nick}
+          </div>
+          <div class="vs">vs</div>
+          <div class="pvp-player ${match.winner_nick === match.player2_nick ? 'winner' : ''}">
+            ${match.player2_nick}
+          </div>
+        </div>
+        ${match.winner_nick ? `
+          <div class="pvp-match-result">
+            🏆 ${match.winner_nick}
+          </div>
+        ` : `
+          <div class="pvp-match-pending">Aguardando...</div>
+        `}
+        ${match.match_id ? `
+          <button class="btn small teal" onclick="viewPVPMatchDetails('${match.match_id}')">Ver Detalhes</button>
+        ` : ''}
+      `;
+      semifinalsGrid.appendChild(matchEl);
+    });
+  }
+  
+  if(tournament.final_match) {
+    const finalGrid = el('final-grid');
+    if(finalGrid) {
+      const matchEl = document.createElement('div');
+      matchEl.className = 'pvp-match-card';
+      matchEl.innerHTML = `
+        <div class="pvp-match-players">
+          <div class="pvp-player ${tournament.final_match.winner_nick === tournament.final_match.player1_nick ? 'winner' : ''}">
+            ${tournament.final_match.player1_nick}
+          </div>
+          <div class="vs">vs</div>
+          <div class="pvp-player ${tournament.final_match.winner_nick === tournament.final_match.player2_nick ? 'winner' : ''}">
+            ${tournament.final_match.player2_nick}
+          </div>
+        </div>
+        ${tournament.final_match.winner_nick ? `
+          <div class="pvp-match-result">
+            👑 ${tournament.final_match.winner_nick}
+          </div>
+        ` : ''}
+        ${tournament.final_match.match_id ? `
+          <button class="btn small teal" onclick="viewPVPMatchDetails('${tournament.final_match.match_id}')">Ver Detalhes</button>
+        ` : ''}
+      `;
+      finalGrid.appendChild(matchEl);
+    }
+  }
+  
+  if(tournament.third_place_match) {
+    const thirdGrid = el('third-place-grid');
+    if(thirdGrid) {
+      const matchEl = document.createElement('div');
+      matchEl.className = 'pvp-match-card';
+      matchEl.innerHTML = `
+        <div class="pvp-match-players">
+          <div class="pvp-player ${tournament.third_place_match.winner_nick === tournament.third_place_match.player1_nick ? 'winner' : ''}">
+            ${tournament.third_place_match.player1_nick}
+          </div>
+          <div class="vs">vs</div>
+          <div class="pvp-player ${tournament.third_place_match.winner_nick === tournament.third_place_match.player2_nick ? 'winner' : ''}">
+            ${tournament.third_place_match.player2_nick}
+          </div>
+        </div>
+        ${tournament.third_place_match.winner_nick ? `
+          <div class="pvp-match-result">
+            🥉 ${tournament.third_place_match.winner_nick}
+          </div>
+        ` : ''}
+        ${tournament.third_place_match.match_id ? `
+          <button class="btn small teal" onclick="viewPVPMatchDetails('${tournament.third_place_match.match_id}')">Ver Detalhes</button>
+        ` : ''}
+      `;
+      thirdGrid.appendChild(matchEl);
+    }
+  }
+}
+
+async function renderPVPMatches(tournament, container){
+  try {
+    const {data: matches, error} = await supaAuth
+      .from('pvp_matches')
+      .select('*')
+      .eq('tournament_id', tournament.id)
+      .order('created_at', {ascending: false});
+    
+    if(error) {
+      console.error('Erro ao carregar matches:', error);
+      container.innerHTML = '<div class="empty-note">Erro ao carregar histórico.</div>';
+      return;
+    }
+    
+    if(!matches || matches.length === 0) {
+      container.innerHTML = '<div class="empty-note">Nenhuma batalha realizada ainda.</div>';
+      return;
+    }
+    
+    const html = `
+      <div class="pvp-matches-history">
+        ${matches.map(match => `
+          <div class="pvp-match-history-card">
+            <div class="pvp-match-header">
+              <h4>${match.player1_nick} vs ${match.player2_nick}</h4>
+              <span class="badge-round">${match.round}</span>
+            </div>
+            <div class="pvp-match-stats">
+              <div class="pvp-player-stats">
+                <p><strong>${match.player1_nick}</strong></p>
+                <p>Dano: ${match.player1_damage_dealt}</p>
+                <p>Turnos: ${match.player1_turns_survived}</p>
+              </div>
+              <div class="vs-divider">
+                ${match.winner_nick === match.player1_nick ? '✓' : match.winner_nick === match.player2_nick ? '✗' : '?'}
+              </div>
+              <div class="pvp-player-stats">
+                <p><strong>${match.player2_nick}</strong></p>
+                <p>Dano: ${match.player2_damage_dealt}</p>
+                <p>Turnos: ${match.player2_turns_survived}</p>
+              </div>
+            </div>
+            <div class="pvp-match-result">
+              ${match.winner_nick ? `🏆 Vencedor: ${match.winner_nick}` : 'Pendente...'}
+            </div>
+            <button class="btn small" onclick="viewPVPMatchDetails('${match.id}')">Ver Batalha</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    container.innerHTML = html;
+    
+  } catch(e) {
+    console.error('Erro ao renderizar matches:', e);
+    container.innerHTML = '<div class="empty-note">Erro ao carregar histórico.</div>';
+  }
+}
+
+async function renderPVPRewards(tournament, container){
+  try {
+    const {data: rewards, error} = await supaAuth
+      .from('pvp_rewards')
+      .select('*')
+      .eq('tournament_id', tournament.id);
+    
+    if(error) {
+      console.error('Erro ao carregar rewards:', error);
+      container.innerHTML = '<div class="empty-note">Erro ao carregar prêmios.</div>';
+      return;
+    }
+    
+    const html = `
+      <div class="pvp-rewards-view">
+        <div class="pvp-final-standings">
+          <h3>🏆 Colocação Final</h3>
+          
+          ${tournament.first_place_nick ? `
+            <div class="pvp-placement first">
+              <div class="placement-badge">🥇 1º Lugar</div>
+              <div class="placement-nick">${tournament.first_place_nick}</div>
+              <div class="placement-prize">
+                <p>◈ ${tournament.first_place_gold}</p>
+                <p>♦ ${tournament.first_place_vip}</p>
+              </div>
+            </div>
+          ` : ''}
+          
+          ${tournament.second_place_nick ? `
+            <div class="pvp-placement second">
+              <div class="placement-badge">🥈 2º Lugar</div>
+              <div class="placement-nick">${tournament.second_place_nick}</div>
+              <div class="placement-prize">
+                <p>◈ ${tournament.second_place_gold}</p>
+                <p>♦ ${tournament.second_place_vip}</p>
+              </div>
+            </div>
+          ` : ''}
+          
+          ${tournament.third_place_nick ? `
+            <div class="pvp-placement third">
+              <div class="placement-badge">🥉 3º Lugar</div>
+              <div class="placement-nick">${tournament.third_place_nick}</div>
+              <div class="placement-prize">
+                <p>◈ ${tournament.third_place_gold}</p>
+                <p>♦ ${tournament.third_place_vip}</p>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+        
+        ${rewards && rewards.length > 0 ? `
+          <div class="pvp-rewards-list">
+            <h3>📋 Histórico de Prêmios</h3>
+            ${rewards.map(reward => `
+              <div class="pvp-reward-card">
+                <div class="reward-nick">${reward.nick}</div>
+                <div class="reward-placement">${reward.placement}</div>
+                <div class="reward-amount">
+                  <p>◈ ${reward.gold_reward}</p>
+                  <p>♦ ${reward.vip_reward}</p>
+                </div>
+                <div class="reward-status">
+                  ${reward.claimed ? '✓ Resgatado' : 'Aguardando'}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '<p style="text-align: center; color: #999;">Nenhum prêmio distribuído ainda.</p>'}
+      </div>
+    `;
+    
+    container.innerHTML = html;
+    
+  } catch(e) {
+    console.error('Erro ao renderizar rewards:', e);
+    container.innerHTML = '<div class="empty-note">Erro ao carregar prêmios.</div>';
+  }
+}
+
+async function viewPVPMatchDetails(matchId){
+  try {
+    const {data: match, error} = await supaAuth
+      .from('pvp_matches')
+      .select('*')
+      .eq('id', matchId)
+      .single();
+    
+    if(error || !match) {
+      toast('Erro ao carregar detalhes da batalha.');
+      return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'pvp-match-detail';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <button class="modal-close" onclick="this.closest('.pvp-match-detail').remove()">×</button>
+        <h2>⚔️ Batalha Detalhada</h2>
+        
+        <div class="pvp-match-detail-info">
+          <h3>${match.player1_nick} vs ${match.player2_nick}</h3>
+          <p class="round-badge">${match.round}</p>
+        </div>
+        
+        <div class="pvp-players-overview">
+          <div class="player-overview">
+            <h4>${match.player1_nick}</h4>
+            <p>Nível ${match.player1_data.level} | ATK ${match.player1_data.atk} | DEF ${match.player1_data.def}</p>
+            <p>Dano Total: ${match.player1_damage_dealt}</p>
+            <p>Turnos: ${match.player1_turns_survived}</p>
+          </div>
+          
+          <div class="player-overview">
+            <h4>${match.player2_nick}</h4>
+            <p>Nível ${match.player2_data.level} | ATK ${match.player2_data.atk} | DEF ${match.player2_data.def}</p>
+            <p>Dano Total: ${match.player2_damage_dealt}</p>
+            <p>Turnos: ${match.player2_turns_survived}</p>
+          </div>
+        </div>
+        
+        ${match.winner_nick ? `
+          <div class="pvp-winner-announcement">
+            🏆 Vencedor: <strong>${match.winner_nick}</strong>
+          </div>
+        ` : ''}
+        
+        <div class="pvp-battle-log">
+          <h4>📜 Log da Batalha (Últimos 20 turnos)</h4>
+          <div class="log-entries">
+            ${match.battle_log && Array.isArray(match.battle_log) ? 
+              match.battle_log.slice(-20).map((turn, idx) => `
+                <div class="log-entry">
+                  <span class="turn-num">Turn ${turn.turn}:</span>
+                  <span class="p1-action">${match.player1_nick} +${turn.player1_damage}</span>
+                  <span class="divider">|</span>
+                  <span class="p2-action">${match.player2_nick} +${turn.player2_damage}</span>
+                  <div class="hp-status">
+                    <span>HP P1: ${turn.p1_hp}</span>
+                    <span>HP P2: ${turn.p2_hp}</span>
+                  </div>
+                </div>
+              `).join('')
+              : '<p style="color: #999;">Nenhum log disponível.</p>'
+            }
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.classList.add('open');
+    
+  } catch(e) {
+    console.error('Erro ao carregar detalhes:', e);
+    toast('Erro ao carregar detalhes da batalha.');
+  }
+}
+
 </script>
 </body>
 </html>
