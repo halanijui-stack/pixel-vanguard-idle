@@ -1333,115 +1333,144 @@ async function confirmListing(cur){
       }]);
     }
   } catch(e) {
-    console.warn('Supabase sync falhou:', e.message);
+/* ============ AUTENTICAÇÃO COM SUPABASE CORRIGIDA ============ */
+const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
+let supaAuth=null;
+
+async function supaAuthInit(){
+  try{
+    if(window.supabase && typeof window.supabase.createClient === 'function'){
+      supaAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      return true;
+    }
+    return false;
+  }catch(e){ 
+    console.warn('Supabase init error:', e); 
+    return false; 
   }
 }
 
-async function renderMarket(){
-  const list = el('market-list'); 
-  list.innerHTML = '';
-  if(marketTab === 'buy'){
-    try {
-      const { data: listings } = await supaAuth.from('market_listings').select('*').order('created_at', {ascending: false});
-      if(!listings || listings.length === 0){
-        list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
-        return;
+async function supaLogin(nick, password){
+  if(!supaAuth) return {ok:false, msg:'Erro: Supabase não inicializado.'};
+  if(!nick || nick.length < 2 || nick.length > 12) return {ok:false, msg:'Nick deve ter entre 2 e 12 caracteres.'};
+  if(!password || password.length < 4) return {ok:false, msg:'Senha deve ter no mínimo 4 caracteres.'};
+
+  try{
+    const emailFantasma = nick.toLowerCase() + '@pixelvanguard.com';
+    
+    // Tenta autenticar na camada Auth do Supabase
+    let {data: authData, error: authError} = await supaAuth.auth.signInWithPassword({
+      email: emailFantasma,
+      password: password
+    });
+    
+    let isNew = false;
+    
+    if(authError){
+      // Se a conta não existe, tenta criar automaticamente
+      if(authError.message.includes('Invalid login credentials') || authError.status === 400){
+        const {data: signUpData, error: signUpError} = await supaAuth.auth.signUp({
+          email: emailFantasma,
+          password: password,
+          options: { data: { nick: nick } }
+        });
+        
+        if(signUpError) return {ok:false, msg:'Erro ao registrar: ' + signUpError.message};
+        authData = signUpData;
+        isNew = true;
+      } else {
+        return {ok:false, msg:'Erro no login: ' + authError.message};
       }
-      listings.forEach(o => {
-        const row = document.createElement('div');
-        row.className = 'item-row';
-        row.innerHTML = `<div class="info"><div class="nm">${o.item_name}</div><div class="st">Vendedor: ${o.seller_nick}</div></div>
-          <div class="acts"><div class="tag">${o.currency === 'vip' ? '♦' : '◈'} ${o.price}</div>
-          <button class="btn small">Comprar</button></div>`;
-        row.querySelector('button').onclick = () => buyListing(o);
-        list.appendChild(row);
-      });
-    } catch(e) {
-      list.innerHTML = '<div class="empty-note">Erro ao carregar mercado.</div>';
+    }
+
+    const userId = authData.user ? authData.user.id : null;
+    if(!userId) return {ok:false, msg:'Erro crítico: ID de usuário inválido.'};
+
+    // Verifica se o perfil já existe na tabela pública 'users'
+    let {data: userData, error: userError} = await supaAuth
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if(userError || !userData){
+      // Se o registro na tabela pública não existir, cria um novo
+      const initialGameData = defaultState(nick);
+      initialGameData.userId = userId;
+      
+      const {data: insertedData, error: insertError} = await supaAuth
+        .from('users')
+        .insert([{
+          id: userId,
+          nick: nick,
+          level: 1,
+          stage: 1,
+          game_data: initialGameData
+        }])
+        .select()
+        .single();
+
+      if(insertError){
+        // Fallback caso a tabela pública exija outro formato ou dê conflito
+        console.warn('Aviso ao inserir na tabela users:', insertError.message);
+        userData = { id: userId, nick: nick, game_data: initialGameData };
+      } else {
+        userData = insertedData;
+      }
+      isNew = true;
+    }
+
+    return { ok: true, user: userData, isNew };
+  }catch(e){
+    console.error('Exceção no supaLogin:', e);
+    return { ok: false, msg: 'Erro de conexão com o servidor.' };
+  }
+}
+
+// Evento principal do botão de início corrigido com destravamento garantido
+el('btn-start').onclick = async () => {
+  const nick = el('nick').value.trim();
+  const pwd = el('password').value;
+  const btn = el('btn-start');
+  
+  if(nick.length < 2) return toast('Nickname precisa de pelo menos 2 letras!');
+  if(pwd.length < 4) return toast('Senha precisa de no mínimo 4 caracteres!');
+  
+  btn.disabled = true; 
+  btn.textContent = 'Conectando...';
+  
+  if(!supaAuth) {
+    const initialized = await supaAuthInit();
+    if(!initialized) {
+      btn.disabled = false; 
+      btn.textContent = 'Enter the Dungeon';
+      return toast('Erro: Falha ao conectar com o Supabase.');
     }
   }
-}
-
-async function buyListing(listing){
-  const bal = listing.currency === 'vip' ? S.vip : S.gold;
-  if(bal < listing.price) return toast('Saldo insuficiente!');
   
-  if(listing.currency === 'vip') S.vip -= listing.price;
-  else S.gold -= listing.price;
+  const res = await supaLogin(nick, pwd);
   
-  if(listing.kind === 'eq') {
-    S.inv.push({uid: newUid(), type: listing.item_data.type, baseId: listing.item_data.baseId, rarity: listing.item_data.rarity || 'Comum'});
-  } else if(listing.kind === 'pet') {
-    S.pets.push({uid: newUid(), petId: listing.item_data.petId, rarity: listing.item_data.rarity, lvl: 1, xp: 0});
+  if(!res.ok){
+    btn.disabled = false; 
+    btn.textContent = 'Enter the Dungeon';
+    return toast(res.msg);
   }
   
-  await supaAuth.from('market_listings').delete().eq('id', listing.id);
-  toast('Compra realizada!');
-  updBars(); save(); renderMarket();
-}
-
-let marketTab='buy';
-let sellTarget=null;
-function openSellPanel(target){
-  sellTarget=target;
-  el('sell-item-name').textContent='Anunciar: '+target.nm;
-  el('sell-price').value=target.sug || 10;
-  el('sell-panel').classList.add('open');
-}
-function closeSellPanel(){ el('sell-panel').classList.remove('open'); sellTarget=null; }
-el('sell-cancel').onclick=closeSellPanel;
-el('sell-gold-btn').onclick=()=>confirmListing('gold');
-el('sell-vip-btn').onclick=()=>confirmListing('vip');
-
-document.querySelectorAll('#modal-market .tab').forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll('#modal-market .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on'); marketTab=t.dataset.mtab;
-    renderMarket();
-  };
-});
-
-function openModal(id){ el(id).classList.add('open'); }
-function closeModal(id){ el(id).classList.remove('open'); }
-document.querySelectorAll('[data-close]').forEach(x=>x.onclick=e=>e.target.closest('.modal').classList.remove('open'));
-
-el('open-market').onclick=()=>{ renderMarket(); openModal('modal-market'); };
-el('open-shop').onclick=()=>{ openModal('modal-shop'); };
-el('open-equip').onclick=()=>{ openModal('modal-equip'); };
-el('open-pets').onclick=()=>{ openModal('modal-pets'); };
-el('open-synth').onclick=()=>{ openModal('modal-synth'); };
-el('open-rank').onclick=()=>{ openModal('modal-rank'); };
-el('open-settings').onclick=()=>{ openModal('modal-settings'); };
-el('open-vip').onclick=()=>{ openModal('modal-vip'); };
-el('open-talents').onclick=()=>{ openModal('modal-talents'); };
-el('open-challenge').onclick=()=>{ openModal('modal-challenge'); };
-
-document.querySelectorAll('.lang-opt').forEach(opt=>{
-  opt.onclick=()=>setLang(opt.dataset.lang);
-});
-function setLang(lang){
-  S.lang=lang; save(); applyI18n();
-}
-
-el('btn-start').onclick = async () => {
-  const nick=el('nick').value.trim();
-  const pwd=el('password').value;
-  const btn=el('btn-start');
-  
-  if(nick.length<2) return toast('Nickname muito curto!');
-  if(pwd.length<4) return toast('Senha muito curta!');
-  
-  if(!supaAuth) await supaAuthInit();
-  
-  btn.disabled=true; btn.textContent='Autenticando...';
-  const res = await supaLogin(nick, pwd);
-  btn.disabled=false; btn.textContent='Enter the Dungeon';
-  
-  if(!res.ok) return toast(res.msg);
-  
-  const cloudData = res.isNew ? {} : res.user.game_data;
-  S = cloudData && Object.keys(cloudData).length>0 ? cloudData : defaultState(nick);
+  // Carrega ou inicializa o estado do jogo com os dados salvos na nuvem
+  const cloudData = res.user && res.user.game_data;
+  S = (cloudData && typeof cloudData === 'object' && Object.keys(cloudData).length > 0) 
+      ? cloudData 
+      : defaultState(nick);
+      
   S.userId = res.user.id;
+  S.nick = nick;
+  
+  if(res.isNew){
+    toast('Novo herói criado!<br>Bem-vindo, '+nick+'!');
+  }else{
+    toast('Bem-vindo de volta,<br>'+nick+'!');
+  }
   
   save();
   startGame();
