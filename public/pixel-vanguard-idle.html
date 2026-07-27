@@ -4216,13 +4216,44 @@ async function renderMarket(){
         return;
       }
       
-      if(!listings || listings.length === 0) {
+      // Combinar anúncios do Supabase + anúncios locais não sincronizados
+      let allListings = listings || [];
+      
+      // Adicionar anúncios locais que ainda não foram sincronizados
+      if(S.listings && S.listings.length > 0) {
+        const supaIds = new Set((listings || []).map(l => l.id || ''));
+        S.listings.forEach(local => {
+          // Se o ID local não está no Supabase, adicionar
+          if(!supaIds.has(local.id)) {
+            allListings.push({
+              id: local.id,
+              seller_nick: S.nick,
+              seller_id: currentUser?.id,
+              kind: local.kind,
+              item_name: local.nm,
+              item_data: {
+                type: local.type, baseId: local.baseId, rarity: local.rarity,
+                affix: local.affix, petId: local.petId, lvl: local.lvl,
+                amount: local.amount, icon: local.icon
+              },
+              currency: local.cur,
+              price: local.price,
+              created_at: new Date(local.ts).toISOString()
+            });
+          }
+        });
+      }
+      
+      if(!allListings || allListings.length === 0) {
         list.innerHTML='<div class="empty-note">Sem ofertas disponíveis.<br>Seja o primeiro a anunciar!<br>Use a aba Vender.</div>';
         return;
       }
       
-      marketListings = listings;
-      const shown = listings.filter(offerMatchesFilter);
+      // Ordenar por data (mais novos primeiro)
+      allListings.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      
+      marketListings = allListings;
+      const shown = allListings.filter(offerMatchesFilter);
       
       if(!shown.length) {
         list.innerHTML='<div class="empty-note">Nenhuma oferta com esses filtros.<br>Ajuste os filtros acima ou aguarde novas ofertas.</div>';
@@ -4653,6 +4684,13 @@ function startGame(){
   /* marketTick removido — mercado é agora real com Supabase */
   setInterval(updateAbilityCooldowns, 500); // atualiza recargas das magias
   setInterval(save, 5000);
+  
+  // Polling do mercado: atualiza lista a cada 6 segundos se aba "comprar" estiver aberta
+  setInterval(() => {
+    if(marketTab === 'buy' && el('modal-market')?.style.display !== 'none') {
+      renderMarket();
+    }
+  }, 6000);
 }
 
 el('btn-start').onclick = async () => {
