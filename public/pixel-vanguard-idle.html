@@ -656,6 +656,64 @@ canvas{image-rendering:pixelated;}
   margin: 4px 0;
 }
 
+.pvp-accumulated-rewards {
+  background: linear-gradient(135deg, rgba(255, 215, 94, 0.1), rgba(125, 232, 216, 0.1));
+  padding: 15px;
+  border-radius: 5px;
+  border: 2px solid var(--amber);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.pvp-accumulated-rewards h3 {
+  color: var(--amber);
+  font-size: 12px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pvp-rewards-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background: var(--stone);
+  border-radius: 3px;
+  border-left: 3px solid var(--amber);
+}
+
+.reward-item canvas {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.reward-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reward-amount-value {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--gold);
+  text-shadow: 0 0 2px rgba(255, 215, 94, 0.5);
+}
+
+.reward-amount-label {
+  font-size: 9px;
+  color: #999;
+  text-transform: uppercase;
+}
+
 .pvp-bracket-view {
   width: 100%;
 }
@@ -2732,8 +2790,13 @@ async function supaSaveGameData(userId, gameData){
   if(!supaAuth || !userId) return false;
   try{
     const {error} = await supaAuth.from('users')
-      .update({game_data:gameData, updated_at:'now()'})
-      .eq('id',userId);
+      .update({
+        game_data: gameData, 
+        level: gameData.k.lvl,        // Atualizar coluna level diretamente
+        stage: gameData.stage,        // Atualizar coluna stage diretamente
+        updated_at: 'now()'
+      })
+      .eq('id', userId);
     return !error;
   }catch(e){ return false; }
 }
@@ -4188,7 +4251,9 @@ async function renderMarket(){
   else if(marketTab==='sell'){
     let any=false;
     S.inv.forEach(inst=>{
+      // Verificar se está equipado OU anunciado
       if(Object.values(S.eq).includes(inst.uid)) return;
+      if(S.listings.some(l=>l.uid===inst.uid && l.kind==='eq')) return; // ← NÃO MOSTRAR SE JÁ ANUNCIADO
       any=true;
       const b=eqBase(inst.type,inst.baseId);
       const val=eqInstValue(inst);
@@ -4202,7 +4267,9 @@ async function renderMarket(){
       list.appendChild(row);
     });
     S.pets.forEach(p=>{
+      // Verificar se é o pet ativo OU anunciado
       if(p.uid===S.activePetUid) return;
+      if(S.listings.some(l=>l.uid===p.uid && l.kind==='pet')) return; // ← NÃO MOSTRAR SE JÁ ANUNCIADO
       any=true;
       const b=petBase(p);
       const row=document.createElement('div'); 
@@ -4980,7 +5047,27 @@ function renderPVPModal(){
   container.innerHTML = '';
   
   if(!currentTournament) {
-    container.innerHTML = `
+    const accRewards = S.tournamentRewards || {gold:0, vip:0};
+    const rewardsHTML = `
+      <div class="pvp-accumulated-rewards">
+        <h3>💰 Recompensas do Mercado (10% das Taxas)</h3>
+        <div class="pvp-rewards-display">
+          <div class="reward-item">
+            <canvas id="reward-gold-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+            <div class="reward-amount">
+              <div class="reward-amount-value">${accRewards.gold}</div>
+              <div class="reward-amount-label">Gold</div>
+            </div>
+          </div>
+          <div class="reward-item">
+            <canvas id="reward-vip-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+            <div class="reward-amount">
+              <div class="reward-amount-value">${accRewards.vip}</div>
+              <div class="reward-amount-label">VIP Coin</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="pvp-empty">
         <h3>⚔️ ${t('pvp_title')}</h3>
         <p>${t('pvp_no_tournament')}</p>
@@ -4988,6 +5075,13 @@ function renderPVPModal(){
         <p style="font-size: 12px; color: #999;">${t('pvp_battles')}</p>
       </div>
     `;
+    container.innerHTML = rewardsHTML;
+    setTimeout(() => {
+      const goldCanvas = document.getElementById('reward-gold-icon');
+      const vipCanvas = document.getElementById('reward-vip-icon');
+      if(goldCanvas) drawSprite(goldCanvas, 'goldpile');
+      if(vipCanvas) drawSprite(vipCanvas, 'vipcoin');
+    }, 0);
     return;
   }
   
@@ -5002,6 +5096,39 @@ function renderPVPModal(){
   `;
   
   container.innerHTML += tabsHTML;
+  
+  // Renderizar recompensas acumuladas do mercado (10% das taxas)
+  const accRewards = S.tournamentRewards || {gold:0, vip:0};
+  const rewardsHTML = `
+    <div class="pvp-accumulated-rewards">
+      <h3>💰 Recompensas do Mercado (10% das Taxas)</h3>
+      <div class="pvp-rewards-display">
+        <div class="reward-item">
+          <canvas id="reward-gold-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+          <div class="reward-amount">
+            <div class="reward-amount-value">${accRewards.gold}</div>
+            <div class="reward-amount-label">Gold</div>
+          </div>
+        </div>
+        <div class="reward-item">
+          <canvas id="reward-vip-icon" width="16" height="16" style="width: 24px; height: 24px;"></canvas>
+          <div class="reward-amount">
+            <div class="reward-amount-value">${accRewards.vip}</div>
+            <div class="reward-amount-label">VIP Coin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  container.innerHTML += rewardsHTML;
+  
+  // Desenhar ícones de ouro e VIP coin
+  setTimeout(() => {
+    const goldCanvas = document.getElementById('reward-gold-icon');
+    const vipCanvas = document.getElementById('reward-vip-icon');
+    if(goldCanvas) drawSprite(goldCanvas, 'goldpile');
+    if(vipCanvas) drawSprite(vipCanvas, 'vipcoin');
+  }, 0);
   
   document.querySelectorAll('.pvp-tab').forEach(tab => {
     tab.onclick = () => {
