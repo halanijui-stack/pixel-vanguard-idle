@@ -5697,6 +5697,27 @@ window.addEventListener('DOMContentLoaded', () => {
     opt.classList.toggle('on', opt.dataset.lang === currentLanguage);
   });
 });
+
+// Controle de Som e Mute
+let isMuted = false;
+const soundBtn = document.getElementById('toggle-sound');
+if(soundBtn) {
+  soundBtn.onclick = () => {
+    const music = document.getElementById('bg-music');
+    if(!music) return;
+    
+    isMuted = !isMuted;
+    music.muted = isMuted;
+    
+    const soundTxt = document.getElementById('sound-txt');
+    if(soundBtn.firstChild) soundBtn.firstChild.textContent = isMuted ? '🔇' : '🔊';
+    if(soundTxt) soundTxt.textContent = isMuted ? 'OFF' : 'ON';
+    
+    if(typeof toast === 'function') {
+      toast(isMuted ? 'Música desativada' : 'Música ativada', 1200);
+    }
+  };
+}
 </script>
 </body>
 </html>
