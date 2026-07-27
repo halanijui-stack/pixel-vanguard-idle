@@ -4668,6 +4668,16 @@ el('btn-start').onclick = async () => {
     return toast('Erro de conexão:<br>Servidor não respondeu.<br>Tente novamente!');
   }
   
+  // Autenticar no Supabase
+  btn.disabled=true; btn.textContent='Autenticando...';
+  const res = await supaLogin(nick, pwd);
+  btn.disabled=false; btn.textContent='Entrar na Dungeon';
+  
+  if(!res.ok){
+    // Erro na autenticação ou bloqueio de criação
+    return toast(res.msg);
+  }
+  
   // Sucesso
   const cloudData = res.isNew ? {} : res.user.game_data;
   S = cloudData && Object.keys(cloudData).length>0 ? cloudData : defaultState(nick);
@@ -4679,7 +4689,7 @@ el('btn-start').onclick = async () => {
     toast('Bem-vindo de volta,<br>'+nick+'!');
   }
   
-  save();
+ save();
   startGame();
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
