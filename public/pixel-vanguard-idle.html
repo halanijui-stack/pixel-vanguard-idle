@@ -33,6 +33,8 @@ body{
   background:var(--stone-dark);
   box-shadow:0 0 60px #000;
 }
+
+
 canvas{image-rendering:pixelated;}
 
 /* ---------- BACKGROUNDS ---------- */
@@ -4602,6 +4604,9 @@ function ensureEquipped(){
     S.petHp=petStats(S.pets[0]).hp;
   }
 }
+/* jshint esversion: 8 */
+/* global S, el, supaAuth, marketTab, sellTarget, openSellPanel, cancelListing, buyListing, drawSprite, eqBase, eqName, eqInstValue, currentLanguage, TRANSLATIONS, t */
+"use strict";
 
 function startGame(){
   el('topbar').style.display='';
