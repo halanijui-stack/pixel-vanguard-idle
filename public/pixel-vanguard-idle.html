@@ -4300,27 +4300,29 @@ el('sell-cancel').onclick=closeSellPanel;
 el('sell-gold-btn').onclick=()=>confirmListing('gold');
 el('sell-vip-btn').onclick=()=>confirmListing('vip');
 
+/* --------- CANCELAR ANÚNCIO ---------- */
 async function cancelListing(id){
-  const l = s.listings.find(x => x.id === id);
+  const l = S.listings.find(x => x.id === id);
   if(!l) return;
 
-  s.listings = s.listings.filter(x => x.id !== id);
+  S.listings = S.listings.filter(x => x.id !== id);
   restoreListing(l);
-  toast('Anúncio retirado.<br>Item devolvido ao inventário.');
-  updBars(); save(); renderMarket();
 
   try {
     const { error } = await supaAuth
       .from('market_listings')
       .delete()
       .eq('id', id);
-      
-    if(error) {
-      console.error('Erro ao remover anúncio do servidor:', error);
-    }
+
+    if(error) throw error;
   } catch(e) {
-    console.error('Falha ao conectar com o Supabase para exclusão:', e);
+    console.error('Erro ao remover anúncio do servidor:', e);
   }
+
+  toast('Anúncio retirado.<br>Item devolvido ao inventário.');
+  updBars();
+  save();
+  renderMarket();
 }
 function restoreListing(l){
   if(l.kind==='eq') S.inv.push({uid:l.uid,type:l.type||inferType(l),baseId:l.baseId||l._b, ...(l.invData||{})});
