@@ -37,55 +37,47 @@ canvas{image-rendering:pixelated;}
 
 /* ---------- BACKGROUNDS ---------- */
 .bg{position:absolute;inset:0;z-index:0;transition:opacity .8s;overflow:hidden;background-repeat:no-repeat;background-size:cover;}
-/* névoa/vinheta suave por cima de todos para dar profundidade */
 .bg::after{content:'';position:absolute;inset:0;pointer-events:none;
   background:
     radial-gradient(ellipse 90% 60% at 50% 42%, transparent 40%, #00000055 100%),
     linear-gradient(180deg, #00000022 0%, transparent 18%, transparent 82%, #00000044 100%);}
 
-/* === 1. DUNGEON — tijolos de pedra, arco, tochas === */
 .bg-dungeon{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='none' stroke='%23000000' stroke-opacity='.22' stroke-width='2'%3E%3Cpath d='M0 30h120M0 60h120M0 90h120'/%3E%3Cpath d='M20 0v30M60 0v30M100 0v30M0 30v30M40 30v30M80 30v30M120 30v30M20 60v30M60 60v30M100 60v30M0 90v30M40 90v30M80 90v30'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.04'%3E%3Crect x='2' y='2' width='16' height='26'/%3E%3Crect x='42' y='32' width='36' height='26'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 46% 40% at 50% 30%, #4a3a6a44 0 40%, transparent 75%),
     linear-gradient(180deg,#2a2236 0%,#3c3252 46%,#221b2c 100%);
 }
-/* === 2. MOSS CAVE — pedra úmida, musgo pendente, poças === */
 .bg-moss{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='140'%3E%3Cg fill='%234a8c4a' fill-opacity='.5'%3E%3Cpath d='M10 0q4 20 0 34 8-6 10-24z'/%3E%3Cpath d='M50 0q6 26 2 40 10-8 8-30z'/%3E%3Cpath d='M110 0q3 16 0 28 7-5 9-20z'/%3E%3Cpath d='M150 0q5 22 0 36 9-7 7-26z'/%3E%3C/g%3E%3Cg fill='%23244a28' fill-opacity='.6'%3E%3Cellipse cx='40' cy='134' rx='34' ry='6'/%3E%3Cellipse cx='120' cy='138' rx='40' ry='7'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 60% 32% at 50% 4%, #4f9c5044 0 40%, transparent 74%),
     linear-gradient(180deg,#182c1e 0%,#2a4a30 46%,#12241a 100%);
 }
-/* === 3. CRYPT — colunas, arcos góticos, luz fria === */
 .bg-crypt{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='180'%3E%3Cg fill='%23000000' fill-opacity='.32'%3E%3Crect x='16' y='24' width='20' height='156'/%3E%3Crect x='90' y='24' width='20' height='156'/%3E%3Crect x='164' y='24' width='20' height='156'/%3E%3Cpath d='M16 24q10-18 20 0zM90 24q10-18 20 0zM164 24q10-18 20 0z'/%3E%3C/g%3E%3Cg fill='%236a7cc0' fill-opacity='.14'%3E%3Cpath d='M50 60q16-24 34 0v70H50z'/%3E%3Cpath d='M124 60q16-24 34 0v70h-34z'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 44% 56% at 50% 108%, #3a4a8a55 0 34%, transparent 66%),
     linear-gradient(180deg,#141a2e 0%,#28345e 50%,#0e142a 100%);
 }
-/* === 4. LAVA CAVERN — magma, rachaduras brilhantes, rochas === */
 .bg-lava{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150'%3E%3Cg fill='%23ff7a2a' fill-opacity='.85'%3E%3Cpath d='M0 132q30-8 60 0t60-4 60 6v16H0z'/%3E%3C/g%3E%3Cg stroke='%23ff9a3a' stroke-width='2' fill='none' stroke-opacity='.7'%3E%3Cpath d='M30 150l6-18 8 10 4-14'/%3E%3Cpath d='M110 150l4-16 8 8 6-12'/%3E%3C/g%3E%3Cg fill='%23201010' fill-opacity='.8'%3E%3Cpath d='M0 0l24 20-14 14L0 30z'/%3E%3Cpath d='M180 0l-22 18 12 16 10-8z'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 60% 30% at 50% 104%, #ff5a2a66 0 32%, transparent 66%),
     linear-gradient(180deg,#2a1410 0%,#54241a 55%,#331610 100%);
 }
-/* === 5. ICE CAVE — cristais, estalactites de gelo, reflexos === */
 .bg-ice{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='160'%3E%3Cg fill='%23bfe8ff' fill-opacity='.5'%3E%3Cpath d='M30 0l6 40-12 0z'/%3E%3Cpath d='M70 0l5 30-10 0z'/%3E%3Cpath d='M120 0l7 46-14 0z'/%3E%3Cpath d='M158 0l5 34-10 0z'/%3E%3C/g%3E%3Cg fill='%238fd0ff' fill-opacity='.4'%3E%3Cpath d='M40 160l8-36 8 36z'/%3E%3Cpath d='M120 160l10-44 10 44z'/%3E%3C/g%3E%3Cg stroke='%23ffffff' stroke-opacity='.2' stroke-width='2'%3E%3Cpath d='M0 60l180 40M0 120l180-30'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 60% 34% at 50% 2%, #a8d8ff44 0 40%, transparent 74%),
     linear-gradient(180deg,#16242e 0%,#2e4c60 48%,#14202a 100%);
 }
-/* === 6. VOID — estrelas, portal arcano, partículas === */
 .bg-void{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='24' cy='30' r='1.5' opacity='.8'/%3E%3Ccircle cx='70' cy='18' r='1' opacity='.6'/%3E%3Ccircle cx='120' cy='40' r='1.5' opacity='.7'/%3E%3Ccircle cx='170' cy='22' r='1' opacity='.5'/%3E%3Ccircle cx='40' cy='90' r='1' opacity='.6'/%3E%3Ccircle cx='150' cy='110' r='1.5' opacity='.7'/%3E%3Ccircle cx='90' cy='150' r='1' opacity='.5'/%3E%3Ccircle cx='30' cy='160' r='1.5' opacity='.6'/%3E%3Ccircle cx='180' cy='170' r='1' opacity='.5'/%3E%3C/g%3E%3Cg fill='none' stroke='%23b06fe8' stroke-opacity='.3'%3E%3Ccircle cx='100' cy='100' r='40'/%3E%3Ccircle cx='100' cy='100' r='26'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 40% 40% at 50% 46%, #7a3db055 0 26%, transparent 64%),
     linear-gradient(180deg,#1a0e28 0%,#3a2060 50%,#160a22 100%);
 }
-/* === 7. CITY DAY — skyline, janelas, nuvens === */
 .bg-city-day{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cg fill='%233f4a63'%3E%3Crect x='10' y='120' width='44' height='140'/%3E%3Crect x='70' y='80' width='40' height='180'/%3E%3Crect x='128' y='140' width='36' height='120'/%3E%3Crect x='180' y='60' width='46' height='200'/%3E%3Crect x='244' y='110' width='44' height='150'/%3E%3C/g%3E%3Cg fill='%233a4560'%3E%3Crect x='40' y='150' width='36' height='110'/%3E%3Crect x='150' y='170' width='38' height='90'/%3E%3Crect x='220' y='130' width='34' height='130'/%3E%3C/g%3E%3Cg fill='%23ffe89a' fill-opacity='.7'%3E%3Crect x='20' y='134' width='6' height='8'/%3E%3Crect x='36' y='134' width='6' height='8'/%3E%3Crect x='80' y='96' width='6' height='8'/%3E%3Crect x='94' y='120' width='6' height='8'/%3E%3Crect x='190' y='80' width='6' height='8'/%3E%3Crect x='206' y='110' width='6' height='8'/%3E%3Crect x='256' y='128' width='6' height='8'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.6'%3E%3Cellipse cx='60' cy='40' rx='30' ry='12'/%3E%3Cellipse cx='210' cy='30' rx='36' ry='13'/%3E%3C/g%3E%3C/svg%3E"),
@@ -93,7 +85,6 @@ canvas{image-rendering:pixelated;}
 }
 .bg-city-day::before{content:'';position:absolute;top:12%;left:14%;width:28px;height:28px;border-radius:50%;
   background:radial-gradient(circle,#fff8d0 0 40%,#ffe89a 72%,transparent 100%);box-shadow:0 0 34px #ffe89aaa;}
-/* === 8. CITY NIGHT — skyline noturno, janelas acesas, lua === */
 .bg-city-night{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cg fill='%23222c42'%3E%3Crect x='10' y='120' width='44' height='140'/%3E%3Crect x='70' y='80' width='40' height='180'/%3E%3Crect x='128' y='140' width='36' height='120'/%3E%3Crect x='180' y='60' width='46' height='200'/%3E%3Crect x='244' y='110' width='44' height='150'/%3E%3C/g%3E%3Cg fill='%231c2438'%3E%3Crect x='40' y='150' width='36' height='110'/%3E%3Crect x='150' y='170' width='38' height='90'/%3E%3Crect x='220' y='130' width='34' height='130'/%3E%3C/g%3E%3Cg fill='%23ffdd88'%3E%3Crect x='20' y='134' width='6' height='8'/%3E%3Crect x='36' y='150' width='6' height='8'/%3E%3Crect x='80' y='96' width='6' height='8'/%3E%3Crect x='94' y='140' width='6' height='8'/%3E%3Crect x='190' y='80' width='6' height='8'/%3E%3Crect x='206' y='130' width='6' height='8'/%3E%3Crect x='196' y='170' width='6' height='8'/%3E%3Crect x='256' y='128' width='6' height='8'/%3E%3Crect x='272' y='160' width='6' height='8'/%3E%3C/g%3E%3C/svg%3E"),
@@ -101,7 +92,6 @@ canvas{image-rendering:pixelated;}
 }
 .bg-city-night::before{content:'';position:absolute;top:11%;left:76%;width:24px;height:24px;border-radius:50%;
   background:radial-gradient(circle,#f6f2e2 0 55%,#d8d4c0 82%,transparent 100%);box-shadow:0 0 26px #f6f2e2aa;}
-/* === 9. FOREST DAY — árvores em camadas, raios de sol, arbustos === */
 .bg-forest-day{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cg fill='%23244a28'%3E%3Cpath d='M30 260V150l-18 10 18-50 18 50-18-10z'/%3E%3Cpath d='M90 260V130l-22 12 22-60 22 60-22-12z'/%3E%3Cpath d='M160 260V150l-18 10 18-52 18 52-18-10z'/%3E%3Cpath d='M230 260V120l-24 14 24-64 24 64-24-14z'/%3E%3Cpath d='M285 260V150l-18 10 18-50 18 50z'/%3E%3C/g%3E%3Cg fill='%231d3d20'%3E%3Cpath d='M60 260V180l-16 8 16-42 16 42-16-8z'/%3E%3Cpath d='M130 260V190l-14 8 14-38 14 38z'/%3E%3Cpath d='M200 260V180l-16 8 16-44 16 44z'/%3E%3C/g%3E%3Cg fill='%232f4a2a'%3E%3Cellipse cx='40' cy='256' rx='40' ry='14'/%3E%3Cellipse cx='150' cy='258' rx='50' ry='16'/%3E%3Cellipse cx='260' cy='256' rx='44' ry='14'/%3E%3C/g%3E%3C/svg%3E"),
@@ -110,7 +100,6 @@ canvas{image-rendering:pixelated;}
 }
 .bg-forest-day::before{content:'';position:absolute;top:9%;left:72%;width:26px;height:26px;border-radius:50%;
   background:radial-gradient(circle,#fffce0 0 45%,#fff0a0 76%,transparent 100%);box-shadow:0 0 32px #fff0a088;}
-/* === 10. FOREST NIGHT — floresta escura, vaga-lumes, lua === */
 .bg-forest-night{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cg fill='%230e2214'%3E%3Cpath d='M30 260V150l-18 10 18-50 18 50-18-10z'/%3E%3Cpath d='M90 260V130l-22 12 22-60 22 60-22-12z'/%3E%3Cpath d='M160 260V150l-18 10 18-52 18 52-18-10z'/%3E%3Cpath d='M230 260V120l-24 14 24-64 24 64-24-14z'/%3E%3Cpath d='M285 260V150l-18 10 18-50 18 50z'/%3E%3C/g%3E%3Cg fill='%23132a18'%3E%3Cpath d='M60 260V180l-16 8 16-42 16 42z'/%3E%3Cpath d='M200 260V180l-16 8 16-44 16 44z'/%3E%3C/g%3E%3Cg fill='%23aef07a'%3E%3Ccircle cx='70' cy='150' r='2' opacity='.9'/%3E%3Ccircle cx='140' cy='180' r='1.6' opacity='.8'/%3E%3Ccircle cx='210' cy='140' r='2' opacity='.9'/%3E%3Ccircle cx='250' cy='190' r='1.6' opacity='.7'/%3E%3Ccircle cx='110' cy='210' r='1.6' opacity='.8'/%3E%3C/g%3E%3C/svg%3E"),
@@ -118,7 +107,6 @@ canvas{image-rendering:pixelated;}
 }
 .bg-forest-night::before{content:'';position:absolute;top:10%;left:20%;width:22px;height:22px;border-radius:50%;
   background:radial-gradient(circle,#eef4ff 0 55%,#c8d4e8 82%,transparent 100%);box-shadow:0 0 24px #cdddf0aa;}
-/* === 11. ALLEY DAY — paredes de tijolo, janelas, varal === */
 .bg-alley-day{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg fill='%235a4a3c'%3E%3Crect x='0' y='0' width='70' height='260'/%3E%3Crect x='190' y='0' width='70' height='260'/%3E%3C/g%3E%3Cg stroke='%23000' stroke-opacity='.25' stroke-width='2'%3E%3Cpath d='M0 40h70M0 80h70M0 120h70M0 160h70M0 200h70M190 40h70M190 80h70M190 120h70M190 160h70M190 200h70'/%3E%3Cpath d='M35 0v40M0 40v40M35 80v40M0 120v40M35 160v40M225 0v40M190 40v40M225 80v40M190 120v40M225 160v40'/%3E%3C/g%3E%3Cg fill='%23503820'%3E%3Crect x='14' y='60' width='24' height='30'/%3E%3Crect x='210' y='100' width='24' height='30'/%3E%3C/g%3E%3Cg stroke='%23e8dcc0' stroke-opacity='.5'%3E%3Cpath d='M70 70q60 30 120 0'/%3E%3C/g%3E%3Cg fill='%23c86a4a' fill-opacity='.6'%3E%3Crect x='90' y='66' width='10' height='14'/%3E%3Crect x='130' y='70' width='10' height='14'/%3E%3C/g%3E%3C/svg%3E"),
@@ -126,7 +114,6 @@ canvas{image-rendering:pixelated;}
 }
 .bg-alley-day::before{content:'';position:absolute;top:0;left:40%;width:20%;height:44%;
   background:linear-gradient(180deg,#fff4d0 0%,transparent 100%);opacity:.45;}
-/* === 12. ALLEY NIGHT — beco escuro, poste de luz, janelas acesas === */
 .bg-alley-night{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cg fill='%231e1812'%3E%3Crect x='0' y='0' width='70' height='260'/%3E%3Crect x='190' y='0' width='70' height='260'/%3E%3C/g%3E%3Cg stroke='%23000' stroke-opacity='.4' stroke-width='2'%3E%3Cpath d='M0 40h70M0 80h70M0 120h70M0 160h70M190 40h70M190 80h70M190 120h70M190 160h70'/%3E%3C/g%3E%3Cg fill='%23ffcc66'%3E%3Crect x='16' y='62' width='16' height='20' opacity='.8'/%3E%3Crect x='212' y='100' width='16' height='20' opacity='.7'/%3E%3Crect x='20' y='150' width='16' height='20' opacity='.6'/%3E%3C/g%3E%3C/svg%3E"),
@@ -135,28 +122,24 @@ canvas{image-rendering:pixelated;}
 }
 .bg-alley-night::before{content:'';position:absolute;top:20%;left:47%;width:12px;height:12px;border-radius:50%;
   background:radial-gradient(circle,#ffd98a 0 40%,#e0a040 82%,transparent 100%);box-shadow:0 0 24px #ffb840aa;}
-/* === 13. DEEP CAVE — estalactites/estalagmites, cristais, poça === */
 .bg-cave{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200'%3E%3Cg fill='%23100c14'%3E%3Cpath d='M20 0l8 46-16 0z'/%3E%3Cpath d='M60 0l6 34-12 0z'/%3E%3Cpath d='M110 0l10 54-20 0z'/%3E%3Cpath d='M160 0l6 38-12 0z'/%3E%3Cpath d='M210 0l9 48-18 0z'/%3E%3C/g%3E%3Cg fill='%231a1420'%3E%3Cpath d='M40 200l8-40 8 40z'/%3E%3Cpath d='M120 200l10-50 10 50z'/%3E%3Cpath d='M190 200l8-44 8 44z'/%3E%3C/g%3E%3Cg fill='%238fd0ff' fill-opacity='.4'%3E%3Cpath d='M80 200l4-20 4 20z'/%3E%3Cpath d='M150 200l3-16 3 16z'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 54% 28% at 50% 56%, #3a3448 0 30%, transparent 68%),
     linear-gradient(180deg,#100c14 0%,#241d2c 50%,#0c090f 100%);
 }
-/* === 14. CASTLE — colunas, bandeiras, vitral, tapete === */
 .bg-castle{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cg fill='%233a3048'%3E%3Crect x='30' y='0' width='26' height='260'/%3E%3Crect x='130' y='0' width='26' height='260'/%3E%3Crect x='244' y='0' width='26' height='260'/%3E%3C/g%3E%3Cg fill='%23504060'%3E%3Crect x='30' y='0' width='26' height='10'/%3E%3Crect x='130' y='0' width='26' height='10'/%3E%3Crect x='244' y='0' width='26' height='10'/%3E%3C/g%3E%3Cg fill='%23b04040'%3E%3Cpath d='M76 20h20v40l-10-8-10 8z'/%3E%3Cpath d='M204 20h20v40l-10-8-10 8z'/%3E%3C/g%3E%3Cg fill='%23d4a045' fill-opacity='.5'%3E%3Cpath d='M126 40q24-30 48 0v70h-48z'/%3E%3C/g%3E%3Cpath d='M120 260l30-90h0l30 90z' fill='%23803030' fill-opacity='.5'/%3E%3C/svg%3E"),
     radial-gradient(ellipse 22% 30% at 50% 14%, #f2c86a33 0 50%, transparent 100%),
     linear-gradient(180deg,#1e1a2c 0%,#34304c 50%,#1a1626 100%);
 }
-/* === 15. SWAMP — árvores mortas, água, névoa, nenúfares === */
 .bg-swamp{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='240'%3E%3Cg stroke='%23162818' stroke-width='6' fill='none'%3E%3Cpath d='M50 240V80q0-20 14-30M50 140q-16-6-24-20M50 110q16-4 26-16'/%3E%3Cpath d='M230 240V90q0-16 12-24M230 150q14-4 24-16M230 120q-14-6-22-18'/%3E%3C/g%3E%3Cg fill='%233a5540' fill-opacity='.6'%3E%3Cellipse cx='120' cy='210' rx='26' ry='6'/%3E%3Cellipse cx='200' cy='224' rx='30' ry='7'/%3E%3Cellipse cx='60' cy='226' rx='24' ry='6'/%3E%3C/g%3E%3Cg fill='%234a7c40'%3E%3Cellipse cx='120' cy='206' rx='8' ry='3'/%3E%3Cellipse cx='200' cy='220' rx='9' ry='3'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse 60% 22% at 50% 32%, #5a7c4022 0 30%, transparent 66%),
     linear-gradient(180deg,#39493a 0%,#48583f 40%,#243218 74%,#1a2612 100%);
 }
-/* === 16. DESERT — dunas, pirâmide, ruínas, sol forte === */
 .bg-desert{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260'%3E%3Cpath d='M60 170l60-90 60 90z' fill='%23b8863f'/%3E%3Cpath d='M120 80l60 90h-30l-30-46z' fill='%23a0742f'/%3E%3Cg fill='%23a87c48'%3E%3Crect x='20' y='120' width='14' height='50'/%3E%3Crect x='40' y='134' width='14' height='36'/%3E%3Crect x='250' y='110' width='14' height='60'/%3E%3Crect x='270' y='128' width='14' height='42'/%3E%3C/g%3E%3Cpath d='M0 170q80-24 150 0t150-10v100H0z' fill='%23d4a860'/%3E%3Cpath d='M0 210q90-18 150 0t150-6v56H0z' fill='%23c89850'/%3E%3C/svg%3E"),
@@ -232,8 +215,7 @@ canvas{image-rendering:pixelated;}
 #open-vip{border-color:#2c8070;box-shadow:inset 0 0 0 2px #5fd0bc, 0 3px 0 #000a;color:var(--vip);}
 .icon-btn:active{transform:translateY(2px);}
 
-/* ---------- ARENA ---------- */
-/* ---------- GAME SCREEN (coluna flex rolável) ---------- */
+/* ---------- ARENA & GAME SCREEN ---------- */
 #game{position:absolute;inset:0;z-index:2;display:none;flex-direction:column;
   padding:64px 0 8px;overflow-y:auto;overflow-x:hidden;}
 #game::-webkit-scrollbar{width:6px;}
@@ -252,7 +234,6 @@ canvas{image-rendering:pixelated;}
 #monster-cv{transform-origin:bottom center;animation:mBob 1.6s ease-in-out infinite;}
 #monster-cv.goblin-glow{filter:drop-shadow(0 0 8px #ffd75e) drop-shadow(0 0 14px #f2a541);animation:mBob 1s ease-in-out infinite, goblinPulse 1.2s ease-in-out infinite;}
 @keyframes goblinPulse{0%,100%{filter:drop-shadow(0 0 6px #ffd75e) drop-shadow(0 0 10px #f2a541);}50%{filter:drop-shadow(0 0 12px #ffd75e) drop-shadow(0 0 20px #f2a541) brightness(1.2);}}
-/* aura de inimigo raro (cor definida via --rare-glow por raridade) */
 #monster-cv.enemy-rare{--rare-glow:#7ac74f;filter:drop-shadow(0 0 7px var(--rare-glow)) drop-shadow(0 0 13px var(--rare-glow));animation:mBob 1.4s ease-in-out infinite, rarePulse 1.5s ease-in-out infinite;}
 @keyframes rarePulse{0%,100%{filter:drop-shadow(0 0 5px var(--rare-glow)) drop-shadow(0 0 9px var(--rare-glow));}50%{filter:drop-shadow(0 0 11px var(--rare-glow)) drop-shadow(0 0 18px var(--rare-glow)) brightness(1.15);}}
 @keyframes mBob{0%,100%{transform:scaleY(1) scaleX(1);}50%{transform:scaleY(.94) scaleX(1.05);}}
@@ -301,7 +282,7 @@ canvas{image-rendering:pixelated;}
 #chat-send:disabled{opacity:.55;cursor:not-allowed;}
 #chat-cd{font-size:6px;color:#e8a;text-align:right;margin-top:3px;min-height:8px;}
 
-/* ---------- STRIP ---------- */
+/* ---------- STRIP & PARTY ---------- */
 #battle-strip{flex:0 0 auto;margin:8px 20px 0;}
 #battle-strip .strip-title{
   font-size:7px;text-align:center;color:#ffe9b8;background:var(--wood-dark);
@@ -316,7 +297,6 @@ canvas{image-rendering:pixelated;}
 #strip-inner .fade-in{animation:popIn .25s;}
 @keyframes popIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
 
-/* ---------- PARTY ---------- */
 #party{flex:0 0 auto;margin:9px 16px 0;}
 #party .party-title{
   font-size:9px;text-align:center;color:#ffe9b8;background:var(--wood-dark);
@@ -351,14 +331,13 @@ canvas{image-rendering:pixelated;}
 #knight-cv.hit,#pet-cv.hit{animation:uHit .28s;}
 @keyframes uHit{0%{filter:brightness(3);}50%{transform:translateX(-6px);}100%{transform:translateX(0);}}
 
-/* ---------- RODAPÉ ---------- */
+/* ---------- RODAPÉ & MAGIAS ---------- */
 #bottombar{
   flex:0 0 auto;margin:9px 16px 0;
   background:var(--wood);border:3px solid var(--wood-dark);
   box-shadow:inset 0 0 0 2px var(--wood-light), 0 4px 0 #000a;
   display:flex;align-items:center;justify-content:center;gap:11px;padding:9px 8px;
 }
-/* barra de magias */
 #ability-bar{flex:0 0 auto;margin:9px 16px 0;display:flex;gap:8px;justify-content:center;}
 .abil-btn{
   flex:1;max-width:120px;height:52px;background:var(--wood-dark);border:3px solid #3a2c1c;
@@ -371,7 +350,6 @@ canvas{image-rendering:pixelated;}
 .abil-btn .cd-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;text-shadow:1px 1px 0 #000;pointer-events:none;}
 .abil-btn.active-eff{animation:abilGlow .8s infinite alternate;}
 @keyframes abilGlow{from{box-shadow:0 0 4px #7de8dc;}to{box-shadow:0 0 14px #7de8dc;}}
-/* toggle ON/OFF de auto-cast, no canto superior direito da skill */
 .abil-auto{
   position:absolute;top:2px;right:2px;z-index:5;
   font-size:6px;line-height:1;padding:2px 3px;cursor:pointer;
@@ -380,38 +358,14 @@ canvas{image-rendering:pixelated;}
 }
 .abil-auto.on{background:var(--xp);color:#0d1a06;border-color:#3a5a1a;font-weight:bold;
   box-shadow:0 0 5px #7ac74f88;}
-.abil-auto:active{transform:scale(.9);}
-/* indicador de ponto de maestria disponível */
 #mastery-dot{display:none;position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;
   background:var(--crit);border:2px solid #fff;animation:mdotPulse .8s infinite alternate;}
 @keyframes mdotPulse{from{transform:scale(1);}to{transform:scale(1.3);}}
-/* contador de tickets */
 #ticket-count{position:absolute;top:-4px;right:-4px;min-width:14px;height:14px;padding:0 2px;
   background:var(--vip);color:#1a1020;border:2px solid #fff;border-radius:7px;
   font-size:7px;line-height:12px;text-align:center;font-weight:bold;display:none;}
 #ticket-count.has{display:block;}
-/* árvore de talentos */
-#talent-branches{display:flex;flex-direction:column;gap:10px;}
-.tal-branch{background:var(--wood-dark);border:2px solid #3a2c1c;padding:7px;}
-.tal-branch h3{font-size:8px;color:var(--amber);margin-bottom:7px;text-align:center;letter-spacing:.5px;}
-.tal-chain{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:5px;}
-.tal-node{
-  background:#241d2c;border:2px solid #120d18;padding:5px 4px;
-  display:flex;flex-direction:column;gap:2px;position:relative;cursor:pointer;min-height:60px;
-}
-.tal-node.maxed{border-color:var(--xp);box-shadow:0 0 0 1px #7ac74f55 inset;}
-.tal-node.available{border-color:var(--amber);box-shadow:0 0 5px #f2a54144;}
-.tal-node.locked{opacity:.4;cursor:not-allowed;}
-.tal-node.magic{grid-column:1 / -1;border-color:var(--epico);background:#2a1d38;flex-direction:row;align-items:center;gap:6px;min-height:0;}
-.tal-node.magic .tn{font-size:8px;flex:0 0 auto;min-height:0;}
-.tal-node.magic .td{flex:1;}
-.tal-node.magic.maxed{border-color:var(--pixel);box-shadow:0 0 8px #7de8dc55;}
-.tal-node .tn{font-size:6px;color:#ffe9b8;line-height:1.25;min-height:15px;font-weight:bold;}
-.tal-node .td{font-size:5px;color:#b9a;line-height:1.35;}
-.tal-node .tr{font-size:6px;color:var(--xp);text-align:right;margin-top:auto;}
-.tal-node.magic .tr{margin-top:0;flex:0 0 auto;}
-.tal-node:active{transform:scale(.97);}
-.tal-legend{font-size:6px;color:#a99;text-align:center;line-height:1.7;}
+
 .pot-btn{
   width:54px;height:54px;background:var(--wood-dark);border:3px solid #3a2c1c;
   display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
@@ -429,19 +383,7 @@ canvas{image-rendering:pixelated;}
 .pot-btn.pulse{animation:pulseGlow .4s;}
 @keyframes pulseGlow{0%{box-shadow:0 0 0 0 #fff8;}100%{box-shadow:0 0 0 14px #fff0;}}
 
-/* config auto-poção */
-#cfg-panel{background:var(--wood-dark);border:2px solid var(--amber);padding:12px 10px;display:flex;flex-direction:column;gap:12px;}
-.cfg-row{display:flex;flex-direction:column;gap:7px;}
-.cfg-row .lab{font-size:8px;color:#ffe9b8;display:flex;justify-content:space-between;align-items:center;}
-.cfg-row .val{color:var(--amber);}
-.cfg-row input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:10px;background:#241d2c;border:2px solid #120d18;outline:none;}
-.cfg-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--amber);border:2px solid #7a3d14;cursor:pointer;}
-.cfg-row input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--amber);border:2px solid #7a3d14;cursor:pointer;border-radius:0;}
-.cfg-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:7px;color:#cbb;}
-.cfg-toggle .box-t{width:16px;height:16px;background:#241d2c;border:2px solid #120d18;display:flex;align-items:center;justify-content:center;color:var(--xp);font-size:9px;}
-.cfg-note{font-size:6px;color:#a99;line-height:1.7;}
-
-/* ---------- MODAIS ---------- */
+/* ---------- MODAIS & ITENS ---------- */
 .modal{position:absolute;inset:0;z-index:40;background:#000a;display:none;align-items:center;justify-content:center;}
 .modal.open{display:flex;}
 .modal .box{
@@ -452,14 +394,6 @@ canvas{image-rendering:pixelated;}
 }
 .modal h2{font-size:11px;color:#ffe9b8;text-align:center;line-height:1.6;}
 .modal .sub{font-size:6px;color:#cbb;text-align:center;line-height:1.7;}
-.booster-badge{
-  background:var(--wood-dark);border:2px solid var(--vip);padding:7px 8px;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px;font-size:7px;color:var(--vip);
-}
-.booster-badge .days{margin-left:auto;color:#ffe9b8;font-size:6px;}
-#booster-active:empty{display:none;}
-.donate-amt{color:var(--vip);}
-.donate-price{color:var(--gold);}
 .modal .close-x{
   position:absolute;top:6px;right:8px;font-size:12px;color:#ffe9b8;cursor:pointer;
   background:var(--hp);border:2px solid #7a1d1d;width:28px;height:28px;
@@ -495,8 +429,6 @@ canvas{image-rendering:pixelated;}
 .tab.on{background:var(--amber);color:#3a2408;border-color:#7a3d14;}
 .empty-note{font-size:7px;color:#a99;text-align:center;padding:14px 6px;line-height:1.8;}
 
-/* venda: escolha de moeda */
-/* filtros do mercado */
 #market-filters{display:none;flex-direction:column;gap:7px;background:var(--wood-dark);border:2px solid #3a2c1c;padding:8px;}
 #market-filters.open{display:flex;}
 .filter-group{display:flex;align-items:center;gap:6px;}
@@ -504,10 +436,6 @@ canvas{image-rendering:pixelated;}
 .chips{display:flex;flex-wrap:wrap;gap:4px;flex:1;}
 .chip{font-size:6px;padding:5px 6px;background:#241d2c;color:#cbb;border:2px solid #120d18;cursor:pointer;white-space:nowrap;}
 .chip.on{background:var(--amber);color:#3a2408;border-color:#7a3d14;}
-.chip.rar-Incomum{color:var(--incom);} .chip.rar-Raro{color:var(--raro);} .chip.rar-Épico{color:var(--epico);}
-.chip.rar-Lendário{color:var(--lend);} .chip.rar-PixelMaster{color:var(--pixel);}
-.chip.rar-Incomum.on{color:#0e2410;} .chip.rar-Raro.on{color:#0e2438;} .chip.rar-Épico.on{color:#1a0e2c;}
-.chip.rar-Lendário.on{color:#3a2408;} .chip.rar-PixelMaster.on{color:#0e3830;}
 #sell-panel{background:var(--wood-dark);border:2px solid var(--amber);padding:10px;display:none;flex-direction:column;gap:8px;}
 #sell-panel.open{display:flex;}
 #sell-panel .row{display:flex;gap:6px;align-items:center;}
@@ -515,41 +443,7 @@ canvas{image-rendering:pixelated;}
   font-family:inherit;font-size:9px;padding:8px;flex:1;min-width:0;
   background:#241d2c;color:var(--parchment);border:2px solid #120d18;outline:none;
 }
-#sell-panel .fee{font-size:6px;color:#e8a;line-height:1.6;}
 
-/* sintetizador */
-#synth-slots{display:flex;gap:6px;justify-content:center;}
-.synth-slot{
-  width:52px;height:52px;background:var(--wood-dark);border:2px dashed #3a2c1c;
-  display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;
-}
-.synth-slot.filled{border-style:solid;}
-.synth-slot .rm{position:absolute;top:-4px;right:-4px;background:var(--hp);color:#fff;
-  width:16px;height:16px;font-size:8px;border:2px solid #7a1d1d;display:flex;align-items:center;justify-content:center;}
-#synth-status{font-size:7px;text-align:center;line-height:1.7;min-height:18px;color:#ffe9b8;}
-#synth-status .up{color:var(--xp);}
-#synth-pool{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;}
-.synth-pick{background:var(--wood-dark);border:2px solid #3a2c1c;padding:7px 8px;display:flex;align-items:center;gap:8px;cursor:pointer;}
-.synth-pick.dim{opacity:.35;cursor:not-allowed;}
-.synth-pick.sel{border-color:var(--amber);box-shadow:0 0 0 2px #f2a54155 inset;}
-.synth-pick .info{flex:1;min-width:0;}
-.synth-pick .nm{font-size:7px;color:var(--parchment);}
-.synth-pick .st{font-size:6px;color:#b9a;}
-#synth-go:disabled{opacity:.5;cursor:not-allowed;}
-@keyframes synthFlash{0%,100%{filter:none;}50%{filter:brightness(2.5) drop-shadow(0 0 8px var(--amber));}}
-.synth-anim{animation:synthFlash .5s 3;}
-
-/* ---------- FX ---------- */
-.dmg{
-  position:absolute;z-index:20;font-size:11px;pointer-events:none;
-  color:#fff;text-shadow:2px 2px 0 #000;
-  animation:dmgFloat .9s forwards;
-}
-.dmg.crit{color:var(--crit);font-size:14px;}
-.dmg.heal{color:#7ac74f;} .dmg.mana{color:#8fd0ff;} .dmg.loot{color:var(--vip);font-size:9px;}
-@keyframes dmgFloat{0%{transform:translateY(0);opacity:1;}100%{transform:translateY(-46px);opacity:0;}}
-.slash{position:absolute;z-index:19;pointer-events:none;animation:slashPop .32s forwards;}
-@keyframes slashPop{0%{transform:scale(.4);opacity:0;}25%{opacity:1;}100%{transform:scale(1.15);opacity:0;}}
 #toast{
   position:absolute;left:50%;top:44%;transform:translateX(-50%);z-index:60;
   background:#241d2cee;border:3px solid var(--amber);padding:12px 16px;
@@ -557,620 +451,6 @@ canvas{image-rendering:pixelated;}
 }
 .shake{animation:shakeApp .3s;}
 @keyframes shakeApp{0%,100%{transform:translate(0,0);}25%{transform:translate(-4px,2px);}50%{transform:translate(4px,-2px);}75%{transform:translate(-2px,1px);}}
-::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--wood-dark);} ::-webkit-scrollbar-track{background:#241d2c;}
-
-/* ============================================================
-   ESTILOS DO SISTEMA PVP TOURNAMENT
-   ============================================================ */
-
-.pvp-container {
-  width: 100%;
-  max-height: 600px;
-  overflow-y: auto;
-  padding: 15px;
-}
-
-.pvp-empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: #999;
-}
-
-.pvp-empty h3 {
-  color: #ffa500;
-  margin-bottom: 20px;
-}
-
-.pvp-empty p {
-  line-height: 1.6;
-  font-size: 11px;
-}
-
-.pvp-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--amber);
-  padding-bottom: 10px;
-}
-
-.pvp-tab {
-  padding: 8px 16px;
-  background: transparent;
-  color: #999;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: 'Press Start 2P', monospace;
-  transition: all 0.3s;
-  text-transform: uppercase;
-}
-
-.pvp-tab:hover {
-  color: var(--amber);
-}
-
-.pvp-tab.on {
-  color: var(--amber);
-  border-bottom: 3px solid var(--amber);
-  padding-bottom: 5px;
-}
-
-.pvp-content {
-  margin-top: 20px;
-}
-
-.pvp-info-header {
-  background: var(--stone);
-  padding: 15px;
-  border-radius: 5px;
-  border-left: 4px solid var(--amber);
-  margin-bottom: 20px;
-}
-
-.pvp-info-header h3 {
-  color: var(--amber);
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.pvp-status {
-  font-size: 11px;
-  color: #bbb;
-  margin-bottom: 10px;
-}
-
-.badge-scheduled { background: #666; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
-.badge-brackets_generated { background: #4a7c59; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
-.badge-semifinals_running { background: #ffa500; padding: 2px 8px; border-radius: 3px; color: #000; font-size: 9px; }
-.badge-finals_running { background: #ff6b6b; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
-.badge-completed { background: #2f7c31; padding: 2px 8px; border-radius: 3px; font-size: 9px; }
-
-.pvp-pool {
-  font-size: 11px;
-  color: #ffff00;
-  margin-top: 10px;
-}
-
-.pvp-pool p {
-  margin: 4px 0;
-}
-
-.pvp-accumulated-rewards {
-  background: linear-gradient(135deg, rgba(255, 215, 94, 0.1), rgba(125, 232, 216, 0.1));
-  padding: 15px;
-  border-radius: 5px;
-  border: 2px solid var(--amber);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.pvp-accumulated-rewards h3 {
-  color: var(--amber);
-  font-size: 12px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.pvp-rewards-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-}
-
-.reward-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 15px;
-  background: var(--stone);
-  border-radius: 3px;
-  border-left: 3px solid var(--amber);
-}
-
-.reward-item canvas {
-  width: 24px !important;
-  height: 24px !important;
-}
-
-.reward-amount {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.reward-amount-value {
-  font-size: 13px;
-  font-weight: bold;
-  color: var(--gold);
-  text-shadow: 0 0 2px rgba(255, 215, 94, 0.5);
-}
-
-.reward-amount-label {
-  font-size: 9px;
-  color: #999;
-  text-transform: uppercase;
-}
-
-.pvp-bracket-view {
-  width: 100%;
-}
-
-.pvp-brackets-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.pvp-round {
-  background: var(--stone);
-  padding: 15px;
-  border-radius: 5px;
-  border-left: 3px solid var(--amber);
-}
-
-.pvp-round h4 {
-  color: var(--amber);
-  font-size: 12px;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-}
-
-.pvp-matches-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.pvp-match-card {
-  background: var(--stone-dark);
-  border: 1px solid var(--amber);
-  border-radius: 5px;
-  padding: 12px;
-  text-align: center;
-}
-
-.pvp-player {
-  background: var(--stone);
-  padding: 8px;
-  border-radius: 3px;
-  margin: 5px 0;
-  font-size: 11px;
-  color: var(--parchment);
-  word-break: break-word;
-  transition: all 0.3s;
-}
-
-.pvp-player.winner {
-  background: #2f7c31;
-  color: #ffff00;
-  font-weight: bold;
-}
-
-.pvp-match-card .vs {
-  font-size: 10px;
-  color: var(--amber);
-  margin: 8px 0;
-  font-weight: bold;
-}
-
-.pvp-match-result {
-  color: #ffff00;
-  font-size: 11px;
-  margin: 10px 0;
-  font-weight: bold;
-}
-
-.pvp-match-pending {
-  color: #ffa500;
-  font-size: 10px;
-  margin: 10px 0;
-  font-style: italic;
-}
-
-.pvp-match-card button {
-  width: 100%;
-  margin-top: 10px;
-  font-size: 9px;
-}
-
-.pvp-matches-history {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.pvp-match-history-card {
-  background: var(--stone);
-  border: 1px solid var(--amber);
-  border-radius: 5px;
-  padding: 15px;
-}
-
-.pvp-match-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.pvp-match-header h4 {
-  color: var(--amber);
-  font-size: 12px;
-  margin: 0;
-}
-
-.badge-round {
-  background: var(--amber);
-  color: #000;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: bold;
-}
-
-.pvp-match-stats {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 10px;
-  margin: 12px 0;
-  padding: 12px;
-  background: var(--stone-dark);
-  border-radius: 3px;
-}
-
-.pvp-player-stats {
-  text-align: center;
-  font-size: 10px;
-}
-
-.pvp-player-stats p {
-  margin: 4px 0;
-  color: #ccc;
-}
-
-.pvp-player-stats strong {
-  color: var(--amber);
-  display: block;
-  margin-bottom: 6px;
-}
-
-.vs-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--amber);
-}
-
-.pvp-rewards-view {
-  width: 100%;
-}
-
-.pvp-final-standings {
-  margin-bottom: 30px;
-}
-
-.pvp-final-standings h3 {
-  color: var(--amber);
-  font-size: 14px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.pvp-placement {
-  background: var(--stone);
-  border: 2px solid var(--amber);
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 12px;
-  text-align: center;
-}
-
-.pvp-placement.first {
-  border-color: #ffff00;
-  background: rgba(255, 255, 0, 0.05);
-}
-
-.pvp-placement.second {
-  border-color: #cccccc;
-  background: rgba(204, 204, 204, 0.05);
-}
-
-.pvp-placement.third {
-  border-color: #cd7f32;
-  background: rgba(205, 127, 50, 0.05);
-}
-
-.placement-badge {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: var(--amber);
-}
-
-.placement-nick {
-  font-size: 13px;
-  color: #ffff00;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.placement-prize {
-  font-size: 11px;
-  color: #ffff00;
-}
-
-.placement-prize p {
-  margin: 4px 0;
-}
-
-.pvp-rewards-list {
-  margin-top: 20px;
-}
-
-.pvp-rewards-list h3 {
-  color: var(--amber);
-  font-size: 12px;
-  margin-bottom: 12px;
-}
-
-.pvp-reward-card {
-  background: var(--stone-dark);
-  border-left: 3px solid var(--amber);
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-}
-
-.reward-nick {
-  flex: 1;
-  color: var(--amber);
-  font-weight: bold;
-}
-
-.reward-placement {
-  background: var(--amber);
-  color: #000;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: bold;
-  margin: 0 10px;
-}
-
-.reward-amount {
-  text-align: center;
-  font-size: 10px;
-  color: #ffff00;
-  margin: 0 15px;
-}
-
-.reward-amount p {
-  margin: 2px 0;
-}
-
-.reward-status {
-  font-size: 9px;
-  color: #aaa;
-}
-
-.pvp-battle-log {
-  background: var(--stone-dark);
-  border: 1px solid var(--amber);
-  border-radius: 5px;
-  padding: 15px;
-  margin-top: 20px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.pvp-battle-log h4 {
-  color: var(--amber);
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-
-.log-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.log-entry {
-  font-size: 9px;
-  color: #bbb;
-  padding: 6px;
-  background: var(--stone);
-  border-radius: 3px;
-  border-left: 2px solid var(--amber);
-}
-
-.turn-num {
-  color: var(--amber);
-  font-weight: bold;
-}
-
-.p1-action {
-  color: #ffff00;
-}
-
-.p2-action {
-  color: #00ff00;
-}
-
-.divider {
-  color: #666;
-  margin: 0 4px;
-}
-
-.hp-status {
-  font-size: 8px;
-  color: #999;
-  margin-top: 4px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.pvp-match-detail {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s;
-}
-
-.pvp-match-detail.open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.pvp-match-detail .modal-content {
-  background: var(--stone-dark);
-  border: 2px solid var(--amber);
-  border-radius: 10px;
-  padding: 20px;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--amber);
-  border: none;
-  color: #000;
-  font-size: 20px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.pvp-match-detail h2 {
-  color: var(--amber);
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-.pvp-match-detail-info {
-  background: var(--stone);
-  padding: 12px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.pvp-match-detail-info h3 {
-  color: var(--parchment);
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.round-badge {
-  background: var(--amber);
-  color: #000;
-  padding: 4px 8px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: bold;
-}
-
-.pvp-players-overview {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.player-overview {
-  background: var(--stone);
-  padding: 12px;
-  border-radius: 5px;
-  border-left: 3px solid var(--amber);
-}
-
-.player-overview h4 {
-  color: var(--amber);
-  font-size: 11px;
-  margin-bottom: 8px;
-}
-
-.player-overview p {
-  font-size: 9px;
-  color: #bbb;
-  margin: 4px 0;
-}
-
-.pvp-winner-announcement {
-  background: #2f7c31;
-  color: #ffff00;
-  padding: 15px;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-@media (max-width: 600px) {
-  .pvp-matches-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .pvp-players-overview {
-    grid-template-columns: 1fr;
-  }
-  
-  .pvp-match-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .vs-divider {
-    margin: 8px 0;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -1216,91 +496,84 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- GAME SCREEN (rolável) -->
+  <!-- GAME SCREEN -->
   <div id="game">
-  <!-- ARENA -->
-  <div id="arena">
-    <div id="pentagon">
-      <div id="monster-wrap"><canvas id="monster-cv" width="16" height="16" style="width:112px;height:112px;"></canvas></div>
-      <div id="monster-name">SLIME HP</div>
-      <div class="hpbar"><div class="fill" id="monster-hp"></div></div>
-    </div>
-  </div>
-
-  <!-- CHAT -->
-  <div id="chatbox">
-    <div class="chat-title">GLOBAL CHAT</div>
-    <div id="chatlog"></div>
-    <div id="chat-input-row">
-      <input id="chat-input" maxlength="80" placeholder="digite sua mensagem..." autocomplete="off">
-      <button id="chat-send">▶</button>
-    </div>
-    <div id="chat-cd"></div>
-  </div>
-
-  <!-- STRIP -->
-  <div id="battle-strip">
-    <div class="strip-title">AUTO-BATTLE ACTIVE</div>
-    <div id="strip-inner"></div>
-  </div>
-
-  <!-- PARTY -->
-  <div id="party">
-    <div class="party-title">CHARACTER &amp; PET</div>
-    <div id="party-inner">
-      <div class="unit">
-        <div class="u-head"><canvas width="16" height="16" style="width:20px;height:20px" data-icon="sword"></canvas><canvas width="16" height="16" style="width:20px;height:20px" data-icon="shield"></canvas> character</div>
-        <div class="lvl" id="k-lvl">Lv.1</div>
-        <div class="sprite-box"><canvas id="knight-cv" width="16" height="16" style="width:84px;height:84px;"></canvas></div>
-        <div class="bars">
-          <div class="bar-wrap"><span class="bar-lbl l-hp">HP</span><div class="bar"><div class="fill f-hp" id="k-hp"></div><div class="bval" id="k-hp-v"></div></div></div>
-          <div class="bar-wrap"><span class="bar-lbl l-mp">MP</span><div class="bar"><div class="fill f-mp" id="k-mp"></div><div class="bval" id="k-mp-v"></div></div></div>
-          <div class="bar-wrap"><span class="bar-lbl l-xp">XP</span><div class="bar"><div class="fill f-xp" id="k-xp"></div><div class="bval" id="k-xp-v"></div></div></div>
-        </div>
+    <div id="arena">
+      <div id="pentagon">
+        <div id="monster-wrap"><canvas id="monster-cv" width="16" height="16" style="width:112px;height:112px;"></canvas></div>
+        <div id="monster-name">SLIME HP</div>
+        <div class="hpbar"><div class="fill" id="monster-hp"></div></div>
       </div>
-      <div class="unit">
-        <div class="u-head"><canvas width="16" height="16" style="width:20px;height:20px" data-icon="paw"></canvas><canvas width="16" height="16" style="width:20px;height:20px" data-icon="flame"></canvas> pet</div>
-        <div class="lvl" id="p-lvl">Lv.1</div>
-        <div class="sprite-box"><canvas id="pet-cv" width="16" height="16" style="width:84px;height:84px;"></canvas></div>
-        <div class="bars">
-          <div class="bar-wrap"><span class="bar-lbl l-hp">HP</span><div class="bar"><div class="fill f-hp" id="p-hp"></div><div class="bval" id="p-hp-v"></div></div></div>
-          <div class="bar-wrap"><span class="bar-lbl l-xp">XP</span><div class="bar"><div class="fill f-xp" id="p-xp"></div><div class="bval" id="p-xp-v"></div></div></div>
+    </div>
+
+    <div id="chatbox">
+      <div class="chat-title">GLOBAL CHAT</div>
+      <div id="chatlog"></div>
+      <div id="chat-input-row">
+        <input id="chat-input" maxlength="80" placeholder="digite sua mensagem..." autocomplete="off">
+        <button id="chat-send">▶</button>
+      </div>
+      <div id="chat-cd"></div>
+    </div>
+
+    <div id="battle-strip">
+      <div class="strip-title">AUTO-BATTLE ACTIVE</div>
+      <div id="strip-inner"></div>
+    </div>
+
+    <div id="party">
+      <div class="party-title">CHARACTER &amp; PET</div>
+      <div id="party-inner">
+        <div class="unit">
+          <div class="u-head"><canvas width="16" height="16" style="width:20px;height:20px" data-icon="sword"></canvas><canvas width="16" height="16" style="width:20px;height:20px" data-icon="shield"></canvas> character</div>
+          <div class="lvl" id="k-lvl">Lv.1</div>
+          <div class="sprite-box"><canvas id="knight-cv" width="16" height="16" style="width:84px;height:84px;"></canvas></div>
+          <div class="bars">
+            <div class="bar-wrap"><span class="bar-lbl l-hp">HP</span><div class="bar"><div class="fill f-hp" id="k-hp"></div><div class="bval" id="k-hp-v"></div></div></div>
+            <div class="bar-wrap"><span class="bar-lbl l-mp">MP</span><div class="bar"><div class="fill f-mp" id="k-mp"></div><div class="bval" id="k-mp-v"></div></div></div>
+            <div class="bar-wrap"><span class="bar-lbl l-xp">XP</span><div class="bar"><div class="fill f-xp" id="k-xp"></div><div class="bval" id="k-xp-v"></div></div></div>
+          </div>
+        </div>
+        <div class="unit">
+          <div class="u-head"><canvas width="16" height="16" style="width:20px;height:20px" data-icon="paw"></canvas><canvas width="16" height="16" style="width:20px;height:20px" data-icon="flame"></canvas> pet</div>
+          <div class="lvl" id="p-lvl">Lv.1</div>
+          <div class="sprite-box"><canvas id="pet-cv" width="16" height="16" style="width:84px;height:84px;"></canvas></div>
+          <div class="bars">
+            <div class="bar-wrap"><span class="bar-lbl l-hp">HP</span><div class="bar"><div class="fill f-hp" id="p-hp"></div><div class="bval" id="p-hp-v"></div></div></div>
+            <div class="bar-wrap"><span class="bar-lbl l-xp">XP</span><div class="bar"><div class="fill f-xp" id="p-xp"></div><div class="bval" id="p-xp-v"></div></div></div>
+          </div>
         </div>
       </div>
     </div>
+
+    <div id="ability-bar"></div>
+
+    <div id="bottombar">
+      <div class="pot-btn" id="cfg-hp" title="Auto-poção de HP">
+        <canvas width="16" height="16" style="width:34px;height:34px" data-icon="hpPot"></canvas>
+        <div class="count" id="cnt-hp">0</div>
+        <div class="thresh" id="th-hp">40%</div>
+      </div>
+      <div class="pot-btn" id="cfg-mp" title="Auto-poção de MP">
+        <canvas width="16" height="16" style="width:34px;height:34px" data-icon="mpPot"></canvas>
+        <div class="count" id="cnt-mp">0</div>
+        <div class="thresh" id="th-mp">20%</div>
+      </div>
+      <div class="pot-btn" id="open-equip" title="Equipamentos">
+        <canvas width="16" height="16" style="width:34px;height:34px" data-icon="bag"></canvas>
+        <div class="count" id="cnt-inv">0</div>
+      </div>
+      <div class="pot-btn" id="open-pets" title="Pets">
+        <canvas width="16" height="16" style="width:34px;height:34px" data-icon="paw"></canvas>
+        <div class="count" id="cnt-pets">1</div>
+      </div>
+      <div class="pot-btn" id="open-synth" title="Sintetizador">
+        <canvas width="16" height="16" style="width:34px;height:34px" data-icon="synth"></canvas>
+      </div>
+    </div>
   </div>
 
-  <!-- BARRA DE MAGIAS -->
-  <div id="ability-bar"></div>
-
-  <!-- RODAPÉ -->
-  <div id="bottombar">
-    <div class="pot-btn" id="cfg-hp" title="Auto-poção de HP">
-      <canvas width="16" height="16" style="width:34px;height:34px" data-icon="hpPot"></canvas>
-      <div class="count" id="cnt-hp">0</div>
-      <div class="thresh" id="th-hp">40%</div>
-    </div>
-    <div class="pot-btn" id="cfg-mp" title="Auto-poção de MP">
-      <canvas width="16" height="16" style="width:34px;height:34px" data-icon="mpPot"></canvas>
-      <div class="count" id="cnt-mp">0</div>
-      <div class="thresh" id="th-mp">20%</div>
-    </div>
-    <div class="pot-btn" id="open-equip" title="Equipamentos">
-      <canvas width="16" height="16" style="width:34px;height:34px" data-icon="bag"></canvas>
-      <div class="count" id="cnt-inv">0</div>
-    </div>
-    <div class="pot-btn" id="open-pets" title="Pets">
-      <canvas width="16" height="16" style="width:34px;height:34px" data-icon="paw"></canvas>
-      <div class="count" id="cnt-pets">1</div>
-    </div>
-    <div class="pot-btn" id="open-synth" title="Sintetizador">
-      <canvas width="16" height="16" style="width:34px;height:34px" data-icon="synth"></canvas>
-    </div>
-  </div>
-  </div><!-- /#game -->
-
-
-  <!-- MODAL POÇÕES -->
+  <!-- MODAIS -->
   <div class="modal" id="modal-shop">
     <div class="box">
       <div class="close-x" data-close>✕</div>
@@ -1314,7 +587,6 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL CONFIG AUTO-POÇÃO -->
   <div class="modal" id="modal-autopot">
     <div class="box">
       <div class="close-x" data-close>✕</div>
@@ -1334,7 +606,6 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL EQUIPAMENTOS -->
   <div class="modal" id="modal-equip">
     <div class="box">
       <div class="close-x" data-close>✕</div>
@@ -1353,30 +624,20 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL PETS -->
   <div class="modal" id="modal-pets">
     <div class="box">
       <div class="close-x" data-close>✕</div>
       <h2>SEUS PETS (1 ativo)</h2>
-      <div class="sub">Drop ultra raro: 0.1% por abate<br>
-        <span style="color:var(--raro)">Raro 1.5x</span> ·
-        <span style="color:var(--epico)">Épico 2x</span> ·
-        <span style="color:var(--lend)">Lendário 3x</span> ·
-        <span style="color:var(--pixel)">Pixel Master 5x</span></div>
+      <div class="sub">Drop ultra raro: 0.1% por abate</div>
       <div id="pet-list"></div>
     </div>
   </div>
 
-  <!-- MODAL SINTETIZADOR -->
   <div class="modal" id="modal-synth">
     <div class="box">
       <div class="close-x" data-close>✕</div>
       <h2>SINTETIZADOR</h2>
-      <div class="sub">Combine <b>5 itens da MESMA raridade</b> para tentar subir.<br>
-        <span id="synth-chance-info">Chance: Comum <b>40%</b> · Incomum <b>30%</b> · Raro <b>20%</b> · Épico <b>10%</b> · Lendário <b>5%</b></span><br>
-        ✔ Sucesso: 1 item na raridade acima.<br>
-        ✘ Falha: sobra 1 item, os outros 4 somem.<br>
-        <span style="color:var(--xp)">Em pets, na falha sobra o de maior nível.</span></div>
+      <div class="sub">Combine <b>5 itens da MESMA raridade</b> para tentar subir.</div>
       <div class="tabs">
         <div class="tab on" data-synthtab="eq">Equipamentos</div>
         <div class="tab" data-synthtab="pet">Pets</div>
@@ -1388,7 +649,6 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL MERCADO GLOBAL -->
   <div class="modal" id="modal-market">
     <div class="box">
       <div class="close-x" data-close>✕</div>
@@ -1407,32 +667,7 @@ canvas{image-rendering:pixelated;}
             <div class="chip" data-fk="weapon">Arma</div>
             <div class="chip" data-fk="armor">Armadura</div>
             <div class="chip" data-fk="shield">Escudo</div>
-            <div class="chip" data-fk="amulet">Amuleto</div>
-            <div class="chip" data-fk="ring">Anel</div>
-            <div class="chip" data-fk="bracelet">Bracelete</div>
-            <div class="chip" data-fk="belt">Cinto</div>
             <div class="chip" data-fk="pet">Pet</div>
-            <div class="chip" data-fk="gold">Gold</div>
-          </div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-lbl">Raridade</span>
-          <div class="chips" id="filter-rar">
-            <div class="chip on" data-fr="all">Todas</div>
-            <div class="chip" data-fr="Comum">Comum</div>
-            <div class="chip rar-Incomum" data-fr="Incomum">Incomum</div>
-            <div class="chip rar-Raro" data-fr="Raro">Raro</div>
-            <div class="chip rar-Épico" data-fr="Épico">Épico</div>
-            <div class="chip rar-Lendário" data-fr="Lendário">Lendário</div>
-            <div class="chip rar-PixelMaster" data-fr="PixelMaster">Pixel Master</div>
-          </div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-lbl">Moeda</span>
-          <div class="chips" id="filter-cur">
-            <div class="chip on" data-fc="all">Ambas</div>
-            <div class="chip" data-fc="gold">◈ Gold</div>
-            <div class="chip" data-fc="vip">♦ VIP Coin</div>
           </div>
         </div>
       </div>
@@ -1450,7 +685,6 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL RANKING -->
   <div class="modal" id="modal-rank">
     <div class="box">
       <div class="close-x" data-close>✕</div>
@@ -1459,85 +693,43 @@ canvas{image-rendering:pixelated;}
     </div>
   </div>
 
-  <!-- MODAL PVP TOURNAMENT -->
-  <div class="modal" id="modal-pvp">
-    <div class="box">
-      <div class="close-x" data-close>✕</div>
-      <h2>🏆 TORNEIO PVP</h2>
-      <div id="pvp-container" class="pvp-container"></div>
-    </div>
-  </div>
-
-  <!-- MODAL CONFIGURAÇÕES -->
   <div class="modal" id="modal-settings">
     <div class="box">
       <div class="close-x" data-close>✕</div>
       <h2 data-i18n="settings_title">CONFIGURAÇÕES</h2>
-      <div class="sub" data-i18n="lang_label">Idioma / Language</div>
       <div id="lang-list">
-        <div class="item-row lang-opt" data-lang="pt">
-          <div class="info"><div class="nm">🇧🇷 Português (Brasil)</div></div>
-          <button class="btn small">✓</button>
-        </div>
-        <div class="item-row lang-opt" data-lang="en">
-          <div class="info"><div class="nm">🇺🇸 English (US)</div></div>
-          <button class="btn small">✓</button>
-        </div>
+        <div class="item-row lang-opt" data-lang="pt"><div class="info"><div class="nm">🇧🇷 Português</div></div><button class="btn small">✓</button></div>
+        <div class="item-row lang-opt" data-lang="en"><div class="info"><div class="nm">🇺🇸 English</div></div><button class="btn small">✓</button></div>
       </div>
-      <div class="sub" style="margin-top:16px" data-i18n="settings_note">O jogo será traduzido automaticamente.</div>
     </div>
   </div>
 
-  <!-- MODAL VIP -->
   <div class="modal" id="modal-vip">
     <div class="box">
       <div class="close-x" data-close>✕</div>
       <h2>LOJA VIP</h2>
       <div class="sub">Saldo atual: <span class="tag vip">♦ <span id="vip-balance">0</span> VIP Coin</span></div>
-      <div class="tabs">
-        <div class="tab on" data-viptab="donate">Donate</div>
-        <div class="tab" data-viptab="booster">Boosters</div>
-      </div>
-      <div id="vip-donate">
-        <div class="sub">Cada VIP Coin custa <b>$0,40</b>.<br>Doe para apoiar o jogo e receba VIP Coins.</div>
-        <div id="donate-list"></div>
-      </div>
-      <div id="vip-booster" style="display:none">
-        <div class="sub">Boosters ativos aparecem no topo.<br>Comprar de novo soma +30 dias.</div>
-        <div id="booster-active"></div>
-        <div id="booster-list"></div>
-      </div>
+      <div id="donate-list"></div>
     </div>
   </div>
 
-  <!-- MODAL ÁRVORE DE TALENTOS -->
   <div class="modal" id="modal-talents">
     <div class="box">
       <div class="close-x" data-close>✕</div>
       <h2>ÁRVORE DE MAESTRIA</h2>
-      <div class="sub">Ganhe 1 ponto a cada 5 níveis (máx nível 1000 = 200 pontos).<br>
-        Pontos disponíveis: <span class="tag" style="color:var(--vip)">◆ <span id="mastery-avail">0</span></span>
-        · Gastos: <span id="mastery-spent">0</span>/200</div>
+      <div class="sub">Pontos disponíveis: <span class="tag" style="color:var(--vip)">◆ <span id="mastery-avail">0</span></span></div>
       <div id="talent-branches"></div>
-      <button class="btn red small" id="talent-reset" style="align-self:center">Resetar todos os pontos</button>
+      <button class="btn red small" id="talent-reset">Resetar</button>
     </div>
   </div>
 
-  <!-- MODAL DESAFIO DO GOLD GOBLIN -->
   <div class="modal" id="modal-challenge">
     <div class="box">
       <div class="close-x" data-close>✕</div>
-      <h2 data-i18n="gold_goblin_title">DESAFIO DO GOLD GOBLIN</h2>
-      <div class="sub">Todo monstro derrotado tem <b>1%</b> de dropar um 🎟️ Ticket.<br>
-        Gaste <b>1 ticket</b> para enfrentar um Gold Goblin numa luta única.</div>
-      <div id="challenge-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0;">
+      <h2>DESAFIO DO GOLD GOBLIN</h2>
+      <div id="challenge-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
         <canvas id="challenge-goblin" width="16" height="16" style="width:96px;height:96px;image-rendering:pixelated"></canvas>
-        <div style="text-align:center;font-size:8px;color:#cbb;line-height:1.8;">
-          🎟️ Tickets: <span id="challenge-tickets" style="color:var(--vip)">0</span><br>
-          <span style="color:var(--xp)">Vitória:</span> loot garantido do Gold Goblin<br>
-          <span style="color:var(--crit)">Derrota:</span> você perde o ticket
-        </div>
-        <button class="btn gold" id="challenge-start">Gastar 1 Ticket e Lutar</button>
+        <button class="btn gold" id="challenge-start">Lutar</button>
       </div>
     </div>
   </div>
@@ -1547,56 +739,24 @@ canvas{image-rendering:pixelated;}
 
 <script>
 "use strict";
-/* =====================================================
-   PIXEL VANGUARD IDLE v2
-   - Equipamentos: SOMENTE drop (2.4% monstro / 10% boss)
-   - Pets: drop 0.1% com raridades:
-       Raro 1.5x · Épico 2x · Lendário 3x · Pixel Master 5x
-   - Mercado Global: vende equip/pets/gold por Gold ou
-     VIP Coin, com taxa de 10% por negociação
-   - Regra de turno: floor(spdA/spdB) ataques por turno
-   ===================================================== */
-
-/* ---------- SPRITES ---------- */
-// Paleta ampliada com tons de sombra/luz para dar volume aos sprites.
-// Cada caractere = 1 cor. '.' = transparente.
 const PAL = {
   '.':null,
-  // metal / armadura (aço)
   'H':'#e4e8f0','A':'#c2c8d4','a':'#9aa2b2','h':'#6e7688','F':'#3a3446','k':'#242030',
-  // couro / madeira
   'S':'#c47a3a','s':'#9a5a28','g':'#7a4620','L':'#5a3418','B':'#3a2410','M':'#8a6a44','m':'#5a4028',
-  // tecido claro / marfim
-  'V':'#f4ecd4','w':'#e0e6ee','C':'#d4dae6',
-  // raposa (laranja quente)
-  'f':'#f28a3a','o':'#d86a22','d':'#a84e18','W':'#fbe6cc','T':'#ffe07a','t':'#e84c28','q':'#fff4d8',
-  // lobo (azul gelo)
-  'U':'#a8d8ff','u':'#6ba8e0','b':'#3d78b8','X':'#f0f4fc','Q':'#8fe8dc',
-  // dragonete (verde)
-  'G':'#7ee060','J':'#a4f088','j':'#4fb03a','E':'#276b22','N':'#154010',
-  // preto / detalhe
-  'K':'#181420','n':'#0e0a14',
-  // vermelho
-  'R':'#e8504a','r':'#a02824','e':'#6a1414',
-  // roxo (arcano)
-  'P':'#b06fe8','p':'#7a3db0','z':'#5a2888',
-  // ouro / amarelo
-  'Y':'#ffd75e','y':'#d4a02c','O':'#e88a3a','i':'#fff2b0',
-  // ciano / vip
-  'c':'#8fe8dc','I':'#5fc8b8',
-  // cinza pedra
-  'x':'#a8a294','Z':'#787264'
+  'V':'#f4ecd4','w':'#e0e6ee','C':'#d4dae6','f':'#f28a3a','o':'#d86a22','d':'#a84e18',
+  'W':'#fbe6cc','T':'#ffe07a','t':'#e84c28','q':'#fff4d8','U':'#a8d8ff','u':'#6ba8e0',
+  'b':'#3d78b8','X':'#f0f4fc','Q':'#8fe8dc','G':'#7ee060','J':'#a4f088','j':'#4fb03a',
+  'E':'#276b22','N':'#154010','K':'#181420','n':'#0e0a14','R':'#e8504a','r':'#a02824',
+  'e':'#6a1414','P':'#b06fe8','p':'#7a3db0','z':'#5a2888','Y':'#ffd75e','y':'#d4a02c',
+  'O':'#e88a3a','i':'#fff2b0','c':'#8fe8dc','I':'#5fc8b8','x':'#a8a294','Z':'#787264'
 };
 
-// sprites baseados em imagem (PNG embutido). Preenchido abaixo (SPR_IMG_SRC).
-const SPR_IMG = {}; // name -> HTMLImageElement (pré-carregado)
+const SPR_IMG = {};
 function drawSprite(cv, name, flip){
   const ctx = cv.getContext('2d');
-  // sprite de imagem tem prioridade sobre o mapa de texto
   const img = SPR_IMG[name];
   if(img){
-    // ajusta o buffer do canvas ao tamanho nativo da imagem (nítido, escala via CSS)
-    if(cv.width!==img.naturalWidth)  cv.width = img.naturalWidth||32;
+    if(cv.width!==img.naturalWidth) cv.width = img.naturalWidth||32;
     if(cv.height!==img.naturalHeight) cv.height= img.naturalHeight||32;
     const W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
@@ -1604,16 +764,10 @@ function drawSprite(cv, name, flip){
     if(img.complete && img.naturalWidth){
       if(flip){ ctx.save(); ctx.translate(W,0); ctx.scale(-1,1); ctx.drawImage(img,0,0,W,H); ctx.restore(); }
       else ctx.drawImage(img,0,0,W,H);
-    }else{
-      // ainda carregando: desenha quando pronto
-      img.addEventListener('load', ()=>{ try{ ctx.clearRect(0,0,W,H);
-        if(flip){ ctx.save(); ctx.translate(W,0); ctx.scale(-1,1); ctx.drawImage(img,0,0,W,H); ctx.restore(); }
-        else ctx.drawImage(img,0,0,W,H); }catch(e){} }, {once:true});
     }
     return;
   }
   const map = SPR[name]; if(!map) return;
-  // sprite de texto usa grid 16x16: garante o buffer correto
   if(cv.width!==16) cv.width=16;
   if(cv.height!==16) cv.height=16;
   const W = cv.width, H = cv.height;
@@ -1629,676 +783,524 @@ function drawSprite(cv, name, flip){
 }
 
 const SPR = {
-knight:[
-"..KKKKKKKKK......",
-".KKKKKKKKKK......",
-".KKKFFFKKK.......",
-".KKFWWWFK........",
-".AKWWWWWKA.......",
-".SSWWWWWWSS......",
-".SSWSWSWSSS.U....",
-".SSWSWSWSWSGGU...",
-".SSWSWSWSSSg.g...",
-".SSWWWWWWSS.g....",
-"..ALLLLLLA.......",
-"..ALLLLLLA.......",
-"...VV..VV........",
-"...VB..BV........",
-"...BB..BB........",
-"................"],
-fox:[
-"................",
-".....ffY.fY.....",
-"....ftfYftfY....",
-"....fooooof.....",
-"...fYKffKYf.....",
-"...foqqqof...YY.",
-"...fYqqqYf..YYY.",
-"..fffooooofYYYYY",
-".fYfoooooofYYYYY",
-".fYfoooooofYYYY.",
-"..ffoooooofYYY..",
-"...oo...oo.YY...",
-"...ff...ff......",
-"...cc...cc......",
-"................",
-"................"],
-wolf:[
-"................",
-"......E...E.....",
-".....EuE.EuE....",
-".....EuuuuE.....",
-"....EuKuuKuE....",
-"....EuQQQuE.....",
-"....EuQEQEuE.E..",
-"...uuuuuuuu.EE..",
-"..uEuuuuuuuuEEE.",
-"..uEuuuuuuuuEEu.",
-"..uuuuuuuuuuEEu.",
-"...uu...uu..EE..",
-"...EE...EE......",
-"...EE...EE......",
-"................",
-"................"],
-skel:[
-"...IIIIIIII......",
-"..IIIIIIIIII.....",
-"..IKIIIKIii.....",
-"..IIIIIIII.......",
-"...IbbbI.........",
-".I.IIIII.I.......",
-".IIIIIIII.I..G...",
-"..IbIIIbI...U...",
-"..IIIIII...gU...",
-"...IbbbI...g....",
-"..IIIIII.......",
-"..II.I.II.......",
-"..II...II.......",
-"..Xb...bX.......",
-"................",
-"................"],
-drake:[
-"....N...NN......",
-"...NjN.NjEN.....",
-"...NGN.NGEN.....",
-"...NGGGGGEEN....",
-"..NGGKGGGGENN...",
-".NWWGGGGGGjEEN..",
-".NWWKGGGGGjEEEN.",
-".NWWGGGGGGjjEEN.",
-"..NGGGGGGGGjEN..",
-"..NGGWWWGGGjN...",
-"..NGGWWWWGGjN...",
-"..NGGWWWWGGjjN..",
-"..NEGGWWGGGGjN..",
-"..NEGGGGGGGEN...",
-"...NjNGGNjNN....",
-"...NN..NN......."],
-slime:[
-"................",
-"................",
-".....JJJJ.......",
-"...JJGGGGJJ.....",
-"..JGGGGGGGGJ....",
-".JGGGGGGGGGGJ...",
-".GGGGGGGGGGGG...",
-".GGKGGGGGGKGG...",
-".GGKGGGGGGKGG...",
-".jGGGGGGGGGGj...",
-".jGGGGGGGGGGj...",
-"..jGGGGGGGGj....",
-"...jEEGGEEj.....",
-"....jjjjjj......",
-"................",
-"................"],
-slimeRed:[
-"................",
-"................",
-".....RRRR.......",
-"...RRRRRRRR.....",
-"..RRRRRRRRRR....",
-".RRRRRRRRRRRR...",
-".RRRRRRRRRRRR...",
-".RRKRRRRRRKRR...",
-".RRKRRRRRRKRR...",
-".rRRRRRRRRRRr...",
-".rRRRRRRRRRRr...",
-"..rRRRRRRRRr....",
-"...reeRReer.....",
-"....rrrrrr......",
-"................",
-"................"],
-bat:[
-"................",
-"................",
-"..P.......P.....",
-".PzP.....PzP....",
-".PPzP...PzPP....",
-".PPPzp.pzPPP....",
-"..PPzppppzPP....",
-"...zppppppz.....",
-"...pKppppKp.....",
-"...ppRppRpp.....",
-"....pppppp......",
-".....p..p.......",
-"....z....z......",
-"................",
-"................",
-"................"],
-mush:[
-"................",
-".....RRRR.......",
-"...RRVRRVRR.....",
-"..RRRRRRRRRR....",
-".RRVRRRRRRVRR...",
-".RRRRRRVRRRRR...",
-".RRRVRRRRRVRR...",
-"..RRRRRRRRRR....",
-"..VVVVVVVVVV....",
-"..VKVVVVVVKV....",
-"..VVVVVVVVVV....",
-"...VVVVVVVV.....",
-"...xx....xx.....",
-"...mm....mm.....",
-"................",
-"................"],
-skel:[
-"...IIIIIIII......",
-"..IIIIIIIIII.....",
-"..IKIIIKIii.....",
-"..IIIIIIII.......",
-"...IbbbI.........",
-".I.IIIII.I.......",
-".IIIIIIII.I..G...",
-"..IbIIIbI...U...",
-"..IIIIII...gU...",
-"...IbbbI...g....",
-"..IIIIII.......",
-"..II.I.II.......",
-"..II...II.......",
-"..Xb...bX.......",
-"................",
-"................"],
-goblin:[
-"................",
-"...i.....i......",
-"..iYi...iYi.....",
-"..iYYYYYYYi.....",
-".iYKYYYYYKYi....",
-".iYYYYYYYYYi....",
-".iYYyyyyyYYi....",
-".iYnnnnnnnYi....",
-"..iYnYYYnYi.....",
-"..iYYYYYYYi.....",
-".iY.YYYYY.Yi....",
-"iy..YY.YY..yi...",
-"....YY.YY.......",
-"...yy...yy......",
-"................",
-"................"],
-golem:[
-"................",
-"..ZmmmmmmmZ.....",
-".ZMMMMMMMMMZ....",
-".ZMMxMMMxMMZ....",
-".ZMMMMMMMMMZ....",
-".ZMMYMMMYMMZ....",
-".ZMmZZZZZmMZ....",
-"ZMMMMMMMMMMMZ...",
-"ZMMmMMMMMmMMZ...",
-"ZMMMMMMMMMMMZ...",
-".ZMMZ...ZMMZ....",
-".ZMMZ...ZMMZ....",
-".ZmmZ...ZmmZ....",
-"..ZZ.....ZZ.....",
-"................",
-"................"],
-sword:[
-"................",
-"..........HC....",
-".........HCA....",
-"........HCA.....",
-".......HCA......",
-"......HCA.......",
-".....HCA........",
-"..Y.HCA.........",
-"..YYHC..........",
-"..sYY...........",
-".gsYYg..........",
-".gg..s..........",
-".g...s..........",
-"................",
-"................",
-"................"],
-swordBlue:[
-"................",
-"..........XU....",
-".........XUb....",
-"........XUb.....",
-".......XUb......",
-"......XUb.......",
-".....XUb........",
-"..Y.XUb.........",
-"..YYXU..........",
-"..sYY...........",
-".gsYYg..........",
-".gg..s..........",
-".g...s..........",
-"................",
-"................",
-"................"],
-special:[
-"................",
-".....c....c.....",
-"..c...I..I......",
-"...I..UUU...c...",
-"....UUXUUU......",
-"..cUUUuuUUUc....",
-"...UUXUUXUU.....",
-"..UUUuUUuUUU....",
-".c.UUuuuuU..c...",
-"....UUUUUU......",
-"...I..UU..I.....",
-"......c.........",
-"................",
-"................",
-"................",
-"................"],
-claw:[
-"................",
-"..R.....R.......",
-"..rR...rR...R...",
-"..erR..erR.rR...",
-"...rRe.rRe.erR..",
-"...erR..rR..rR..",
-"....rRe.rRe.eR..",
-"....erR..rR.rR..",
-".....rRe.rRe....",
-"......rR..rR....",
-"......erR.erR...",
-".......e...e....",
-"................",
-"................",
-"................",
-"................"],
-shield:[
-"................",
-"..HssssssH......",
-".HSSSSSSSSSH....",
-".sSMSSSSMSSs....",
-".sSSSSSSSSSs....",
-".sSSVVVVSSSs....",
-".sSSVaaVSSSs....",
-".sSSSSSSSSSs....",
-"..sSSSSSSSs.....",
-"..sSSSSSSSs.....",
-"...sSSSSSs......",
-"....sSSSs.......",
-".....sSs........",
-"......s.........",
-"................",
-"................"],
-amulet:[
-"................",
-".....yYYy.......",
-"....Y....Y......",
-"...Y..yy..Y.....",
-"...Y.y..y.Y.....",
-"....Y....Y......",
-".....yYYy.......",
-"......PP........",
-".....PzzP.......",
-"....PzUcUzP.....",
-"....PzUcUzP.....",
-".....PzzP.......",
-"......PP........",
-"................",
-"................",
-"................"],
-ring:[
-"................",
-"................",
-".......YY.......",
-"......YppY......",
-".....Yz..zY.....",
-"....iYU..UYi....",
-"...i.z....z.i...",
-"...i.z....z.i...",
-"....iYU..UYi....",
-".....Yz..zY.....",
-"......YppY......",
-".......YY.......",
-"................",
-"................",
-"................",
-"................"],
-bracelet:[
-"................",
-"................",
-"...iYYYYYYi.....",
-"..iY......Yi....",
-".iY.cUUUUc.Yi...",
-".Y.cU....Uc.Y...",
-".Y.cU.II.Uc.Y...",
-".Y.cU....Uc.Y...",
-".iY.cUUUUc.Yi...",
-"..iY......Yi....",
-"...iYYYYYYi.....",
-"................",
-"................",
-"................",
-"................",
-"................"],
-belt:[
-"................",
-"................",
-".sssssssssssss..",
-".SLLLLLLLLLLLS..",
-".SLYYYYYYYYYLS..",
-".SLYiiiiiiiYLS..",
-".SLYyyIIyyy.LS..",
-".SLYiiiiiiiYLS..",
-".SLYYYYYYYYYLS..",
-".SLLLLLLLLLLLS..",
-".sssssssssssss..",
-"......YY........",
-"......yy........",
-"................",
-"................",
-"................"],
-bag:[
-"................",
-".....mm.mm......",
-"....mS.mS.m.....",
-"...MMMMMMMMM....",
-"..MMMMMMMMMMM...",
-".MMMYyYMMMMMMM..",
-".MMMYYYMMMMMMM..",
-".MMMMMMMMMMMMM..",
-".mMMMMMMMMMMMm..",
-".mMMMMMMMMMMMm..",
-".mmMMMMMMMMMmm..",
-"..mmmmmmmmmmm...",
-"...mmmmmmmmm....",
-"................",
-"................",
-"................"],
-trophy:[
-"................",
-"..iYYYYYYYYi....",
-"..YiYYYYYYiY....",
-".YYiYYYYYYiYY...",
-".Yi.YYYYYY.iY...",
-".YYiYYYYYYiYY...",
-"..iYYYYYYYYi....",
-"...iYYYYYYi.....",
-".....YYYY.......",
-"......yy........",
-".....yYYy.......",
-"....yYYYYy......",
-"...yYYYYYYy.....",
-"................",
-"................",
-"................"],
-gear:[
-"................",
-"......AA........",
-"...A.AAAA.A.....",
-"...AAAAAAAA.....",
-"..AAAAkkAAAA....",
-"...AAkFFkAA.....",
-".AAAAkFFkAAAA...",
-".AAAAkFFkAAAA...",
-"...AAkFFkAA.....",
-"..AAAAkkAAAA....",
-"...AAAAAAAA.....",
-"...A.AAAA.A.....",
-"......AA........",
-"................",
-"................",
-"................"],
-scale:[
-"................",
-".......i........",
-"...iYYYYYYYi....",
-".Yi....Y....iY..",
-".Y     Y     Y..",
-"YyY    Y    YyY.",
-"Y.Y    Y    Y.Y.",
-"YyY    Y    YyY.",
-"       Y        ",
-"       Y        ",
-"     yYYYy      ",
-"    YYYYYYY     ",
-"   yyyyyyyyy    ",
-"                ",
-"                ",
-"                "],
-paw:[
-"................",
-"...OO....OO.....",
-"..OoOO..OOoO....",
-"..OoOO..OOoO....",
-"................",
-".OO........OO...",
-"OoOO..OO..OOoO..",
-"OoOO.OOOO.OOoO..",
-"     OoooO      ",
-"    OoOOooO     ",
-"    OOOOOOOO    ",
-"     OooooO     ",
-"                ",
-"                ",
-"                ",
-"                "],
-flame:[
-"................",
-"       i        ",
-"      iY        ",
-"      iYY       ",
-"     iYYY  i    ",
-"     OiYYY iY   ",
-"    OOiYYYiYY   ",
-"    OOOiYYYY    ",
-"...tOOOOiYYY    ",
-"...ttOOOOiY     ",
-"...tttOOOOi     ",
-"    ttttOO      ",
-"     tttt       ",
-"      tt        ",
-"                ",
-"                "],
-hpPot:[
-"................",
-"      gg        ",
-"      ss        ",
-"     VVVV       ",
-"     V  V       ",
-"    bVVVVb      ",
-"...bVRRRRVb     ",
-"...bVRrRRVb     ",
-"...bVRVRRVb     ",
-"...bVRrRRVb     ",
-"...bVRRRRVb     ",
-"    bVVVVb      ",
-"     bbbb       ",
-"                ",
-"                ",
-"                "],
-mpPot:[
-"................",
-"      gg        ",
-"      ss        ",
-"     VVVV       ",
-"     V  V       ",
-"    bVVVVb      ",
-"...bVUUUUVb     ",
-"...bVUbUUVb     ",
-"...bVUVUUVb     ",
-"...bVUbUUVb     ",
-"...bVUUUUVb     ",
-"    bVVVVb      ",
-"     bbbb       ",
-"                ",
-"                ",
-"                "],
-vipcoin:[
-"................",
-"     yYYYy      ",
-"    YiiiiiY     ",
-"...YicccccY     ",
-"...YicIIIcY     ",
-"...YicIcIcY     ",
-"...YicIIIcY     ",
-"...YicIcIcY     ",
-"...YicIIIcY     ",
-"    YicccY      ",
-"     yYYYy      ",
-"                ",
-"                ",
-"                ",
-"                ",
-"                "],
-ticket:[
-"................",
-"                ",
-"..OOOOOOOOOOO...",
-".OYYYYYYYYYYYO..",
-".OYyYiYYYiYyYO..",
-"KOYYiiYYYiiYYOK.",
-".OYyYiYYYiYyYO..",
-".OYYYYiYiYYYYO..",
-"KOYyYYYiYYYyYOK.",
-".OYYYiYYYiYYYO..",
-".OYyYYYYYYYyYO..",
-".OYYYYYYYYYYYO..",
-"..OOOOOOOOOOO...",
-"                ",
-"                ",
-"                "],
-goblin_gate:[
-"................",
-"...KKKKKKKKKK...",
-"..KYyYyYyYyYK...",
-"..KyOOOOOOOyK...",
-"..KYOKGGKGOYK...",
-"..KyOGGGGGOyK...",
-"..KYOGGKGGOYK...",
-"..KyOGGGGGOyK...",
-"..KYOOGGOOOYK...",
-"..KyOOOOOOOyK...",
-"..KYyYyYyYyYK...",
-"..KKKKKKKKKKK...",
-"...K.K..K.K.....",
-"                ",
-"                ",
-"                "],
-goldpile:[
-"................",
-"                ",
-"      Yi        ",
-"     YYYy       ",
-"    YiYYYy      ",
-"...YYYiYYYy     ",
-"..YiYYYYYiYy    ",
-"..YYYiYYYYYy    ",
-".YiYYYYiYYYyy...",
-".YYYiYYYYYyyy...",
-".YYYYYiYYyyyy...",
-".iyyyyyyyyyyy...",
-"..iiyyyyyyyi    ",
-"                ",
-"                ",
-"                "],
-synth:[
-"................",
-"       c        ",
-"      cIc       ",
-"     c Y c      ",
-"    c YYY c     ",
-"...cYYiiiYYc    ",
-"..c YuUcUuY c   ",
-"..cuUccIccUuc...",
-"..cUcI   IcUc...",
-"..cuUccIccUuc...",
-"..c YuUcUuY c   ",
-"...cYYiiiYYc    ",
-"    c YYY c     ",
-"     ccYcc      ",
-"      c c       ",
-"                "],
-crest:[
-"................",
-"..U  sSSSSs  U..",
-".UbU SVVVVS UbU.",
-"UbbU SYiiYS UbbU",
-".UbU SYVVYS UbU.",
-"..U SSYVVYSS U..",
-"    SSYiiYSS    ",
-"    SVSSSSVS    ",
-"     SSSSSS     ",
-"     SVVVVS     ",
-"      SSSS      ",
-"       SS       ",
-"                ",
-"                ",
-"                ",
-"                "],
-ghost:[
-"................",
-"                ",
-"    IIIIII      ",
-"..IIbbbbIII     ",
-".IbbbbbbbbbI    ",
-".IbbKbbKbbI    ",
-".IbbbbbbbbbI    ",
-".IbbbbbbbbbI    ",
-"..IbbbbbbbI     ",
-"...IBBBBBIc     ",
-"    BBBBBcc     ",
-"...cBBBBccccc...",
-"    ccccccc     ",
-"     ccccc      ",
-"                ",
-"                "],
-shield:[
-"................",
-"      KKKK      ",
-"    KKKKKKKK    ",
-"...KKKBBBKKK...",
-"..KKKBBBBBKKK..",
-"..KKBBbBbBBKK..",
-"..KKBbbbbbBKK..",
-"..KKBbKKbBBKK..",
-"..KKBbKKbBBKK..",
-"..KKBbbbbbBKK..",
-"..KKBBbBbBBKK..",
-"...KKKBBBKKK...",
-"    KKKKKKKK    ",
-"      KKKK      ",
-"                ",
-"                "],
-wasp:[
-"................",
-"     YYY        ",
-"    YYYYYY      ",
-"...YYbBbYYY     ",
-"..YYbBiBYYYYY...",
-".YYbBiBiBYYEYY..",
-".YbBiBiBiBYEEYY.",
-".bBiBiBiBiBEEYY.",
-".YbBiBiBiBYEEYY.",
-".YYbBiBiBYYEYY..",
-"..YYbBiBYYYYY...",
-"...YYbBbYYY.....",
-"    YYYYYY      ",
-"     YYY        ",
-"                ",
-"                "]
+  knight:[".KKKKKKKKK......",".KKKKKKKKKK......",".KKKFFFKKK.......",".KKFWWWFK........",".AKWWWWWKA.......",".SSWWWWWWSS......",".SSWSWSWSSS.U....",".SSWSWSWSWSGGU...",".SSWSWSWSSSg.g...",".SSWWWWWWSS.g....","..ALLLLLLA.......","..ALLLLLLA.......","...VV..VV........","...VB..BV........","...BB..BB........","................"],
+  fox:["................",".....ffY.fY.....","....ftfYftfY....","....fooooof.....","...fYKffKYf.....","...foqqqof...YY.","...fYqqqYf..YYY.","..fffooooofYYYYY",".fYfoooooofYYYYY",".fYfoooooofYYYY.","..ffoooooofYYY..","...oo...oo.YY...",...ff...ff......","...cc...cc......","................","................"],
+  wolf:["................","......E...E.....",".....EuE.EuE....",".....EuuuuE.....","....EuKuuKuE....","....EuQQQuE.....","....EuQEQEuE.E..","...uuuuuuuu.EE..","..uEuuuuuuuuEEE.","..uEuuuuuuuuEEu.","..uuuuuuuuuuEEu.","...uu...uu..EE..","...EE...EE......","...EE...EE......","................","................"],
+  skel:["...IIIIIIII......","..IIIIIIIIII.....","..IKIIIKIii.....","..IIIIIIII.......","...IbbbI.........",".I.IIIII.I.......",".IIIIIIII.I..G...","..IbIIIbI...U...","..IIIIII...gU...", "...IbbbI...g....","..IIIIII.......","..II.I.II.......","..II...II.......","..Xb...bX.......","................","................"],
+  drake:[".N...NN......","...NjN.NjEN.....","...NGN.NGEN.....","...NGGGGGEEN....","..NGGKGGGGENN...",".NWWGGGGGGjEEN..",".NWWKGGGGGjEEEN.",".NWWGGGGGGjjEEN.","..NGGGGGGGGjEN..","..NGGWWWGGGjN...","..NGGWWWWGGjN...","..NGGWWWWGGjjN..","..NEGGWWGGGGjN..","..NEGGGGGGGEN...","...NjNGGNjNN....","...NN..NN......."],
+  slime:[".JJJJ.......","...JJGGGGJJ.....","..JGGGGGGGGJ....",".JGGGGGGGGGGJ...",".GGGGGGGGGGGG...",".GGKGGGGGGKGG...",".GGKGGGGGGKGG...",".jGGGGGGGGGGj...",".jGGGGGGGGGGj...","..jGGGGGGGGj....","...jEEGGEEj.....","....jjjjjj......","................","................","................","................"],
+  slimeRed:["....RRRR.......","...RRRRRRRR.....","..RRRRRRRRRR....",".RRRRRRRRRRRR...",".RRRRRRRRRRRR...",".RRKRRRRRRKRR...",".RRKRRRRRRKRR...",".rRRRRRRRRRRr...",".rRRRRRRRRRRr...","..rRRRRRRRRr....","...reeRReer.....","....rrrrrr......","................","................","................","................"],
+  bat:["..P.......P.....",".PzP.....PzP....",".PPzP...PzPP....",".PPPzp.pzPPP....","..PPzppppzPP....","...zppppppz.....","...pKppppKp.....","...ppRppRpp.....","....pppppp......",".....p..p.......","....z....z......","................","................","................","................","................"],
+  mush:[".....RRRR.......","...RRVRRVRR.....","..RRRRRRRRRR....",".RRVRRRRRRVRR...",".RRRRRRVRRRRR...",".RRRVRRRRRVRR...","..RRRRRRRRRR....","..VVVVVVVVVV....","..VKVVVVVVKV....","..VVVVVVVVVV....","...VVVVVVVV.....","...xx....xx.....","...mm....mm.....","................","................","................"],
+  goblin:["...i.....i......","..iYi...iYi.....","..iYYYYYYYi.....",".iYKYYYYYKYi....",".iYYYYYYYYYi....",".iYYyyyyyYYi....",".iYnnnnnnnYi....","..iYnYYYnYi.....","..iYYYYYYYi.....",".iY.YYYYY.Yi....","iy..YY.YY..yi...","....YY.YY.......","...yy...yy......","................","................","................"],
+  golem:["..ZmmmmmmmZ.....",".ZMMMMMMMMMZ....",".ZMMxMMMxMMZ....",".ZMMMMMMMMMZ....",".ZMMYMMMYMMZ....",".ZMmZZZZZmMZ....","ZMMMMMMMMMMMZ...","ZMMmMMMMMmMMZ...","ZMMMMMMMMMMMZ...",".ZMMZ...ZMMZ....",".ZMMZ...ZMMZ....",".ZmmZ...ZmmZ....","..ZZ.....ZZ.....","................","................","................"],
+  sword:["..........HC....",".........HCA....","........HCA.....",".......HCA......","......HCA.......",".....HCA........","..Y.HCA.........","..YYHC..........","..sYY...........",".gsYYg..........",".gg..s..........",".g...s..........","................","................","................","................"],
+  swordBlue:["..........XU....",".........XUb....","........XUb.....",".......XUb......","......XUb.......",".....XUb........","..Y.XUb.........","..YYXU..........","..sYY...........",".gsYYg..........",".gg..s..........",".g...s..........","................","................","................","................"],
+  special:[".....c....c.....","..c...I..I......","...I..UUU...c...","....UUXUUU......","..cUUUuuUUUc....","...UUXUUXUU.....","..UUUuUUuUUU....",".c.UUuuuuU..c...","....UUUUUU......","...I..UU..I.....","......c.........","................","................","................","................","................"],
+  claw:["..R.....R.......","..rR...rR...R...","..erR..erR.rR...", "...rRe.rRe.erR..","...erR..rR..rR..","....rRe.rRe.eR..","....erR..rR.rR..",".....rRe.rRe....","......rR..rR....","......erR.erR...",".......e...e....","................","................","................","................","................"],
+  shield:["..HssssssH......",".HSSSSSSSSSH....",".sSMSSSSMSSs....",".sSSSSSSSSSs....",".sSSVVVVSSSs....",".sSSVaaVSSSs....",".sSSSSSSSSSs....","..sSSSSSSSs.....","..sSSSSSSSs.....","...sSSSSSs......","....sSSSs.......",".....sSs........","......s.........","................","................","................"],
+  amulet:[".....yYYy.......","....Y....Y......","...Y..yy..Y.....","...Y.y..y.Y.....","....Y....Y......",".....yYYy.......","......PP........",".....PzzP.......","....PzUcUzP.....","....PzUcUzP.....",".....PzzP.......","......PP........","................","................","................","................"],
+  ring:[".......YY.......","......YppY......",".....Yz..zY.....","....iYU..UYi....","...i.z....z.i...", "...i.z....z.i...","....iYU..UYi....",".....Yz..zY.....","......YppY......",".......YY.......","................","................","................","................","................","................"],
+  bracelet:["...iYYYYYYi.....","..iY......Yi....",".iY.cUUUUc.Yi...",".Y.cU....Uc.Y...",".Y.cU.II.Uc.Y...",".Y.cU....Uc.Y...",".iY.cUUUUc.Yi...","..iY......Yi....","...iYYYYYYi.....","................","................","................","................","................","................","................"],
+  belt:[".sssssssssssss..",".SLLLLLLLLLLLS..",".SLYYYYYYYYYLS..",".SLYiiiiiiiYLS..",".SLYyyIIyyy.LS..",".SLYiiiiiiiYLS..",".SLYYYYYYYYYLS..",".SLLLLLLLLLLLS..",".sssssssssssss..","......YY........","......yy........","................","................","................","................","................"],
+  bag:[".....mm.mm......","....mS.mS.m.....","...MMMMMMMMM....","..MMMMMMMMMMM...",".MMMYyYMMMMMMM..",".MMMYYYMMMMMMM..",".MMMMMMMMMMMMM..",".mMMMMMMMMMMMm..",".mMMMMMMMMMMMm..",".mmMMMMMMMMMmm..","..mmmmmmmmmmm...","...mmmmmmmmm....","................","................","................","................"],
+  trophy:["..iYYYYYYYYi....","..YiYYYYYYiY....",".YYiYYYYYYiYY...",".Yi.YYYYYY.iY...",".YYiYYYYYYiYY...","..iYYYYYYYYi....","...iYYYYYYi.....",".....YYYY.......","......yy........",".....yYYy.......","....yYYYYy......","...yYYYYYYy.....","................","................","................","................"],
+  gear:["......AA........","...A.AAAA.A.....","...AAAAAAAA.....",""..AAAAkkAAAA....","...AAkFFkAA.....",".AAAAkFFkAAAA...",".AAAAkFFkAAAA...","...AAkFFkAA.....","..AAAAkkAAAA....","...AAAAAAAA.....","...A.AAAA.A.....","......AA........","................","................","................","................"],
+  scale:[".i.YYYYYYYi....",".Yi....Y....iY..",".Y     Y     Y..","YyY    Y    YyY.","Y.Y    Y    Y.Y.","YyY    Y    YyY.",",      Y        ",",      Y        ","     yYYYy      ","    YYYYYYY     ","   yyyyyyyyy    ","................","................","................","................","................"],
+  paw:["...OO....OO.....","..OoOO..OOoO....","..OoOO..OOoO....","................",".OO........OO...", "OoOO..OO..OOoO..","OoOO.OOOO.OOoO..","     OoooO      ","    OoOOooO     ","    OOOOOOOO    ","     OooooO     ","................","................","................","................","................"],
+  flame:["       i        ","      iY        ","      iYY       ","     iYYY  i    ","     OiYYY iY   ","    OOiYYYiYY   ","    OOOiYYYY    ","...tOOOOiYYY    ","...ttOOOOiY     ","...tttOOOOi     ","    ttttOO      ","     tttt       ","      tt        ","................","................","................"],
+  hpPot:["      gg        ","      ss        ","     VVVV       ","     V  V       ","    bVVVVb      ","...bVRRRRVb     ","...bVRrRRVb     ","...bVRVRRVb     ","...bVRrRRVb     ","...bVRRRRVb     ","    bVVVVb      ","     bbbb       ","................","................","................","................"],
+  mpPot:["      gg        ","      ss        ","     VVVV       ","     V  V       ","    bVVVVb      ","...bVUUUUVb     ","...bVUbUUVb     ","...bVUVUUVb     ","...bVUbUUVb     ","...bVUUUUVb     ","    bVVVVb      ","     bbbb       ","................","................","................","................"],
+  vipcoin:["     yYYYy      ","    YiiiiiY     ","...YicccccY     ","...YicIIIcY     ","...YicIcIcY     ","...YicIIIcY     ","...YicIcIcY     ","...YicIIIcY     ","    YicccY      ","     yYYYy      ","................","................","................","................","................","................"],
+  ticket:["..OOOOOOOOOOO...",".OYYYYYYYYYYYO..",".OYyYiYYYiYyYO..","KOYYiiYYYiiYYOK.",".OYyYiYYYiYyYO..",".OYYYYiYiYYYYO..","KOYyYYYiYYYyYOK.",".OYYYiYYYiYYYO..",".OYyYYYYYYYyYO..",".OYYYYYYYYYYYO..","..OOOOOOOOOOO...","................","................","................","................","................"],
+  goblin_gate:["...KKKKKKKKKK...","..KYyYyYyYyYK...","..KyOOOOOOOyK...","..KYOKGGKGOYK...","..KyOGGGGGOyK...","..KYOGGKGGOYK...","..KyOGGGGGOyK...","..KYOOGGOOOYK...","..KyOOOOOOOyK...","..KYyYyYyYyYK...","..KKKKKKKKKKK...","...K.K..K.K.....","................","................","................","................"],
+  goldpile:["      Yi        ","     YYYy       ","    YiYYYy      ","...YYYiYYYy     ","..YiYYYYYiYy    ","..YYYiYYYYYy    ",".YiYYYYiYYYyy...",".YYYiYYYYYyyy...",".YYYYYiYYyyyy...",".iyyyyyyyyyyy...","..iiyyyyyyyi    ","................","................","................","................","................"],
+  synth:["       c        ","      cIc       ","     c Y c      ","    c YYY c     ","...cYYiiiYYc    ","..c YuUcUuY c   ","..cuUccIccUuc...","..cUcI   IcUc...","..cuUccIccUuc...","..c YuUcUuY c   ","...cYYiiiYYc    ","    c YYY c     ","     ccYcc      ","      c c       ","................","................"],
+  crest:["..U  sSSSSs  U..",".UbU SVVVVS UbU.", "UbbU SYiiYS UbbU",".UbU SYVVYS UbU.","..U SSYVVYSS U..","    SSYiiYSS    ","    SVSSSSVS    ","     SSSSSS     ","     SVVVVS     ","      SSSS      ","       SS       ","................","................","................","................","................"],
+  ghost:["    IIIIII      ","..IIbbbbIII     ",".IbbbbbbbbbI    ",".IbbKbbKbbI    ",".IbbbbbbbbbI    ",".IbbbbbbbbbI    ","..IbbbbbbbI     ","...IBBBBBIc     ","    BBBBBcc     ","...cBBBBccccc...", "    ccccccc     ","     ccccc      ","................","................","................","................"],
+  shield:["......KKKK......","    KKKKKKKK    ","...KKKBBBKKK...", "..KKKBBBBBKKK..","..KKBBbBbBBKK..","..KKBbbbbbBKK..","..KKBbKKbBBKK..","..KKBbKKbBBKK..","..KKBbbbbbBKK..","..KKBBbBbBBKK..","...KKKBBBKKK...", "    KKKKKKKK    ","      KKKK      ","................","................","................"],
+  wasp:["     YYY        ","    YYYYYY      ","...YYbBbYYY     ","..YYbBiBYYYYY...",".YYbBiBiBYYEYY..",".YbBiBiBiBYEEYY.",".bBiBiBiBiBEEYY.",".YbBiBiBiBYEEYY.",".YYbBiBiBYYEYY..","..YYbBiBYYYYY...", "...YYbBbYYY.....","    YYYYYY      ","     YYY        ","................","................","................"]
 };
 
-/* ---------- SPRITES DE IMAGEM (PNG embutido) ----------
-   Sprites com arte detalhada demais para o grid 16x16 são embutidos como PNG.
-   drawSprite detecta e renderiza a imagem (com nearest-neighbor via CSS). */
-const SPR_IMG_SRC = {
-  wasp: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAQaUlEQVR4nO2aeXQUdbbHv7+q6u70kqSz7yGBSEIgISYhYRGDwEMIq2CDEFBQRBQFmYPD84xjp3k836gI+HwMCCqIb1QShWHYRgWk2VdZTAKELKSzdOgkve9dVb/3RwYUXB4jKOjk06fOqf5VnVP3fu/9LfdXBXTRRRdddNFFF1108dPQQnunTbhzUEoBAhCGoKys7E6bc2cIReS1c4Zh7qAlPxGNRgNK6XXH/xdNSjvT/g8zFy3bsaGMvvOntwyPjpv+EtCZDb8JCENAKf3ePs6yLADgvddXtwYaW8Sv/r6HNp+uoqt1Kz4DAIb99WQCNzareGrfgX2mSuQyiUyuEH0uD1N/vvrQhi8+XkpIZzQppbh6DgAUFABwpaVFaLfYSERYpNDUUC+OHDlkxKuW0l2LV5aOomUUZPLdnw3coBEDN8x7fIq0prEJUbExkIoCamrqRub1v3eBuc2579NtW5cRQo6BANqHtdDpdBB4AYQQ2IzW44Z6w4QghQIyiVRyofIcn9u3x8gXS57bRiaTsZSWgZDJd9rHH4UJi1DbOJWSD1aq+JoL1ULFhWohKTlJmDHlocjiEYUPPzp14sGSIRP3dGN6TNDpdCAMQWlpKQCgtrn1bPo96VQM+KnN50dUXBKXkJIayMvLHDN5wPhnCJkMrfbuniaZfTt2r6+uuMAFq1UkOSWJDQ1TsdW1l9jDh49Qs61DGDuxmFv4wlNDp0wbUtY/KbucE0Oh0+nAsAy8FrPQ3HCZqCLDERBEmIwtCLi9XEZaqjCjZNyqKUXTNDqdDmWau3eKJACwdPaihqGjBye2trbBbbMzCYmJiE6IR4uxGSqFEvEx8QKIyOz821ZSXWds5QXZ62+Vr1oeo4zB4llPugpzeyt4AlGhDmGsNgsK+g0Qvz5+BBUXDY3bdh9K2X5i+3VjyN0EIYQgPyJrzNvvrdiWmd2Lb2/vYC/XVpPYhCSEh4WjvdWIDpMJbj6ApJRUvq29hXPZfTh3ulq/aOXLQ6Zmj3y6dP7clQ7iZ9ullBW9HnABETFRMYLg97FHquoOzfvPRffdOJDeLTCbNm3CifZz2z/ZvKO0vr6B8zrtAkMh7Nv7BY4fO4x2mxVB4WokdUuGoaGOC5KpaGJcjNi7V0LR2iVvWINiY4RVGzYZvW4XyzYsaVuNAVda2xCQsmyLpZ3vESwf9GTxrD8QQqAt+ufGA41GA41G8zO53gkBAKrVguh0mJZfvGTK1PF/DE+MRUJcLOQKBWwuOxxmC3w+P4gInKs8i6zsHISq1YLgcbMmqwM712+H0GLF0OJBiE6PB0dY+OxOtHsclGUIFRmF44217w+LK0w+ZSo3QQ/9TVhGANo53SYCUCEZSihwChduvwDAN3P9iOxRYyhLErLSui3pnZ0endQ9nsZFRhKT0YgLNRcx6L774XG64Ha4YDI0UTUnFT0SwlZUGSA7bUNIuBxB6SHgwoIQrY6Eydou0ICfrahq2vbazvXjGJZA5ClANADKf9S4UdmjphClROMKeAdwUi4ePGAxmEq/aj2pK0LRzQl5swIAwJy8OVh7ai0AVGx/t+xYzx4JfH1NLed2OJGYmAiOJTh68gQSQyOhiAgDD8BuMiMySAEbCcAVEND0eQWi6vxA9zDwvYLB8344qVvoaHPTv20/8pzB51rjQj0AQAMNyr8lwtX/g2MKQBJUp1lOmiOK1Oe3+454nM5LFCDU43//nOXcwVv2/PsEAIA5c+bg2AdfYvaCx09Pf3RSjiiIfENjE+noaGciw8OI1WyDs80Mr9UCBhTSMDUQGgra2oGOtlZ4IxVgWwHP1guoC7VAksPg9AUvGAmFKAbAEtZuM3sPtDS0ljd6694vK9PgkUfKIVIAFEgP7YbUPtkGr4dXGCqq5tT5GzbfaKNGo0F5+Y9nz08W4ForBV5b+B9HCwb3KyQBH8JkErAcC5fbBcPly2hv7UCoSgVjWxvkMhVkHANpkAQmUwu4sGBcbvchwvs15JEd2HYmCnKZBJyEoUFyKWEZgPgCuHym/ZnDDYdXA/FIg4hQECiyMrb4RTrIUlkfXY0GpCENQbGhxerI4DS/yX78uOmro7dThB+clwhDQEWKAcn5M8aNK344IiI8nZGr0tVqBe2dnUqUSjsaa2rQYvJALZPDZxbhtNlAWAaiIMDidMLs9WPv0Yuoa7NCJiOQKaSglKEyqUxQhHCs4YKRPDGE7ErPCSkofdvNsIwAhrJKqcE+6ARfcTI/MV8rj1DP87l5tVTOSVRqFRRSWYWz+crSz8/v23Q7RPhBAYqKirD/gB5UBGSImNsvt+D5x6fH9kxJIKiq8pD9R+1IiovFiJGp8DrtqG+QwtLBwdLRgXarHRk9EuD22iB4rCge3IDz1T7Eh0uQnsHgUiOPjVt59Epi8NBwFnUWGUztwPKNLoSrGMFmwnaVQlYfFCx73mHreE1up4s7nA6EJESsVkYHz1BHqpVCm2PazjOffaSFFjrobq8ARUVF0Ov16BGalfvc3IRlV5zqB+qvSPH2fDNCIt2oPe/FpJcIEmI5rF6aCmOjGU8uaUUE78FANgJ8jgtnmkPQ0OhDstqHaUMl8Li8uGigKMjlMK4/gf6YAEYtxasfsoLFG848mGNEegKPHskKwnNKzH2plUYQhjneduY625RQIi2p96cpPVMmttc3TzxUd2jLjYPpP8N3CndtURH279djWFo+3nkzd9eC38c9UJhu48+ea6CHT1sgOjyIDWeR1UMKnyhDVCiHXt04yGUSpMYQJBRZEZYUDnmIDMHhLAxmEWGRMvzb2FRUWuTQbQ7FmJcl2LjXB3MHjyYTZQvzIkitPYNIJEGk4QpPrRa3kBAXY+6ZmgSttjMgVwPjInfmiwua7iOviYAAAAASUVORK5CYII=",
-  knight: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAdBklEQVR4nLWbd5Rd1XX/P+fce999vcyMpmnUR6gjUYREMTI2HWMwZgZIln9xiXGLneKsrMSOMwz2ipPYTo9tcBzbCS5oABvTTBGRKKZKgBAqqEujGU2f19+7955zfn+8NzJy1MBir/XWzHrv3Hv3/t6999ntCN5tEoCBVuD3b+z+rF/2nHKpGE0kk74feI7n+04ikTKFQgEdeKZl+ozKru1b8j998cU73u6jenoMvb2CP77p/90TjkQSf//D716xdm0f3d3dJ2TvXaEeoBdY2d7OVR+4YePS81Z3nrHi3KRSGjAYY5BSghBorY8wYzshRgf72bP51cHtr7z86LfW/vhjPT099Pb2nvx5UpJyNH//tW+blo4ZhQ/dcm0CIegxhuNdLU+fyEfT+jVrAEhb1kc7V15ydsdZFyS1HVJOPK4i6YyKNzaqSDqtwsmUimUaVDSTUW4ypYTrqoaZc9X7PvKpttmLlt0CcPtXv3byB67pAa3pfs+VX565cCnpTCb+2Usv/yTGQE/PcS+zT4+4x6eWadP8UjGvt7yyWbuOZUtLEo1GcUIOjm2TTMbxPL+uCQYhwHFsEwqFjBuN5gAM5uQPei+wAYS0p7nhOKl0FI01DYD1x7/sXQdAWSGUNlIgjOf5hMMu2WwOx7IxwKFDh5ne0YobcrEsiWVJQo4DIIIgeNsa6gdGagy+VyWolPK1b9cfd/27DkBuctIGg21LYwtJKBTCcRykgGK5QiTs0tbWQqlcQQcKKSVKKQQgTO3NC8Sp6AAAyWTMtW0bYzSxeCQ42fp3zQdMUWMqriwp8bxASCnRSqG1xhjAGLK5PKViGa/qYWpfYoByxUOKGnunZAJ1sqRw7ZBDpVRm4OBAAU5oAe++BjihiK+UJmRbhFwXIQSBH6C0wXYcEk6IeCKOAUrFMmDAaBzHwbyDTcoYI0OhEONDRSaGh4snW/+uAzAyPGaXK1WaUwkmxsZ4+aVNtLW1EtTVHCA7OU40GkFKSaXssXnz63zhi5/HsmsaIMTJTWDJkiUAxJOp0NDIGDLwyKTieUagubn5uNe9awA0j4zUGMokHMuSBIEy4+MTPPTAw7hhF61rb1ppjdEGy5K4IZd0oolcfpKrrrsa27IAMPrUTcDzfKtQrhCuVpkYO1wGoK/vuOvfFQCEENyzfTs9PT30r1snIuEwh4dGSKZSfOlv/gqtFVrpqdXMmDUd1w2hlca2bQLfo7m5mUGtSCaTZLNZhDg1cwiUdizLRgU+hYlCCWDqxreosbxsay4j3K3JzWLSkyuP4Pq+3pM7a31bJqJ5c+d27bupGrbbOhu/ffq6pZ3W+a+u0tvd8a5Gv7v3G5m4fufgUf5u0XyZ76uObeC+ffuOvu67g63+7cZtY2vrkC2/u7nL9rN4V9M717o/9v9rX3/7P1t07m9/u+d3/n8/7/wGZf+2FkKpt4AAAAAElFTkSuQmCC"
+const WEAPONS = [
+  {id:'w1',nm:'Espada de Treino', atk:5,  spd:0,tier:0,val:40,   icon:'sword'},
+  {id:'w2',nm:'Lâmina de Ferro',  atk:12, spd:1,tier:1,val:150,  icon:'sword'},
+  {id:'w3',nm:'Espada Energizada',atk:22, spd:2,tier:3,val:520,  icon:'swordBlue'},
+  {id:'w4',nm:'Lâmina Rúnica',    atk:40, spd:3,tier:5,val:1600, icon:'swordBlue'},
+  {id:'w5',nm:'Vanguarda Astral', atk:70, spd:5,tier:7,val:4800, icon:'swordBlue'},
+];
+const ARMORS = [
+  {id:'a1',nm:'Cota Simples',    def:3,  hp:0,  tier:0,val:35,   icon:'shield'},
+  {id:'a2',nm:'Placas de Aço',   def:8,  hp:30, tier:2,val:210,  icon:'shield'},
+  {id:'a3',nm:'Armadura Rúnica', def:15, hp:80, tier:4,val:800,  icon:'shield'},
+  {id:'a4',nm:'Égide do Abismo', def:26, hp:180,tier:7,val:2900, icon:'shield'},
+];
+const SHIELDS = [
+  {id:'s1',nm:'Escudo de Madeira',def:2,  tier:0,val:30,   icon:'shield'},
+  {id:'s2',nm:'Escudo com Brasão',def:6,  tier:1,val:170,  icon:'shield'},
+  {id:'s3',nm:'Muralha de Ferro', def:12, tier:4,val:680,  icon:'shield'},
+  {id:'s4',nm:'Baluarte Sagrado', def:22, tier:6,val:2500, icon:'shield'},
+];
+const AMULETS = [{id:'am1',nm:'Amuleto de Osso',atk:4,tier:0,val:80,icon:'amulet'}];
+const RINGS = [{id:'ri1',nm:'Anel de Cobre',atk:3,tier:0,val:70,icon:'ring'}];
+const BRACELETS = [{id:'br1',nm:'Bracelete de Couro',def:3,tier:0,val:75,icon:'bracelet'}];
+const BELTS = [{id:'be1',nm:'Cinto de Couro',def:2,tier:0,val:65,icon:'belt'}];
+
+const AFFIXES = {
+  lifesteal:{nm:'Rouba Vida', suf:'%', short:'RV'},
+  atkspd:   {nm:'Atk Spd',    suf:'%', short:'AS'},
+  atkpct:   {nm:'Atk',        suf:'%', short:'ATK'},
+  defpct:   {nm:'Defesa',     suf:'%', short:'DEF'},
+};
+const AFFIX_KEYS=Object.keys(AFFIXES);
+const ACCESSORY_TYPES=['amulet','ring','bracelet','belt'];
+const ALL_EQ = {weapon:WEAPONS, armor:ARMORS, shield:SHIELDS, amulet:AMULETS, ring:RINGS, bracelet:BRACELETS, belt:BELTS};
+function eqBase(type,id){ return ALL_EQ[type].find(x=>x.id===id); }
+function isAccessory(type){ return ACCESSORY_TYPES.includes(type); }
+function rollAffix(rarity){
+  const key=AFFIX_KEYS[Math.floor(Math.random()*AFFIX_KEYS.length)];
+  const base=1+Math.floor(Math.random()*3);
+  return {key, pct: Math.round(base*rarMult(rarity)) };
+}
+
+const PET_BASES = [
+  {id:'fox',  nm:'Raposa Flamejante', spr:'fox',  atk:4, spd:6, hp:40, val:900, desc:'Veloz.'},
+  {id:'wolf', nm:'Lobo Espectral',    spr:'wolf', atk:8, spd:4, hp:70, val:1400, desc:'Equilibrado.'},
+  {id:'drake',nm:'Dragonete Verde',   spr:'drake',atk:14,spd:3, hp:110,val:2200, desc:'Forte.'},
+];
+const RARITIES = [
+  {id:'Comum',      mult:1,   w:0,   color:'#cbb'},
+  {id:'Incomum',    mult:1.5, w:120, color:'#7ac74f'},
+  {id:'Raro',       mult:2,   w:70,  color:'var(--raro)'},
+  {id:'Épico',      mult:2.5, w:20,  color:'var(--epico)'},
+  {id:'Lendário',   mult:3,   w:8,   color:'var(--lend)'},
+  {id:'PixelMaster',mult:5,   w:2,   color:'var(--pixel)'},
+];
+function rarLabel(id){ return id==='PixelMaster'?'Pixel Master':id; }
+function rollRarity(){
+  const pool=RARITIES.filter(r=>r.w>0);
+  const total=pool.reduce((s,r)=>s+r.w,0);
+  let roll=Math.random()*total;
+  for(const r of pool){ roll-=r.w; if(roll<=0) return r.id; }
+  return 'Raro';
+}
+function rarMult(id){ return RARITIES.find(r=>r.id===id).mult; }
+
+const ENEMY_RARITIES = [
+  {id:'Comum',    mult:1,   w:820, exp:1,   drop:1,   color:'#cbb',        label:''},
+  {id:'Incomum',  mult:1.5, w:120, exp:1.6, drop:2,   color:'#7ac74f',     label:'INCOMUM'},
+  {id:'Raro',     mult:2,   w:45,  exp:2.4, drop:3.5, color:'var(--raro)', label:'RARO'},
+  {id:'Épico',    mult:2.5, w:12,  exp:3.5, drop:6,   color:'var(--epico)',label:'ÉPICO'},
+  {id:'Lendário', mult:3,   w:3,   exp:5,   drop:10,  color:'var(--lend)', label:'LENDÁRIO'},
+];
+function rollEnemyRarity(){
+  const bonus = Math.min(760, (S.stage-1)*10);
+  const upWeights = ENEMY_RARITIES.slice(1).reduce((s,r)=>s+r.w,0);
+  let roll = Math.random()*1000;
+  const comumW = Math.max(60, ENEMY_RARITIES[0].w - bonus);
+  roll -= comumW;
+  if(roll<=0) return ENEMY_RARITIES[0];
+  const transferred = ENEMY_RARITIES[0].w - comumW;
+  for(let i=1;i<ENEMY_RARITIES.length;i++){
+    const r=ENEMY_RARITIES[i];
+    const w = r.w + transferred*(r.w/upWeights);
+    roll -= w;
+    if(roll<=0) return r;
+  }
+  return ENEMY_RARITIES[ENEMY_RARITIES.length-1];
+}
+function enemyRar(id){ return ENEMY_RARITIES.find(r=>r.id===id) || ENEMY_RARITIES[0]; }
+
+const MONSTERS = [
+  {nm:'SLIME',        spr:'slime',   hp:30, atk:4, def:0, spd:2, gold:6},
+  {nm:'SLIME RUBRO',  spr:'slimeRed',hp:45, atk:6, def:1, spd:3, gold:9},
+  {nm:'MORCEGO',      spr:'bat',     hp:38, atk:7, def:0, spd:6, gold:11},
+  {nm:'COGUMELO',     spr:'mush',    hp:70, atk:8, def:3, spd:2, gold:14},
+  {nm:'ESQUELETO',    spr:'skel',    hp:90, atk:12,def:4, spd:4, gold:20},
+];
+const BOSSES = [{nm:'GOLEM ANCIÃO', spr:'golem', hp:220,atk:16,def:6, spd:2, gold:80}];
+const GOLD_GOBLIN = {nm:'GOLD GOBLIN', spr:'goblin', hp:60, atk:5, def:2, spd:8, gold:250};
+const GOBLIN_SPAWN_CHANCE=0.004;
+const BGS=[
+  {c:'bg-dungeon',    nm:'Masmorra'},
+  {c:'bg-forest-day', nm:'Floresta (Dia)'},
+  {c:'bg-cave',       nm:'Caverna Profunda'},
+  {c:'bg-city-day',   nm:'Cidade (Dia)'},
+];
+const DROP_EQ_MONSTER=0.024, DROP_EQ_BOSS=0.10, DROP_PET=0.001;
+const MARKET_FEE=0.10;
+const VIP_COIN_PRICE=0.40;
+const DONATE_PACKS=[{coins:10,bonus:0},{coins:30,bonus:2}];
+const BOOSTERS={
+  exp: {id:'exp', nm:'Booster de EXP', cost:12, days:30, bonus:0.20},
+  drop:{id:'drop',nm:'Booster de Drop',cost:22, days:30, bonus:0.20},
+};
+const DAY_MS=86400000;
+
+const TALENTS = [
+  {id:'f1', branch:'fury', tier:0, req:null, nm:'Lâmina Afiada', stat:'atk', perRank:2, maxRank:5, cost:1, desc:'+2% ATK'},
+  {id:'corte', branch:'fury', tier:1, req:'f1', nm:'Corte Cruel', stat:null, active:'corte', cost:5, maxRank:1, desc:'MAGIA: Dano puro.'},
+];
+const TALENT_BY_ID = Object.fromEntries(TALENTS.map(t=>[t.id,t]));
+const ABILITIES = {
+  corte:  {nm:'Corte Cruel', cd:40000, dur:0, icon:'special'},
+  ira:    {nm:'Ira', cd:300000, dur:30000, icon:'flame'},
+  esquiva:{nm:'Esquiva', cd:120000, dur:10000, icon:'shield'},
 };
 
-// ============================================================
-// CORREÇÃO DA FUNÇÃO CONFIRMLISTING (SUPABASE REAL)
-// ============================================================
+let S = null;
+let uidSeq = 1;
+function newUid(){ return 'u'+(uidSeq++)+'_'+Date.now().toString(36); }
+function defaultState(nick){
+  const starterPet={uid:newUid(),petId:'fox',rarity:'Comum',lvl:1,xp:0};
+  return {
+    nick, gold:30, vip:0, stage:1, wave:1, kills:0,
+    k:{lvl:1,xp:0,hp:100,mp:50},
+    inv:[
+      {uid:newUid(),type:'weapon',baseId:'w1',rarity:'Comum'},
+      {uid:newUid(),type:'armor', baseId:'a1',rarity:'Comum'},
+      {uid:newUid(),type:'shield',baseId:'s1',rarity:'Comum'},
+    ],
+    eq:{weapon:null,armor:null,shield:null,amulet:null,ring:null,bracelet:null,belt:null},
+    pets:[starterPet],
+    activePetUid:starterPet.uid,
+    petHp:40,
+    pots:{hp:2,mp:1},
+    tickets:0,
+    autopot:{hpOn:true, hpPct:40, mpOn:true, mpPct:20},
+    listings:[],
+    tournamentRewards:{gold:0, vip:0},
+    boosters:{exp:0, drop:0},
+    mastery:0,
+    talents:{},
+    abilCd:{corte:0, ira:0, esquiva:0},
+    abilAuto:{corte:false, ira:false, esquiva:false},
+    bestStage:1,
+    lang:'pt',
+    uidSeq:10,
+  };
+}
+const SAVE_KEY='pixel_vanguard_idle_v2';
 
+const I18N = {
+  'maestria':{pt:'maestria', en:'mastery'},
+  'desafio':{pt:'desafio', en:'challenge'},
+  'poções':{pt:'poções', en:'potions'},
+  'mercado':{pt:'mercado', en:'market'},
+  'ranking':{pt:'ranking', en:'ranking'},
+  'settings':{pt:'config', en:'settings'},
+  'vip':{pt:'vip', en:'vip'},
+  'settings_title':{pt:'CONFIGURAÇÕES', en:'SETTINGS'},
+};
+function t(key){
+  const lang=(typeof S!=='undefined' && S && S.lang)?S.lang:'pt';
+  const entry=I18N[key];
+  if(!entry) return key;
+  return entry[lang]||entry.pt||key;
+}
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(elm=>{
+    const key=elm.getAttribute('data-i18n');
+    elm.textContent=t(key);
+  });
+}
+
+const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
+let supaAuth=null;
+async function supaAuthInit(){
+  try{
+    supaAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return true;
+  }catch(e){ return false; }
+}
+
+async function supaLogin(nick, password){
+  if(!supaAuth) return {ok:false, msg:'Supabase não conectado'};
+  try{
+    const emailFantasma = nick.toLowerCase() + '@pixelvanguard.com';
+    const {data: loginData, error: loginError} = await supaAuth.auth.signInWithPassword({
+      email: emailFantasma,
+      password: password
+    });
+    
+    if(loginError){
+      if(loginError.message.includes('Invalid login credentials')){
+        const {data: signupData, error: signupError} = await supaAuth.auth.signUp({
+          email: emailFantasma,
+          password: password,
+          options: { data: { nick: nick } }
+        });
+        if(signupError) return {ok:false, msg:'Erro ao criar conta: '+signupError.message};
+        
+        const {data: userData, error: userError} = await supaAuth.from('users').select('*').eq('nick', nick).single();
+        if(userError) return {ok:false, msg:'Erro ao carregar dados: '+userError.message};
+        return {ok:true, user:userData, isNew:true};
+      }else{
+        return {ok:false, msg:'Erro de autenticação: '+loginError.message};
+      }
+    }
+    
+    const {data: userData, error: userError} = await supaAuth.from('users').select('*').eq('nick', nick).single();
+    if(userError) return {ok:false, msg:'Erro ao carregar dados: '+userError.message};
+    return {ok:true, user:userData, isNew:false};
+  }catch(e){
+    return {ok:false, msg:'Erro na autenticação: '+e.message};
+  }
+}
+
+async function supaSaveGameData(userId, gameData){
+  if(!supaAuth || !userId) return false;
+  try{
+    await supaAuth.from('users').update({
+      game_data: gameData, 
+      level: gameData.k.lvl,
+      stage: gameData.stage,
+      updated_at: 'now()'
+    }).eq('id', userId);
+    return true;
+  }catch(e){ return false; }
+}
+
+function save(){ 
+  try{ 
+    S.uidSeq=uidSeq; 
+    localStorage.setItem(SAVE_KEY, JSON.stringify(S)); 
+    if(S.userId && supaAuth) supaSaveGameData(S.userId, S);
+  }catch(e){} 
+}
+function load(){ try{ const d=localStorage.getItem(SAVE_KEY); return d?JSON.parse(d):null; }catch(e){ return null; } }
+
+function boosterActive(id){ return S.boosters && S.boosters[id] && S.boosters[id]>Date.now(); }
+function expMult(){ return boosterActive('exp') ? 1+BOOSTERS.exp.bonus : 1; }
+function dropMult(){ return boosterActive('drop') ? 1+BOOSTERS.drop.bonus : 1; }
+function stageDropBonus(){ return Math.floor((S.stage-1)/5)*0.001; }
+
+function eqInstStats(inst){
+  if(!inst) return {atk:0,spd:0,def:0,hp:0,affix:null};
+  const b=eqBase(inst.type,inst.baseId);
+  const m=rarMult(inst.rarity||'Comum');
+  return {
+    atk:Math.round((b.atk||0)*m),
+    spd:(b.spd||0)+Math.floor((m-1)*1.2),
+    def:Math.round((b.def||0)*m),
+    hp: Math.round((b.hp||0)*m),
+    affix: inst.affix||null,
+  };
+}
+function eqInstValue(inst){
+  const b=eqBase(inst.type,inst.baseId);
+  let v=b.val*rarMult(inst.rarity||'Comum');
+  if(inst.affix) v*= (1 + inst.affix.pct*0.08);
+  return Math.round(v);
+}
+function eqItem(slot){
+  const uid=S.eq[slot];
+  const inst=S.inv.find(i=>i.uid===uid);
+  return eqInstStats(inst);
+}
+function knightAffixPct(key){
+  let sum=0;
+  ACCESSORY_TYPES.forEach(slot=>{
+    const st=eqItem(slot);
+    if(st.affix && st.affix.key===key) sum+=st.affix.pct;
+  });
+  return sum;
+}
+function activePet(){ return S.pets.find(p=>p.uid===S.activePetUid); }
+function petBase(p){ return PET_BASES.find(b=>b.id===p.petId); }
+function petStats(p){
+  const b=petBase(p), m=rarMult(p.rarity);
+  const lvlScale=Math.pow(1.005, p.lvl-1);
+  return {
+    atk:Math.round((b.atk+(p.lvl-1)*2)*m*lvlScale),
+    spd:Math.round(b.spd*m),
+    hp: Math.round((b.hp +(p.lvl-1)*10)*m*lvlScale),
+  };
+}
+
+function talentRank(id){ return (S.talents&&S.talents[id])||0; }
+function talentUnlocked(t){
+  if(!t.req) return true;
+  const reqT=TALENT_BY_ID[t.req];
+  return talentRank(t.req) >= (reqT.active?1:reqT.maxRank);
+}
+function talentStatBonus(statKey){
+  let sum=0;
+  for(const t of TALENTS){ if(t.stat===statKey){ sum += talentRank(t.id)*t.perRank; } }
+  return sum;
+}
+
+function kAtkFlat(){
+  const base = 6 + (S.k.lvl-1)*3 + (eqItem('weapon').atk||0) + (eqItem('amulet').atk||0) + (eqItem('ring').atk||0);
+  return Math.round(base * Math.pow(1.005, S.k.lvl-1));
+}
+function kDefFlat(){
+  return (eqItem('armor').def||0)+(eqItem('shield').def||0)+(eqItem('bracelet').def||0)+(eqItem('belt').def||0)+Math.floor(S.k.lvl/2);
+}
+function kMaxHP(){return Math.round((100 + (S.k.lvl-1)*18 + (eqItem('armor').hp||0))*(1+talentStatBonus('hp')/100)*Math.pow(1.007, S.k.lvl-1));}
+function kMaxMP(){return 50 + (S.k.lvl-1)*6;}
+function kAtk(){return Math.round(kAtkFlat()*(1+(knightAffixPct('atkpct')+talentStatBonus('atk'))/100));}
+function kDef(){return Math.round(kDefFlat()*(1+(knightAffixPct('defpct')+talentStatBonus('def'))/100));}
+function kSpd(){return Math.round((4 + (eqItem('weapon').spd||0) + Math.floor(S.k.lvl/4))*(1+knightAffixPct('atkspd')/100));}
+function kLifesteal(){return knightAffixPct('lifesteal');}
+function kCritChance(){return 0.10;}
+function kManaRegen(){return 4;}
+function xpNeed(lvl){return Math.round(30 * Math.pow(1.018, lvl) + lvl*12 + 20);}
+
+let iraUntil=0, esquivaUntil=0;
+function iraActive(){ return iraUntil>Date.now(); }
+function esquivaActive(){ return esquivaUntil>Date.now(); }
+function abilReady(id){ return (S.abilCd&&S.abilCd[id]?S.abilCd[id]:0) <= Date.now(); }
+function abilOwned(id){ return talentRank(id)>0; }
+
+function castAbility(id, silent){
+  if(!abilOwned(id)){ if(!silent) toast('Destrave esta magia na árvore!'); return; }
+  if(!abilReady(id)) return;
+  const now=Date.now();
+  if(id==='corte'){
+    if(!M || M.dead || S.k.mp<=0) return;
+    const dmg=Math.round(S.k.mp);
+    S.k.mp=0;
+    M.hp-=dmg;
+    S.abilCd.corte=now+ABILITIES.corte.cd;
+    if(M.hp<=0 && !M.dead) monsterDefeated();
+  }
+  updBars(); save();
+}
+
+let M = null;
+let inChallenge=false;
+function spawnMonster(){
+  if(inChallenge) return;
+  const isBoss = S.wave>=10;
+  const isGoblin = !isBoss && Math.random() < GOBLIN_SPAWN_CHANCE;
+  const mult = Math.pow(1.18, S.stage-1) * (1 + (S.wave-1)*0.08);
+
+  if(isGoblin){
+    const g=GOLD_GOBLIN;
+    M = {
+      nm:'✨ '+g.nm, spr:g.spr,
+      hp: Math.round(g.hp*mult), maxhp: Math.round(g.hp*mult),
+      atk: Math.round(g.atk*Math.pow(1.18,S.stage-1)),
+      def: Math.round(g.def*Math.pow(1.14,S.stage-1)),
+      spd: g.spd + Math.floor(S.stage/2),
+      gold: Math.round(g.gold*Math.pow(1.3,S.stage-1)),
+      boss:false, goblin:true,
+    };
+    drawSprite(el('monster-cv'), M.spr);
+    el('monster-name').textContent = M.nm+' HP';
+    toast('Gold Goblin apareceu!', 2800);
+    updBars();
+    return;
+  }
+
+  const base = isBoss ? BOSSES[0] : MONSTERS[Math.floor(Math.random()*MONSTERS.length)];
+  const er = rollEnemyRarity();
+  M = {
+    nm: (isBoss?'👑 ':'')+(er.label?'['+er.label+'] ':'')+base.nm, spr:base.spr,
+    hp: Math.round(base.hp*mult*er.mult), maxhp: Math.round(base.hp*mult*er.mult),
+    atk: Math.round(base.atk*Math.pow(1.18,S.stage-1)*er.mult),
+    def: Math.round(base.def*Math.pow(1.14,S.stage-1)*er.mult),
+    spd: base.spd,
+    gold: Math.round(base.gold*Math.pow(1.3,S.stage-1)*er.mult),
+    boss:isBoss,
+    rarity:er.id,
+  };
+  drawSprite(el('monster-cv'), M.spr);
+  el('monster-name').textContent = M.nm+' HP';
+  updBars();
+}
+
+const el = id=>document.getElementById(id);
+function setFill(id, pct){ el(id).style.transform=`scaleX(${Math.max(0,Math.min(1,pct))})`; }
+function updBars(){
+  const ap=activePet(), ps=petStats(ap);
+  const kHP=kMaxHP(), kMP=kMaxMP(), kXP=xpNeed(S.k.lvl), pHP=ps.hp, pXP=xpNeed(ap.lvl);
+  setFill('monster-hp', M?M.hp/M.maxhp:0);
+  setFill('k-hp', S.k.hp/kHP);
+  setFill('k-mp', S.k.mp/kMP);
+  setFill('k-xp', S.k.xp/kXP);
+  setFill('p-hp', S.petHp/pHP);
+  setFill('p-xp', ap.xp/pXP);
+  el('k-lvl').textContent='Lv.'+S.k.lvl;
+  el('ui-stage').textContent=S.stage;
+  el('ui-wave').textContent=S.wave;
+  el('ui-gold').textContent=S.gold;
+  el('ui-vip').textContent=S.vip;
+}
+function toast(msg, ms=1800){
+  const el_t=el('toast');
+  el_t.innerHTML=msg; el_t.style.display='block';
+  setTimeout(()=>el_t.style.display='none',ms);
+}
+
+function setStageBG(){
+  const scene=BGS[(S.stage-1)%BGS.length];
+  el('bgA').className='bg '+scene.c;
+  el('scene-label').textContent=scene.nm;
+}
+
+let busy=false;
+async function combatRound(){
+  if(busy || !M || M.dead || S.k.hp<=0) return;
+  busy=true;
+  
+  const dmg = Math.max(1, Math.round(kAtk() - M.def*0.5));
+  M.hp -= dmg;
+  
+  if(M.hp<=0) monsterDefeated();
+  else {
+    const foeDmg = Math.max(1, Math.round(M.atk - kDef()*0.5));
+    S.k.hp = Math.max(0, S.k.hp - foeDmg);
+    if(S.k.hp<=0) partyDefeated();
+  }
+  
+  S.k.mp = Math.min(kMaxMP(), S.k.mp+kManaRegen());
+  updBars(); save();
+  busy=false;
+}
+
+function monsterDefeated(){
+  if(!M || M.dead) return;
+  M.dead=true;
+  S.gold += M.gold;
+  gainXP(25);
+  
+  if(M.boss){
+    S.stage++; S.wave=1;
+    setStageBG();
+  } else {
+    S.wave++;
+  }
+  setTimeout(spawnMonster, 400);
+}
+
+function partyDefeated(){
+  M=null;
+  setTimeout(()=>{
+    S.wave=1;
+    S.k.hp=kMaxHP(); S.k.mp=kMaxMP();
+    spawnMonster();
+  }, 2000);
+}
+
+function gainXP(xp){
+  S.k.xp += xp;
+  while(S.k.xp >= xpNeed(S.k.lvl)){
+    S.k.xp -= xpNeed(S.k.lvl);
+    S.k.lvl++;
+    S.k.hp = kMaxHP(); S.k.mp = kMaxMP();
+  }
+}
+
+// MERCADO GLOBAL E ANÚNCIOS CORRIGIDOS
 async function confirmListing(cur){
   if(!sellTarget) return;
-  
   const price = Math.max(1, Math.floor(Number(el('sell-price').value) || 0));
   if(price < 1) return toast('Defina um preço válido!');
-  
   const t = sellTarget;
-  let fair = t.sug;
   
-  // Remove item do inventário local
   if(t.kind === 'eq'){
     S.inv = S.inv.filter(i => i.uid !== t.uid);
   } else if(t.kind === 'pet'){
@@ -2308,45 +1310,162 @@ async function confirmListing(cur){
     S.gold -= t.amount;
   }
   
-  if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
-  
-  // Salvar localmente SEMPRE (funciona mesmo sem Supabase)
   const localId = newUid();
-  S.listings.push({id: localId, ...t, cur, price, fair, ts: Date.now()});
+  S.listings.push({id: localId, ...t, cur, price, ts: Date.now()});
   
-  toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
-  closeSellPanel(); 
-  updBars(); 
-  save(); 
-  renderMarket();
+  toast('Anúncio publicado!');
+  closeSellPanel(); updBars(); save(); renderMarket();
   
-  // Tentar sincronizar com Supabase com segurança (sem estourar erro de currentUser)
   try {
     if(supaAuth) {
       const { data: { user } } = await supaAuth.auth.getUser();
       const userId = user ? user.id : (S.userId || null);
 
-      await supaAuth
-        .from('market_listings')
-        .insert([{
-          id: localId,
-          seller_nick: S.nick,
-          seller_id: userId,
-          kind: t.kind,
-          item_name: t.nm,
-          item_data: {
-            type: t.type, baseId: t.baseId, rarity: t.rarity,
-            affix: t.affix, petId: t.petId, lvl: t.lvl,
-            amount: t.amount, icon: t.icon
-          },
-          currency: cur === 'vip' ? 'vip' : 'gold',
-          price: price
-        }]);
+      await supaAuth.from('market_listings').insert([{
+        id: localId,
+        seller_nick: S.nick,
+        seller_id: userId,
+        kind: t.kind,
+        item_name: t.nm,
+        item_data: t,
+        currency: cur === 'vip' ? 'vip' : 'gold',
+        price: price
+      }]);
     }
   } catch(e) {
-    console.warn('Supabase market sync falhou (anúncio salvo localmente):', e.message);
+    console.warn('Supabase sync falhou:', e.message);
   }
 }
+
+async function renderMarket(){
+  const list = el('market-list'); 
+  list.innerHTML = '';
+  if(marketTab === 'buy'){
+    try {
+      const { data: listings } = await supaAuth.from('market_listings').select('*').order('created_at', {ascending: false});
+      if(!listings || listings.length === 0){
+        list.innerHTML = '<div class="empty-note">Sem ofertas disponíveis.</div>';
+        return;
+      }
+      listings.forEach(o => {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `<div class="info"><div class="nm">${o.item_name}</div><div class="st">Vendedor: ${o.seller_nick}</div></div>
+          <div class="acts"><div class="tag">${o.currency === 'vip' ? '♦' : '◈'} ${o.price}</div>
+          <button class="btn small">Comprar</button></div>`;
+        row.querySelector('button').onclick = () => buyListing(o);
+        list.appendChild(row);
+      });
+    } catch(e) {
+      list.innerHTML = '<div class="empty-note">Erro ao carregar mercado.</div>';
+    }
+  }
+}
+
+async function buyListing(listing){
+  const bal = listing.currency === 'vip' ? S.vip : S.gold;
+  if(bal < listing.price) return toast('Saldo insuficiente!');
+  
+  if(listing.currency === 'vip') S.vip -= listing.price;
+  else S.gold -= listing.price;
+  
+  if(listing.kind === 'eq') {
+    S.inv.push({uid: newUid(), type: listing.item_data.type, baseId: listing.item_data.baseId, rarity: listing.item_data.rarity || 'Comum'});
+  } else if(listing.kind === 'pet') {
+    S.pets.push({uid: newUid(), petId: listing.item_data.petId, rarity: listing.item_data.rarity, lvl: 1, xp: 0});
+  }
+  
+  await supaAuth.from('market_listings').delete().eq('id', listing.id);
+  toast('Compra realizada!');
+  updBars(); save(); renderMarket();
+}
+
+let marketTab='buy';
+let sellTarget=null;
+function openSellPanel(target){
+  sellTarget=target;
+  el('sell-item-name').textContent='Anunciar: '+target.nm;
+  el('sell-price').value=target.sug || 10;
+  el('sell-panel').classList.add('open');
+}
+function closeSellPanel(){ el('sell-panel').classList.remove('open'); sellTarget=null; }
+el('sell-cancel').onclick=closeSellPanel;
+el('sell-gold-btn').onclick=()=>confirmListing('gold');
+el('sell-vip-btn').onclick=()=>confirmListing('vip');
+
+document.querySelectorAll('#modal-market .tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('#modal-market .tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on'); marketTab=t.dataset.mtab;
+    renderMarket();
+  };
+});
+
+function openModal(id){ el(id).classList.add('open'); }
+function closeModal(id){ el(id).classList.remove('open'); }
+document.querySelectorAll('[data-close]').forEach(x=>x.onclick=e=>e.target.closest('.modal').classList.remove('open'));
+
+el('open-market').onclick=()=>{ renderMarket(); openModal('modal-market'); };
+el('open-shop').onclick=()=>{ openModal('modal-shop'); };
+el('open-equip').onclick=()=>{ openModal('modal-equip'); };
+el('open-pets').onclick=()=>{ openModal('modal-pets'); };
+el('open-synth').onclick=()=>{ openModal('modal-synth'); };
+el('open-rank').onclick=()=>{ openModal('modal-rank'); };
+el('open-settings').onclick=()=>{ openModal('modal-settings'); };
+el('open-vip').onclick=()=>{ openModal('modal-vip'); };
+el('open-talents').onclick=()=>{ openModal('modal-talents'); };
+el('open-challenge').onclick=()=>{ openModal('modal-challenge'); };
+
+document.querySelectorAll('.lang-opt').forEach(opt=>{
+  opt.onclick=()=>setLang(opt.dataset.lang);
+});
+function setLang(lang){
+  S.lang=lang; save(); applyI18n();
+}
+
+el('btn-start').onclick = async () => {
+  const nick=el('nick').value.trim();
+  const pwd=el('password').value;
+  const btn=el('btn-start');
+  
+  if(nick.length<2) return toast('Nickname muito curto!');
+  if(pwd.length<4) return toast('Senha muito curta!');
+  
+  if(!supaAuth) await supaAuthInit();
+  
+  btn.disabled=true; btn.textContent='Autenticando...';
+  const res = await supaLogin(nick, pwd);
+  btn.disabled=false; btn.textContent='Enter the Dungeon';
+  
+  if(!res.ok) return toast(res.msg);
+  
+  const cloudData = res.isNew ? {} : res.user.game_data;
+  S = cloudData && Object.keys(cloudData).length>0 ? cloudData : defaultState(nick);
+  S.userId = res.user.id;
+  
+  save();
+  startGame();
+};
+
+function startGame(){
+  el('topbar').style.display='';
+  el('game').style.display='flex';
+  el('login').style.display='none';
+  setStageBG();
+  drawSprite(el('knight-cv'),'knight');
+  drawSprite(el('pet-cv'),'fox',true);
+  document.querySelectorAll('[data-icon]').forEach(cv=>drawSprite(cv,cv.dataset.icon));
+  applyI18n();
+  spawnMonster();
+  setInterval(combatRound, 1400);
+  setInterval(save, 5000);
+}
+
+(async function(){
+  await supaAuthInit();
+  const prev=load();
+  if(prev && prev.nick) el('nick').value=prev.nick;
+})();
 </script>
 </body>
 </html>
