@@ -4330,27 +4330,6 @@ el('sell-cancel').onclick=closeSellPanel;
 el('sell-gold-btn').onclick=()=>confirmListing('gold');
 el('sell-vip-btn').onclick=()=>confirmListing('vip');
 
-function confirmListing(cur){
-  if(!sellTarget) return;
-  const price=Math.max(1,Math.floor(Number(el('sell-price').value)||0));
-  if(price<1) return toast('Defina um preço válido!');
-  const t=sellTarget;
-  // remove o item do jogador enquanto anunciado
-  let fair=t.sug;
-  if(t.kind==='eq'){
-    S.inv=S.inv.filter(i=>i.uid!==t.uid);
-  }else if(t.kind==='pet'){
-    S.pets=S.pets.filter(p=>p.uid!==t.uid);
-  }else{
-    if(S.gold<t.amount) return toast('Ouro insuficiente!');
-    S.gold-=t.amount;
-  }
-  // preço "justo" convertido pra moeda escolhida
-  if(cur==='vip') fair=Math.max(1,Math.round(fair/ (t.kind==='gold'?250:200)));
-  S.listings.push({id:newUid(),...t,cur,price,fair,ts:Date.now()});
-  toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
-  closeSellPanel(); updBars(); save(); renderMarket();
-}
 function cancelListing(id){
   const l=S.listings.find(x=>x.id===id);
   if(!l) return;
@@ -4881,67 +4860,49 @@ async function confirmListing(cur){
   const t = sellTarget;
   let fair = t.sug;
   
+  // Remove item do inventário
+  if(t.kind === 'eq'){
+    S.inv = S.inv.filter(i => i.uid !== t.uid);
+  } else if(t.kind === 'pet'){
+    S.pets = S.pets.filter(p => p.uid !== t.uid);
+  } else {
+    if(S.gold < t.amount) return toast('Ouro insuficiente!');
+    S.gold -= t.amount;
+  }
+  
+  if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
+  
+  // Salvar localmente SEMPRE (funciona mesmo sem Supabase)
+  const localId = newUid();
+  S.listings.push({id: localId, ...t, cur, price, fair, ts: Date.now()});
+  
+  toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
+  closeSellPanel(); 
+  updBars(); 
+  save(); 
+  renderMarket();
+  
+  // Tentar sincronizar com Supabase em background (não bloqueia)
   try {
-    if(t.kind === 'eq'){
-      S.inv = S.inv.filter(i => i.uid !== t.uid);
-    } else if(t.kind === 'pet'){
-      S.pets = S.pets.filter(p => p.uid !== t.uid);
-    } else {
-      if(S.gold < t.amount) return toast('Ouro insuficiente!');
-      S.gold -= t.amount;
+    if(supaAuth && currentUser?.id) {
+      await supaAuth
+        .from('market_listings')
+        .insert([{
+          seller_nick: S.nick,
+          seller_id: currentUser.id,
+          kind: t.kind,
+          item_name: t.nm,
+          item_data: {
+            type: t.type, baseId: t.baseId, rarity: t.rarity,
+            affix: t.affix, petId: t.petId, lvl: t.lvl,
+            amount: t.amount, icon: t.icon
+          },
+          currency: cur === 'vip' ? 'vip' : 'gold',
+          price: price
+        }]);
     }
-    
-    if(cur === 'vip') fair = Math.max(1, Math.round(fair / (t.kind === 'gold' ? 250 : 200)));
-    
-    const {data: listing, error} = await supaAuth
-      .from('market_listings')
-      .insert([{
-        seller_nick: S.nick,
-        seller_id: currentUser?.id,
-        kind: t.kind,
-        item_name: t.nm,
-        item_data: {
-          type: t.type,
-          baseId: t.baseId,
-          rarity: t.rarity,
-          affix: t.affix,
-          petId: t.petId,
-          lvl: t.lvl,
-          amount: t.amount,
-          icon: t.icon
-        },
-        currency: cur === 'vip' ? 'vip' : 'gold',
-        price: price
-      }])
-      .select()
-      .single();
-    
-    if(error) {
-      console.error('Erro ao anunciar item:', error);
-      if(t.kind === 'eq') S.inv.push({uid: t.uid, type: t.type, baseId: t.baseId, rarity: t.rarity, affix: t.affix});
-      else if(t.kind === 'pet') S.pets.push({uid: t.uid, petId: t.petId, rarity: t.rarity, lvl: t.lvl || 1, xp: 0});
-      else S.gold += t.amount;
-      return toast('Erro ao anunciar item.<br>Tente novamente.');
-    }
-    
-    S.listings.push({
-      id: listing.id,
-      ...t,
-      cur,
-      price,
-      fair,
-      ts: Date.now()
-    });
-    
-    toast('Anúncio publicado!<br>Taxa de 10% será cobrada na venda.');
-    closeSellPanel(); 
-    updBars(); 
-    save(); 
-    renderMarket();
-    
   } catch(e) {
-    console.error('Erro ao anunciar:', e);
-    toast('Erro ao anunciar item.<br>Tente novamente.');
+    console.warn('Supabase market sync falhou (anúncio salvo localmente):', e.message);
   }
 }
 
@@ -5536,6 +5497,17 @@ const TRANSLATIONS = {
     'rank_loading': 'Carregando ranking...',
     'rank_error': 'Erro ao carregar ranking. Tente novamente.',
     'lang_label': 'Idioma / Language',
+    'pvp_no_tournament': 'Nenhum torneio ativo no momento.',
+    'pvp_info': '⚔️ Top 10 jogadores do ranking participam do torneio semanal!',
+    'pvp_battles': '🏆 Vença para conquistar Gold e VIP Coins!',
+    'pvp_status': 'Status:',
+    'pvp_pool': 'Prêmios em Disputa:',
+    'pvp_brackets': 'Chaves',
+    'pvp_history': 'Histórico',
+    'pvp_rewards': 'Prêmios',
+    'pvp_semifinals': 'Semi-finais',
+    'pvp_final': 'Final',
+    'pvp_third_place': '3º Lugar',
   },
   en: {
     'ranking': 'ranking',
@@ -5569,6 +5541,17 @@ const TRANSLATIONS = {
     'rank_loading': 'Loading ranking...',
     'rank_error': 'Error loading ranking. Try again.',
     'lang_label': 'Language / Idioma',
+    'pvp_no_tournament': 'No active tournament at the moment.',
+    'pvp_info': '⚔️ Top 10 ranking players participate in the weekly tournament!',
+    'pvp_battles': '🏆 Win to earn Gold and VIP Coins!',
+    'pvp_status': 'Status:',
+    'pvp_pool': 'Prize Pool:',
+    'pvp_brackets': 'Brackets',
+    'pvp_history': 'History',
+    'pvp_rewards': 'Rewards',
+    'pvp_semifinals': 'Semifinals',
+    'pvp_final': 'Final',
+    'pvp_third_place': '3rd Place',
   }
 };
 
