@@ -444,13 +444,6 @@ canvas{image-rendering:pixelated;}
 .cfg-toggle .box-t{width:16px;height:16px;background:#241d2c;border:2px solid #120d18;display:flex;align-items:center;justify-content:center;color:var(--xp);font-size:9px;}
 .cfg-note{font-size:6px;color:#a99;line-height:1.7;}
 
-<div class="icon-btn" id="open-rank"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>ranking</div>
-      <div class="icon-btn" id="open-pvp"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>pvp</div>
-      <!-- BOTÃO DE SOM -->
-      <div class="icon-btn" id="toggle-sound" title="Ligar/Desligar Som">🔊<span id="sound-txt" style="font-size:6px;margin-top:2px;">ON</span></div>
-      <!-- FIM DO BOTÃO -->
-      <div class="icon-btn" id="open-settings"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="gear"></canvas><span data-i18n="settings">config</span></div>
-
 /* ---------- MODAIS ---------- */
 .modal{position:absolute;inset:0;z-index:40;background:#000a;display:none;align-items:center;justify-content:center;}
 .modal.open{display:flex;}
@@ -1206,23 +1199,20 @@ canvas{image-rendering:pixelated;}
     </div>
    </div>
   <!-- HUD -->
-  <div id="topbar" style="display:none">
-    <div>
-      <div class="stage-plate">stage <span id="ui-stage">1</span> - <span id="ui-wave">1</span> <span id="scene-label" style="color:#9fd0ff"></span></div>
-      <div class="stage-plate" id="gold-plate">◈ <span id="ui-gold">0</span></div>
-      <div class="stage-plate" id="vip-plate">♦ <span id="ui-vip">0</span> VIP</div>
-    </div>
-    <div class="top-icons">
-      <div class="icon-btn" id="open-talents" style="position:relative"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="crest"></canvas>maestria<span id="mastery-dot"></span></div>
-      <div class="icon-btn" id="open-challenge" style="position:relative"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="ticket"></canvas>desafio<span id="ticket-count">0</span></div>
+ <div class="top-icons">
+      <div class="icon-btn" id="open-talents" style="position:relative"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="crest"></canvas>maestria</div>
+      <div class="icon-btn" id="open-challenge" style="position:relative"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="ticket"></canvas>desafio<span id="ticket-count"></span></div>
       <div class="icon-btn" id="open-shop"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="hpPot"></canvas>poções</div>
       <div class="icon-btn" id="open-market"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="scale"></canvas>mercado</div>
       <div class="icon-btn" id="open-rank"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>ranking</div>
       <div class="icon-btn" id="open-pvp"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="trophy"></canvas>pvp</div>
+      
+      <!-- BOTÃO DE SOM AQUI -->
+      <div class="icon-btn" id="toggle-sound" title="Ligar/Desligar Som">🔊<span id="sound-txt" style="font-size:6px;margin-top:2px;">ON</span></div>
+      
       <div class="icon-btn" id="open-settings"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="gear"></canvas><span data-i18n="settings">config</span></div>
       <div class="icon-btn" id="open-vip"><canvas width="16" height="16" style="width:24px;height:24px" data-icon="vipcoin"></canvas>vip</div>
     </div>
-  </div>
 
   <!-- GAME SCREEN (rolável) -->
   <div id="game">
