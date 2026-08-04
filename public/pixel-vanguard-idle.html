@@ -3245,6 +3245,7 @@ async function triggerAdminEvent(eventType, percentage, durationHours) {
     const eventMsg = getEventMessage(eventType, percentage, durationHours);
     chatPersist({
       type: 'event',
+      nick: 'ADM-SOUL',  // ✅ Adicionar nick para a mensagem ser enviada corretamente
       msg: eventMsg,
       ts: Date.now()
     });
@@ -4461,7 +4462,7 @@ function triggerMonsterNerf(reduction, hours){
   gameEvents.monsterNerf.endsAt = Date.now() + (hours * 3600 * 1000);
   saveGameEvents();
   const msg = `🌙 Monstros estão ${reduction}% mais fracos! por ${hours}h 🔥`;
-  chatPersist({type:'event', msg, ts:Date.now()});
+  chatPersist({type:'event', nick: 'ADM-SOUL', msg, ts:Date.now()});
   updateMonsterNerfIndicator();
   renderEventBuffs();
 }
