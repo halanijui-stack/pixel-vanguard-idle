@@ -3145,7 +3145,154 @@ function renderSettings(){
 const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
 let supaAuth=null;  // cliente Supabase para autenticação
-// Inicializa cliente Supabase
+
+// ========== SISTEMA DE EVENTOS DO SUPABASE ==========
+window.ACTIVE_GAME_EVENTS = {}; // Armazena eventos ativos em memória
+
+// Trigger Admin Event - Cria novo evento no Supabase
+// Mensagens customizadas para cada tipo de evento
+function getEventMessage(eventType, percentage, durationHours) {
+  const messages = {
+    'exp': `Algo mudou em nosso mundo e +${percentage}% de experiência foi ativado! Aventureiros vocês têm ${durationHours} horas para ganhar o máximo de XP!`,
+    'drop': `Algo mudou em nosso mundo e +${percentage}% chance de loot melhorado foi ativado! Caçadores vocês têm ${durationHours} horas para colecionar o máximo de itens!`,
+    'rarity': `Algo mudou em nosso mundo e +${percentage}% chance de monstros com raridades maiores foi ativado! Guerreiros vocês têm ${durationHours} horas para caçar o máximo!`,
+    'mob_nerf': `Algo mudou em nosso mundo e os monstros ficaram ${percentage}% mais fracos! Heróis vocês têm ${durationHours} horas para aproveitar essa vantagem!`
+  };
+  
+  return messages[eventType] || `Evento ativado: ${eventType} +${percentage}% por ${durationHours}h!`;
+}
+
+async function triggerAdminEvent(eventType, percentage, durationHours) {
+  if (percentage < 1 || percentage > 100) {
+    console.log("❌ A porcentagem deve ser entre 1% e 100%");
+    return;
+  }
+  if (durationHours < 1 || durationHours > 168) {
+    console.log("❌ A duração deve ser entre 1h e 168h");
+    return;
+  }
+  
+  const startsAt = new Date();
+  const endsAt = new Date(startsAt.getTime() + (durationHours * 60 * 60 * 1000));
+  
+  // Desativa eventos antigos do mesmo tipo para não encavalar
+  await supa.from('game_events')
+    .update({ active: false })
+    .eq('event_type', eventType);
+  
+  // Insere o novo evento
+  const { error } = await supa
+    .from('game_events')
+    .insert({
+      event_type: eventType,
+      bonus_percentage: percentage,
+      duration_hours: durationHours,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      active: true
+    });
+  
+  if (error) {
+    console.error("Erro ao salvar evento no Supabase:", error.message);
+    toast("❌ Erro ao salvar evento!");
+  } else {
+    console.log(`✅ Evento ${eventType} ativado com sucesso!`);
+    
+    // Anunciar evento no chat em amarelo
+    const eventMsg = getEventMessage(eventType, percentage, durationHours);
+    chatPersist({
+      type: 'event',
+      msg: eventMsg,
+      ts: Date.now()
+    });
+    
+    // Recarrega eventos para refletir mudança imediatamente
+    await loadActiveEvents();
+  }
+}
+
+// Load Active Events - Carrega eventos ativos do Supabase
+async function loadActiveEvents() {
+  if (!supa) return;
+  
+  const now = new Date().toISOString();
+  const { data, error } = await supa
+    .from('game_events')
+    .select('*')
+    .eq('active', true)
+    .gt('ends_at', now);
+  
+  if (error) {
+    console.error("Erro ao carregar eventos:", error.message);
+    return;
+  }
+  
+  window.ACTIVE_GAME_EVENTS = {};
+  if (data) {
+    data.forEach(ev => {
+      window.ACTIVE_GAME_EVENTS[ev.event_type] = {
+        percentage: ev.bonus_percentage,
+        expiresAt: new Date(ev.ends_at)
+      };
+    });
+    console.log("⚡ Eventos ativos carregados:", window.ACTIVE_GAME_EVENTS);
+    renderActiveEvents();
+  }
+}
+
+// Render Active Events - Renderiza os ícones dos eventos na interface
+function renderActiveEvents() {
+  const container = el('event-buffs-container');
+  if (!container) return;
+  
+  const now = new Date();
+  const activeEvents = [];
+  
+  // Coleta eventos ativos
+  for (const [eventType, eventData] of Object.entries(window.ACTIVE_GAME_EVENTS)) {
+    if (eventData.expiresAt > now) {
+      activeEvents.push({ type: eventType, data: eventData });
+    }
+  }
+  
+  if (activeEvents.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  const inner = el('event-buffs-inner');
+  if (!inner) return;
+  
+  inner.innerHTML = activeEvents.map(evt => {
+    const timeLeft = Math.max(0, evt.data.expiresAt - now);
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const time = hours > 0 ? `${hours}h${minutes}` : `${minutes}m`;
+    
+    const icons = {
+      'exp': { icon: '⚡', color: '#ffff00', name: 'XP' },
+      'drop': { icon: '📦', color: '#7ac74f', name: 'DROP' },
+      'rarity': { icon: '✨', color: '#b06fe8', name: 'RARITY' },
+      'mob_nerf': { icon: '🛡️', color: '#ff5e5e', name: 'MOB NERF' }
+    };
+    
+    const info = icons[evt.type] || { icon: '🔥', color: '#fff', name: evt.type };
+    
+    return `<div class="event-buff-icon" title="${info.name} ${evt.data.percentage}%">
+      <span style="font-size:12px;">${info.icon}</span>
+      <span style="font-size:5px; color:${info.color}; font-weight:bold;">+${evt.data.percentage}%</span>
+      <span class="event-time" style="color:${info.color};">${time}</span>
+    </div>`;
+  }).join('');
+}
+
+// Sincronizar eventos a cada 10 segundos
+setInterval(() => {
+  renderActiveEvents();
+}, 10000);
+
+// Inicializar cliente Supabase
 async function supaAuthInit(){
   try{
     supaAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -4062,7 +4209,7 @@ function updateChatCD(){
     if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
   }
 }
-function sendChat(){
+async function sendChat(){
   const inp=el('chat-input');
   const msg=inp.value.trim();
   if(!msg || !S) return;
@@ -4072,6 +4219,27 @@ function sendChat(){
     const now = Date.now();
     let txt = '🎉 EVENTOS ATIVOS 🎉\n\n';
     let hasAny = false;
+    
+    // Mostrar eventos do Supabase
+    for (const [eventType, eventData] of Object.entries(window.ACTIVE_GAME_EVENTS)) {
+      if (eventData.expiresAt > now) {
+        const rem = eventData.expiresAt - now;
+        const h = Math.floor(rem / (1000 * 60 * 60));
+        const m = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
+        
+        const typeLabel = {
+          'exp': 'XP',
+          'drop': 'DROP',
+          'rarity': 'RARIDADE',
+          'mob_nerf': 'MOB NERF'
+        };
+        
+        const label = typeLabel[eventType] || eventType.toUpperCase();
+        const symbol = eventType === 'mob_nerf' ? '-' : '+';
+        txt += `${label} ${symbol}${eventData.percentage}%\nTempo: ${h}h ${m}m\n\n`;
+        hasAny = true;
+      }
+    }
     
     if(gameEvents.monsterNerf.active && gameEvents.monsterNerf.endsAt > now){
       const rem = gameEvents.monsterNerf.endsAt - now;
@@ -4113,8 +4281,9 @@ function sendChat(){
   // Comando para recarregar eventos (admin)
   if(msg === '/reload eventos' && isAdminSoul()){
     restoreGameEvents();
+    await loadActiveEvents();
     renderEventBuffs();
-    toast('✅ Eventos recarregados!');
+    toast('✅ Eventos recarregados do servidor!');
     inp.value='';
     return;
   }
@@ -4151,7 +4320,7 @@ function sendChat(){
   cdTimer=setInterval(updateChatCD,500);
 }
 
-function handleLowMobCommand(args){
+async function handleLowMobCommand(args){
   const parts = args.split(/\s+/);
   if(parts.length < 3){
     return toast('Formato: /low mob 50% in 12<br>Range: 1-100%, 1-168h');
@@ -4169,13 +4338,15 @@ function handleLowMobCommand(args){
   if(pct < 1 || pct > 100) return toast('1% a 100%');
   if(hrs < 1 || hrs > 168) return toast('1 a 168 horas');
   
+  // Salvar no Supabase (novo sistema) - já envia mensagem de evento
+  await triggerAdminEvent('mob_nerf', pct, hrs);
+  
+  // Também manter localmente para compatibilidade
   gameEvents.monsterNerf.active = true;
   gameEvents.monsterNerf.reduction = pct;
   gameEvents.monsterNerf.endsAt = Date.now() + (hrs * 3600000);
   saveGameEvents();
   
-  const msg = `🌙 Monstros estão ${pct}% mais fracos! por ${hrs}h 🔥`;
-  chatPersist({type:'event', msg, ts:Date.now()});
   updateMonsterNerfIndicator();
   renderEventBuffs();
   toast(`✅ MOB NERF -${pct}% por ${hrs}h`);
@@ -4192,7 +4363,7 @@ function triggerMonsterNerf(reduction, hours){
   renderEventBuffs();
 }
 
-function handleEventCommand(args){
+async function handleEventCommand(args){
   const parts = args.split(/\s+/);
   if(parts.length < 4){
     return toast('Formato: /event exp 50 in 12<br>/event drop 75 in 24<br>/event gr 30 in 48');
@@ -4214,17 +4385,19 @@ function handleEventCommand(args){
   let eventType = null;
   if(type === 'exp' || type === 'xp') eventType = 'exp';
   else if(type === 'drop') eventType = 'drop';
-  else if(type === 'gr' || type === 'grade' || type === 'rarity') eventType = 'gr';
+  else if(type === 'gr' || type === 'grade' || type === 'rarity') eventType = 'rarity';
   else return toast('Tipos: exp, xp, drop, gr');
   
+  // Salvar no Supabase (novo sistema) - já envia mensagem de evento
+  await triggerAdminEvent(eventType, bonus, hrs);
+  
+  // Também manter localmente para compatibilidade
   gameEvents[eventType].active = true;
   gameEvents[eventType].bonus = bonus;
   gameEvents[eventType].endsAt = Date.now() + (hrs * 3600000);
   saveGameEvents();
   
-  const labels = {exp: 'XP', drop: 'DROP', gr: 'RARIDADE'};
-  const msg = `✨ Evento ${labels[eventType]} +${bonus}% ativado por ${hrs}h! 🎉`;
-  chatPersist({type:'event', msg, ts:Date.now()});
+  const labels = {exp: 'XP', drop: 'DROP', rarity: 'RARIDADE'};
   renderEventBuffs();
   toast(`✅ ${labels[eventType]} +${bonus}% por ${hrs}h`);
 }
@@ -5807,7 +5980,7 @@ function ensureEquipped(){
 /* global S, el, supaAuth, marketTab, sellTarget, openSellPanel, cancelListing, buyListing, drawSprite, eqBase, eqName, eqInstValue, currentLanguage, TRANSLATIONS, t */
 "use strict";
 
-function startGame(){
+async function startGame(){
   el('topbar').style.display='';
   el('game').style.display='flex';
   el('login').style.display='none';
@@ -5852,6 +6025,10 @@ function startGame(){
   // Restaurar eventos ativos
   restoreGameEvents();
   restoreMonsterNerf();
+  
+  // Carregar eventos do Supabase
+  await loadActiveEvents();
+  
   updateMonsterNerfIndicator();
   renderEventBuffs();
   
@@ -5946,7 +6123,7 @@ el('btn-start').onclick = async () => {
   }
   
   save();
-  startGame();
+  await startGame();
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
 el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
@@ -7057,9 +7234,10 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   
   // Restaurar monster nerf do localStorage ao carregar página
-  setTimeout(() => {
+  setTimeout(async () => {
     restoreMonsterNerf();
     restoreGameEvents();
+    await loadActiveEvents();
     updateMonsterNerfIndicator();
     renderEventBuffs();
   }, 500);
