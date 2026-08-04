@@ -3277,8 +3277,28 @@ async function loadActiveEvents() {
         percentage: ev.bonus_percentage,
         expiresAt: new Date(ev.ends_at)
       };
+      
+      // IMPORTANTE: Também atualizar gameEvents localmente para compatibilidade
+      if(ev.event_type === 'exp') {
+        gameEvents.exp.active = true;
+        gameEvents.exp.bonus = ev.bonus_percentage;
+        gameEvents.exp.endsAt = new Date(ev.ends_at).getTime();
+      } else if(ev.event_type === 'drop') {
+        gameEvents.drop.active = true;
+        gameEvents.drop.bonus = ev.bonus_percentage;
+        gameEvents.drop.endsAt = new Date(ev.ends_at).getTime();
+      } else if(ev.event_type === 'rarity') {
+        gameEvents.gr.active = true;
+        gameEvents.gr.bonus = ev.bonus_percentage;
+        gameEvents.gr.endsAt = new Date(ev.ends_at).getTime();
+      } else if(ev.event_type === 'mob_nerf') {
+        gameEvents.monsterNerf.active = true;
+        gameEvents.monsterNerf.reduction = ev.bonus_percentage;
+        gameEvents.monsterNerf.endsAt = new Date(ev.ends_at).getTime();
+      }
     });
     console.log("⚡ Eventos ativos carregados:", window.ACTIVE_GAME_EVENTS);
+    saveGameEvents(); // Salvar gameEvents atualizado
     renderActiveEvents();
   }
 }
