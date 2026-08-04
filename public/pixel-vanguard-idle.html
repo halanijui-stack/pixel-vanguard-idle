@@ -2586,7 +2586,21 @@ function rollEnemyRarity(){
   // A cada stage passado, +1% de chance de o inimigo ser acima de Comum.
   // Peso total = 1000. Transfere 10 de peso (1%) do Comum para as raridades
   // superiores por stage, distribuído na proporção original entre elas.
-  const bonus = Math.min(760, (S.stage-1)*10); // até no máx ~76% extra (Comum não zera)
+  let bonus = Math.min(760, (S.stage-1)*10); // até no máx ~76% extra (Comum não zera)
+  
+  // Aplicar evento de raridade do Supabase se ativo
+  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['rarity']) {
+    const now = new Date();
+    if(window.ACTIVE_GAME_EVENTS['rarity'].expiresAt > now) {
+      bonus += window.ACTIVE_GAME_EVENTS['rarity'].percentage * 10; // +10% de peso por % de evento
+    }
+  }
+  
+  // Fallback para evento local
+  if(!bonus && gameEvents.gr.active && gameEvents.gr.endsAt > Date.now()) {
+    bonus += gameEvents.gr.bonus * 10;
+  }
+  
   const upWeights = ENEMY_RARITIES.slice(1).reduce((s,r)=>s+r.w,0); // 180 (Incomum+)
   let roll = Math.random()*1000;
   // Comum
@@ -2810,8 +2824,35 @@ let gameEvents = {
   monsterNerf: {active:false, reduction:0, endsAt:0}, // {active:bool, reduction:0-100, endsAt:0}
 };
 
-function expMult(){ return boosterActive('exp') ? 1+BOOSTERS.exp.bonus : (gameEvents.exp.active ? 1+gameEvents.exp.bonus/100 : 1); }
-function dropMult(){ return boosterActive('drop') ? 1+BOOSTERS.drop.bonus : (gameEvents.drop.active ? 1+gameEvents.drop.bonus/100 : 1); }
+function expMult(){ 
+  if(boosterActive('exp')) return 1+BOOSTERS.exp.bonus;
+  
+  // Verificar eventos do Supabase primeiro
+  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['exp']) {
+    const now = new Date();
+    if(window.ACTIVE_GAME_EVENTS['exp'].expiresAt > now) {
+      return 1 + (window.ACTIVE_GAME_EVENTS['exp'].percentage / 100);
+    }
+  }
+  
+  // Fallback para eventos locais
+  return gameEvents.exp.active ? 1+gameEvents.exp.bonus/100 : 1;
+}
+
+function dropMult(){ 
+  if(boosterActive('drop')) return 1+BOOSTERS.drop.bonus;
+  
+  // Verificar eventos do Supabase primeiro
+  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['drop']) {
+    const now = new Date();
+    if(window.ACTIVE_GAME_EVENTS['drop'].expiresAt > now) {
+      return 1 + (window.ACTIVE_GAME_EVENTS['drop'].percentage / 100);
+    }
+  }
+  
+  // Fallback para eventos locais
+  return gameEvents.drop.active ? 1+gameEvents.drop.bonus/100 : 1;
+}
 
 function isEventActive(eventType){
   return gameEvents[eventType] && gameEvents[eventType].active && gameEvents[eventType].endsAt > Date.now();
@@ -4499,6 +4540,12 @@ async function initChat(){
   el('chat-input').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
   // tenta Supabase primeiro
   const okSupa = await supaInit();
+  
+  // ATIVAR SISTEMA DE EVENTOS EM TEMPO REAL
+  if(okSupa && typeof subscribeToGameEvents === 'function') {
+    subscribeToGameEvents();
+  }
+  
   if(okSupa){ return; } // realtime cuida de tudo
   // fallbacks
   if(!hasShared && typeof BroadcastChannel!=='undefined'){
@@ -6064,17 +6111,19 @@ async function startGame(){
   applyI18n();
   spawnMonster();
   
+  // Inicializar Supabase ANTES de carregar eventos
+  initChat();
+  
   // Restaurar eventos ativos
   restoreGameEvents();
   restoreMonsterNerf();
   
-  // Carregar eventos do Supabase
+  // Carregar eventos do Supabase (agora com supa inicializado)
   await loadActiveEvents();
   
   updateMonsterNerfIndicator();
   renderEventBuffs();
   
-  initChat();
   renderAbilityBar();
   updTicketBtn();
   if((S.mastery||0)>0){ const dot=el('mastery-dot'); if(dot) dot.style.display='block'; }
@@ -6166,10 +6215,6 @@ el('btn-start').onclick = async () => {
   
   save();
   await startGame();
-  
-  // LIGAR O SISTEMA DE EVENTOS PARA TODOS
-  await loadActiveEvents();
-  if(typeof subscribeToGameEvents === 'function') subscribeToGameEvents();
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
 el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
