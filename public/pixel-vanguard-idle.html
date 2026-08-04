@@ -3152,14 +3152,16 @@ window.ACTIVE_GAME_EVENTS = {}; // Armazena eventos ativos em memória
 // Trigger Admin Event - Cria novo evento no Supabase
 // Mensagens customizadas para cada tipo de evento
 function getEventMessage(eventType, percentage, durationHours) {
-  const messages = {
-    'exp': `Algo mudou em nosso mundo e +${percentage}% de experiência foi ativado! Aventureiros vocês têm ${durationHours} horas para ganhar o máximo de XP!`,
-    'drop': `Algo mudou em nosso mundo e +${percentage}% chance de loot melhorado foi ativado! Caçadores vocês têm ${durationHours} horas para colecionar o máximo de itens!`,
-    'rarity': `Algo mudou em nosso mundo e +${percentage}% chance de monstros com raridades maiores foi ativado! Guerreiros vocês têm ${durationHours} horas para caçar o máximo!`,
-    'mob_nerf': `Algo mudou em nosso mundo e os monstros ficaram ${percentage}% mais fracos! Heróis vocês têm ${durationHours} horas para aproveitar essa vantagem!`
-  };
+  const nomeEvento = {
+    'exp': 'Experiência',
+    'drop': 'Drop de Itens',
+    'rarity': 'Raridade de Monstros',
+    'mob_nerf': 'Enfraquecimento de Monstros'
+  }[eventType] || eventType;
   
-  return messages[eventType] || `Evento ativado: ${eventType} +${percentage}% por ${durationHours}h!`;
+  const sinal = eventType === 'mob_nerf' ? '-' : '+';
+  
+  return `✨ Algo mudou em nosso mundo e ${sinal}${percentage}% de ${nomeEvento}! Aproveitem guerreiros, vocês têm ${durationHours} horas para caçar ao máximo!`;
 }
 
 async function triggerAdminEvent(eventType, percentage, durationHours) {
