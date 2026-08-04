@@ -44,26 +44,30 @@ canvas{image-rendering:pixelated;}
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.2);
+  gap: 1px;
+  padding: 1.5px 3px;
+  border-radius: 1px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid #ff3333;
   transition: all 0.2s;
   cursor: pointer;
+  min-width: 21px;
 }
 
 .event-buff-icon:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.4);
-  transform: scale(1.1);
+  background: rgba(255,255,255,0.15);
+  border-color: #ffaa00;
+  transform: scale(1.2);
+  box-shadow: 0 0 3px rgba(255,51,51,0.6);
 }
 
 .event-time {
-  font-size: 7px;
-  color: var(--parchment);
+  font-size: 3px;
+  color: #ffff00;
   white-space: nowrap;
-  text-shadow: 0 0 2px #000;
+  text-shadow: 0 0 1px #000;
+  font-weight: bold;
+  letter-spacing: -0.5px;
 }
 
 /* ---------- BACKGROUNDS ---------- */
@@ -1302,9 +1306,9 @@ canvas{image-rendering:pixelated;}
     <div id="strip-inner"></div>
   </div>
 
-  <!-- EVENT BUFFS ICONS -->
-  <div id="event-buffs-container" style="display:none;padding:8px;background:rgba(0,0,0,0.3);border-top:2px solid var(--amber);text-align:center;">
-    <div id="event-buffs-inner" style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;"></div>
+  <!-- EVENT BUFFS ICONS - CANTO SUPERIOR ESQUERDO -->
+  <div id="event-buffs-container" style="display:none;position:absolute;top:110px;left:40px;width:auto;background:transparent;border:none;padding:0;text-align:center;z-index:50;">
+    <div id="event-buffs-inner" style="display:flex;gap:3px;align-items:center;justify-content:flex-start;flex-wrap:wrap;"></div>
   </div>
 
   <!-- PARTY -->
@@ -2901,16 +2905,16 @@ function renderEventBuffs(){
   
   // Verificar eventos
   if(gameEvents.monsterNerf.active && gameEvents.monsterNerf.endsAt > now){
-    active.push({type: 'nerf', label: 'MOB NERF', color: '#ff3333', end: gameEvents.monsterNerf.endsAt});
+    active.push({type: 'nerf', label: 'MOB', symbol: '⚡', end: gameEvents.monsterNerf.endsAt});
   }
   if(gameEvents.exp.active && gameEvents.exp.endsAt > now){
-    active.push({type: 'exp', label: 'XP', color: '#7ac74f', end: gameEvents.exp.endsAt});
+    active.push({type: 'exp', label: 'XP', symbol: '✦', end: gameEvents.exp.endsAt});
   }
   if(gameEvents.drop.active && gameEvents.drop.endsAt > now){
-    active.push({type: 'drop', label: 'DROP', color: '#ffd75e', end: gameEvents.drop.endsAt});
+    active.push({type: 'drop', label: 'DROP', symbol: '◆', end: gameEvents.drop.endsAt});
   }
   if(gameEvents.gr.active && gameEvents.gr.endsAt > now){
-    active.push({type: 'gr', label: 'RARITY', color: '#b06fe8', end: gameEvents.gr.endsAt});
+    active.push({type: 'gr', label: 'RARE', symbol: '★', end: gameEvents.gr.endsAt});
   }
   
   if(active.length === 0){
@@ -2923,9 +2927,11 @@ function renderEventBuffs(){
     const rem = Math.max(0, e.end - now);
     const h = Math.floor(rem / 3600000);
     const m = Math.floor((rem % 3600000) / 60000);
-    const time = h > 0 ? `${h}h${m}m` : `${m}m`;
-    const icon = `<svg width="20" height="20" viewBox="0 0 20 20" style="filter:drop-shadow(0 0 1px ${e.color})"><circle cx="10" cy="10" r="9" fill="none" stroke="${e.color}" stroke-width="1"/><text x="10" y="13" text-anchor="middle" font-size="8" fill="${e.color}">●</text></svg>`;
-    return `<div class="event-buff-icon" title="${e.label} (${time})">${icon}<div class="event-time">${time}</div></div>`;
+    const time = h > 0 ? `${h}h${m}` : `${m}m`;
+    return `<div class="event-buff-icon" title="${e.label} (${time})" style="color:#ff3333;font-weight:bold;font-size:6px;">
+      ${e.symbol}
+      <div class="event-time">${time}</div>
+    </div>`;
   }).join('');
 }
 
@@ -3815,21 +3821,7 @@ function spawnMonster(){
 const el = id=>document.getElementById(id);
 function setFill(id, pct){ el(id).style.transform=`scaleX(${Math.max(0,Math.min(1,pct))})`; }
 function updateMonsterNerfIndicator(){
-  const nerfDiv = el('monster-nerf-indicator') || document.createElement('div');
-  if(!nerfDiv.id) {
-    nerfDiv.id = 'monster-nerf-indicator';
-    nerfDiv.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#ff3333;color:white;padding:8px 16px;border-radius:4px;font-weight:bold;text-shadow:0 0 4px #000;z-index:1000;display:none;';
-    document.body.appendChild(nerfDiv);
-  }
-  
-  const reduction = getMonsterNerfReduction();
-  if(reduction > 0 && gameEvents.monsterNerf.endsAt > Date.now()){
-    const remaining = Math.max(0, Math.ceil((gameEvents.monsterNerf.endsAt - Date.now()) / 1000 / 60));
-    nerfDiv.textContent = `🔴 NERF -${reduction}% (${remaining}m)`;
-    nerfDiv.style.display = 'block';
-  } else {
-    nerfDiv.style.display = 'none';
-  }
+  // Barra vermelha removida - eventos aparecem apenas nos ícones laterais
 }
 
 function updBars(){
@@ -4161,7 +4153,7 @@ function sendChat(){
 
 function handleLowMobCommand(args){
   const parts = args.split(/\s+/);
-  if(parts.length < 4){
+  if(parts.length < 3){
     return toast('Formato: /low mob 50% in 12<br>Range: 1-100%, 1-168h');
   }
   
