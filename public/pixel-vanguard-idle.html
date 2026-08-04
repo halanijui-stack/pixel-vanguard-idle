@@ -3294,6 +3294,46 @@ setInterval(() => {
   renderActiveEvents();
 }, 10000);
 
+// Subscribe to Game Events - Real-time listener para mudanças de eventos
+function subscribeToGameEvents() {
+  if (!supa) {
+    console.log('Supabase não disponível para real-time');
+    return;
+  }
+  
+  console.log('📡 Inscrito em eventos em tempo real...');
+  
+  supa
+    .channel('game-events-channel')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'game_events' },
+      async (payload) => {
+        console.log('⚡ Mudança de evento detectada!', payload);
+        
+        // Recarrega os eventos na memória local de todos os jogadores
+        await loadActiveEvents();
+        renderActiveEvents();
+        
+        // Se for INSERT (novo evento), log de notificação
+        if(payload.eventType === 'INSERT') {
+          const evt = payload.new;
+          const nomeEvento = {
+            'exp': 'Experiência',
+            'drop': 'Drop de Itens',
+            'rarity': 'Raridade de Monstros',
+            'mob_nerf': 'Enfraquecimento de Monstros'
+          }[evt.event_type] || evt.event_type;
+          
+          const sinal = evt.event_type === 'mob_nerf' ? '-' : '+';
+          
+          console.log(`✅ Novo evento: ${nomeEvento} ${sinal}${evt.bonus_percentage}% por ${evt.duration_hours}h`);
+        }
+      }
+    )
+    .subscribe();
+}
+
 // Inicializar cliente Supabase
 async function supaAuthInit(){
   try{
@@ -6126,6 +6166,10 @@ el('btn-start').onclick = async () => {
   
   save();
   await startGame();
+  
+  // LIGAR O SISTEMA DE EVENTOS PARA TODOS
+  await loadActiveEvents();
+  if(typeof subscribeToGameEvents === 'function') subscribeToGameEvents();
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
 el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
