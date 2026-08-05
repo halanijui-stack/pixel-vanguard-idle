@@ -341,6 +341,9 @@ canvas{image-rendering:pixelated;}
 #chatlog .alert-lend{color:#ff8c1a;text-shadow:0 0 4px #ff8c1a55;word-break:break-word;}
 #chatlog .alert-pixel{color:#ffd75e;text-shadow:0 0 6px #ffd75e88;word-break:break-word;}
 #chatlog .alert-reaper{color: #ff2222; /* Vermelho vibrante (ou a cor exata que você preferir para o Reaper) */font-weight: bold;}
+#chatlog .alert-synth-buff{color:#5eb3ff;text-shadow:0 0 6px #5eb3ff88;word-break:break-word;font-weight:bold;}
+#chatlog .alert-synth-fail{color:#1a5a8f;text-shadow:0 0 6px #1a5a8f88;word-break:break-word;font-weight:bold;}
+#chatlog .alert-synth-orb{color:#ffd700;text-shadow:0 0 8px #ffd70088, 0 0 16px #ff6b9d88;word-break:break-word;font-weight:bold;}
 #chat-input-row{display:flex;gap:5px;margin-top:6px;}
 #chat-input{
   flex:1;min-width:0;font-family:inherit;font-size:8px;padding:7px;
@@ -2777,7 +2780,51 @@ const CLASSES = {
   }
 };
 
-// Runtime: bônus do Mago de Batalha (próximo impacto dobrado)
+// Mapeamento de nomes de skills para cada classe
+const SKILL_NAMES_BY_CLASS = {
+  knight: {
+    f1: 'Lâmina Afiada', f2: 'Golpe Pesado', f3: 'Precisão Letal', f4: 'Sede de Sangue',
+    b1: 'Pele de Ferro', b2: 'Vigor', b3: 'Muralha Viva', b4: 'Constituição',
+    i1: 'Reflexos', i2: 'Fluxo de Mana', i3: 'Ritmo de Batalha', i4: 'Fúria Acelerada',
+    s1: 'Toque Vampírico', s2: 'Ceifador', s3: 'Sanguessuga', s4: 'Vampiro Ancião', s5: 'Lorde do Sangue',
+    c1: 'Treino Básico', c2: 'Resistência', c3: 'Fôlego', c4: 'Agilidade',
+    c5: 'Força Bruta', c6: 'Couraça', c9: 'Maestria de Batalha', c10: 'Resistência Mágica',
+    c13: 'Instinto Selvagem', c14: 'Alma Blindada',
+  },
+  berserker: {
+    f1: 'Lâmina de Fúria', f2: 'Golpe Brutal', f3: 'Precisão Selvagem', f4: 'Sede Insaciável',
+    b1: 'Pele Endurecida', b2: 'Vigor Feroz', b3: 'Muralha de Ferro', b4: 'Constituição Bestial',
+    i1: 'Reflexos Apurados', i2: 'Fluxo Rúnico', i3: 'Ritmo Desenfrenado', i4: 'Fúria Irreprimível',
+    s1: 'Toque Sanguinário', s2: 'Ceifador Implacável', s3: 'Sanguessuga Feroz', s4: 'Vampiro da Batalha', s5: 'Lorde da Carnificina',
+    c1: 'Treino Marcial', c2: 'Resistência Bruta', c3: 'Fôlego Selvagem', c4: 'Agilidade Bestial',
+    c5: 'Força Desmedida', c6: 'Endurecimento', c9: 'Maestria de Combate', c10: 'Resistência Rúnica',
+    c13: 'Instinto de Predador', c14: 'Corpo Blindado',
+  },
+  paladino: {
+    f1: 'Lâmina Consagrada', f2: 'Golpe Sagrado', f3: 'Precisão Divina', f4: 'Sede Purificadora',
+    b1: 'Pele Abençoada', b2: 'Vigor Celestial', b3: 'Muralha Sagrada', b4: 'Constituição Divina',
+    i1: 'Reflexos Celestiais', i2: 'Fluxo Sagrado', i3: 'Ritmo Protetor', i4: 'Fúria Justeira',
+    s1: 'Toque Purificador', s2: 'Ceifador Sagrado', s3: 'Sanguessuga Divina', s4: 'Vampiro Abençoado', s5: 'Lorde da Redenção',
+    c1: 'Treino Sagrado', c2: 'Resistência Divina', c3: 'Fôlego Celestial', c4: 'Agilidade Protetor',
+    c5: 'Força Consagrada', c6: 'Proteção Divina', c9: 'Maestria Sagrada', c10: 'Resistência Celestial',
+    c13: 'Instinto Protetor', c14: 'Armadura Divina',
+  },
+  mago: {
+    f1: 'Lâmina Arcana', f2: 'Golpe Mágico', f3: 'Precisão Mística', f4: 'Sede Arcana',
+    b1: 'Pele Etérea', b2: 'Vigor Mágico', b3: 'Muralha Arcana', b4: 'Constituição Mística',
+    i1: 'Reflexos Místicos', i2: 'Fluxo Arcano', i3: 'Ritmo Mágico', i4: 'Fúria Arcana',
+    s1: 'Toque Mágico', s2: 'Ceifador Místico', s3: 'Sanguessuga Arcana', s4: 'Vampiro Mágico', s5: 'Lorde da Magia',
+    c1: 'Treino Mágico', c2: 'Resistência Mística', c3: 'Fôlego Arcano', c4: 'Agilidade Mágica',
+    c5: 'Força Arcana', c6: 'Proteção Mágica', c9: 'Maestria Arcana', c10: 'Resistência Mágica Apurada',
+    c13: 'Instinto Mágico', c14: 'Armadura Etérea',
+  }
+};
+
+function getSkillNameByClass(skillId, classType) {
+  if (!classType) classType = 'knight';
+  const names = SKILL_NAMES_BY_CLASS[classType];
+  return (names && names[skillId]) || SKILL_NAMES_BY_CLASS.knight[skillId] || skillId;
+}
 let arcaneEmpowered = false;
 // Runtime: Égide ativa
 let egideUntil = 0;
@@ -2808,6 +2855,14 @@ function effectiveDefAbil(){
 // Lista de habilidades ativas do jogador
 function activeAbilList(){
   return [effectiveAtkAbil(), 'ira', effectiveDefAbil()];
+}
+
+// Função para re-renderizar o sprite do personagem (chamada ao trocar classe)
+function updatePlayerSprite() {
+  const playerClass = S.playerClass || 'knight';
+  const spriteToUse = (SPR[playerClass] || SPR_IMG_SRC[playerClass]) ? playerClass : 'knight';
+  drawSprite(el('knight-cv'), spriteToUse);
+  console.log(`🎨 Sprite do personagem atualizado: ${spriteToUse}`);
 }
 
 /* ---------- ESTADO ---------- */
@@ -4227,37 +4282,79 @@ async function supaSend(entry){
   }catch(e){ console.warn('Supabase send erro:', e.message); return false; }
 }
 
+// Função auxiliar para mesclar entradas sem duplicar
+function mergeEntries(existing, newEntries){
+  const timestamps = new Set(existing.map(e => e.ts));
+  const merged = [...existing];
+  newEntries.forEach(entry => {
+    if(!timestamps.has(entry.ts)){
+      merged.push(entry);
+    }
+  });
+  return merged.slice(-CHAT_MAX);
+}
+
 async function chatLoad(){
-  if(supaReady) return; // realtime já mantém sincronizado
+  // Sempre carregar do localStorage PRIMEIRO, mesmo com Supabase
   if(hasShared){
     try{
       const r=await window.storage.get(CHAT_KEY,true);
-      chatCache = r&&r.value ? JSON.parse(r.value) : [];
+      const cached = r&&r.value ? JSON.parse(r.value) : [];
+      if(cached.length > 0){
+        chatCache = cached;
+      }
     }catch(e){ /* chave ainda não existe */ }
   }
+  
+  // Se Supabase está pronto, sincronizar mensagens novas
+  if(supaReady && supa) {
+    try{
+      const { data, error } = await supa
+        .from('messages').select('*')
+        .order('created_at', {ascending:true})
+        .limit(CHAT_MAX);
+      if(!error && data){
+        const newEntries = data.map(rowToEntry);
+        // Mesclar sem duplicar
+        chatCache = mergeEntries(chatCache, newEntries);
+      }
+    }catch(e){ console.warn('Sincronizar chat falhou:', e.message); }
+  }
+  
   renderChat();
 }
 async function chatPersist(entry){
-  // Supabase: envia e deixa o realtime devolver (não duplica localmente)
-  if(supa){
-    const ok=await supaSend(entry);
-    if(ok) return;               // realtime vai inserir na tela
-    // se falhar, cai no modo local abaixo
-  }
+  // 1. Salvar LOCALMENTE primeiro (persistência garantida)
   chatCache.push(entry);
   if(chatCache.length>CHAT_MAX) chatCache=chatCache.slice(-CHAT_MAX);
-  renderChat();
+  
+  // 2. Salvar no localStorage/shared storage
   if(hasShared){
     try{
       let msgs=[];
-      try{ const r=await window.storage.get(CHAT_KEY,true); msgs=r&&r.value?JSON.parse(r.value):[]; }catch(e){}
+      try{ 
+        const r=await window.storage.get(CHAT_KEY,true); 
+        msgs=r&&r.value?JSON.parse(r.value):[]; 
+      }catch(e){}
       msgs.push(entry);
       if(msgs.length>CHAT_MAX) msgs=msgs.slice(-CHAT_MAX);
       chatCache=msgs;
       await window.storage.set(CHAT_KEY, JSON.stringify(msgs), true);
-      renderChat();
-    }catch(e){}
-  }else if(chatChannel){
+    }catch(e){
+      console.warn('Erro ao salvar no storage:', e.message);
+    }
+  }
+  
+  // 3. Renderizar na tela IMEDIATAMENTE
+  renderChat();
+  
+  // 4. Enviar para Supabase em background (sem bloquear)
+  if(supa){
+    supaSend(entry).catch(e => {
+      console.warn('Falha ao enviar para Supabase:', e.message);
+    });
+  } else if(chatChannel){
+    // Fallback: usar BroadcastChannel
     chatChannel.postMessage(entry);
   }
 }
@@ -4285,6 +4382,12 @@ function renderChat(){
     }else if(m.type==='synth'){
       const cls = m.rar==='PixelMaster' ? 'alert-pixel' : 'alert-lend';
       d.innerHTML=`<span class="${cls}">[${esc(m.nick)}] sintetizou com sucesso [${esc(m.item)}] [${rarLabel(m.rar)}]</span>`;
+    }else if(m.type==='synth-buff'){
+      d.innerHTML=`<span class="alert-synth-buff">${esc(m.msg)}</span>`;
+    }else if(m.type==='synth-fail'){
+      d.innerHTML=`<span class="alert-synth-fail">${esc(m.msg)}</span>`;
+    }else if(m.type==='synth-orb'){
+      d.innerHTML=`<span class="alert-synth-orb">${esc(m.msg)}</span>`;
     }else{
       const me = S && m.nick===S.nick && !adminClass;
       const nickCls = adminClass || (me ? 'me' : '');
@@ -4410,6 +4513,12 @@ async function sendChat(){
     return;
   }
   
+  if(msg.startsWith('/sintetizador ') && isAdminSoul()){
+    handleSynthCommand(msg.substring(13).trim());
+    inp.value='';
+    return;
+  }
+  
   const since=Date.now()-lastChatSent;
   if(since<CHAT_COOLDOWN){
     const remain=Math.ceil((CHAT_COOLDOWN-since)/1000);
@@ -4454,6 +4563,87 @@ async function handleLowMobCommand(args){
   updateMonsterNerfIndicator();
   renderEventBuffs();
   toast(`✅ MOB NERF -${pct}% por ${hrs}h`);
+}
+
+async function handleSynthCommand(args){
+  const parts = args.split(/\s+/);
+  if(parts.length < 3){
+    return toast('Formato: /sintetizador 50% in 30<br>Ou: /sintetizador ORB in 30<br>Range: 1-100%, 1-60s');
+  }
+  
+  let pct = parts[0].toUpperCase();
+  let isOrb = false;
+  
+  // Verificar se é ORB (modo impossível falhar)
+  if(pct === 'ORB'){
+    isOrb = true;
+  }else{
+    // Parse normal com %
+    if(pct.endsWith('%')) pct = pct.slice(0, -1);
+    pct = parseInt(pct);
+    
+    if(isNaN(pct)) return toast('Valores inválidos');
+    if(pct < 1 || pct > 100) return toast('1% a 100%');
+  }
+  
+  if(parts[1].toLowerCase() !== 'in') return toast('Use: /sintetizador 50% in 30 ou /sintetizador ORB in 30');
+  
+  let secs = parseInt(parts[2]);
+  
+  if(isNaN(secs)) return toast('Valores inválidos');
+  if(secs < 1 || secs > 60) return toast('1 a 60 segundos');
+  
+  // Raridades do jogo
+  const rarities = ['Comum', 'Incomum', 'Raro', 'Épico', 'Lendário', 'PixelMaster', 'PixelReaper'];
+  
+  // Chances base de sucesso (aproximadas do jogo)
+  const baseSynthChances = {
+    'Comum': 99,
+    'Incomum': 95,
+    'Raro': 85,
+    'Épico': 70,
+    'Lendário': 40,
+    'PixelMaster': 20,
+    'PixelReaper': 5
+  };
+  
+  if(isOrb){
+    // Modo ORB - 100% de sucesso em tudo
+    let msg = `✨ [ADM-SOUL] ORB DO DESTINO ATIVADO! 🌟✨\n`;
+    msg += '╔═══════════════════════════════╗\n';
+    msg += '║ SINTETIZADOR: 100% GARANTIDO! ║\n';
+    msg += '╠═══════════════════════════════╣\n';
+    
+    rarities.forEach(rarity => {
+      msg += `║ ${rarity.padEnd(15)}: 🎯 100% ║\n`;
+    });
+    
+    msg += '╚═══════════════════════════════╝\n';
+    msg += '🔮 NADA PODE FALHAR AGORA! 🔮';
+    
+    chatPersist({type:'synth-orb', nick:'ADM-SOUL', msg, ts:Date.now()});
+    toast(`✅ ORB ativado! Tudo sintetiza com 100% por ${secs}s`);
+  }else if(pct === 100){
+    // Mensagem de falha em azul escuro
+    const msg = '⚠️ [ADM-SOUL] Algo aconteceu com o Sintetizador e eu acho que é uma falha na capacidade de recusar a sintetização! É melhor ser RÁPIDO e verificar!';
+    chatPersist({type:'synth-fail', nick:'ADM-SOUL', msg, ts:Date.now()});
+    toast(`✅ Alerta de FALHA TOTAL enviado por ${secs}s`);
+  }else{
+    // Mensagem de buff em azul claro - mostrar melhora percentual para cada raridade
+    let msg = `⚡ [ADM-SOUL] SINTETIZADOR +${pct}% 🔧\n`;
+    msg += '═════════════════════════════\n';
+    
+    rarities.forEach(rarity => {
+      const baseChance = baseSynthChances[rarity];
+      const improvedChance = Math.min(100, baseChance + (baseChance * pct / 100));
+      const improvement = Math.round(improvedChance - baseChance);
+      msg += `${rarity}: ${baseChance}% → ${improvedChance.toFixed(1)}% (+${improvement}%)\n`;
+    });
+    
+    msg += '═════════════════════════════';
+    chatPersist({type:'synth-buff', nick:'ADM-SOUL', msg, ts:Date.now()});
+    toast(`✅ Buff de Sintetizador +${pct}% ativado por ${secs}s`);
+  }
 }
 
 function triggerMonsterNerf(reduction, hours){
@@ -4559,7 +4749,8 @@ function announceSynth(itemName, rarity){
 async function initChat(){
   el('chat-send').onclick=sendChat;
   el('chat-input').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
-  // tenta Supabase primeiro
+  
+  // Tenta Supabase primeiro
   const okSupa = await supaInit();
   
   // ATIVAR SISTEMA DE EVENTOS EM TEMPO REAL
@@ -4567,14 +4758,25 @@ async function initChat(){
     subscribeToGameEvents();
   }
   
-  if(okSupa){ return; } // realtime cuida de tudo
-  // fallbacks
+  // NÃO retornar! Sempre configurar fallbacks
+  // Configurar BroadcastChannel se não houver shared storage
   if(!hasShared && typeof BroadcastChannel!=='undefined'){
     chatChannel=new BroadcastChannel(CHAT_KEY);
-    chatChannel.onmessage=e=>{ chatCache.push(e.data); if(chatCache.length>CHAT_MAX)chatCache=chatCache.slice(-CHAT_MAX); renderChat(); };
+    chatChannel.onmessage=e=>{ 
+      chatCache.push(e.data); 
+      if(chatCache.length>CHAT_MAX)chatCache=chatCache.slice(-CHAT_MAX); 
+      renderChat(); 
+    };
   }
-  chatLoad();
+  
+  // Carregar histórico e sincronizar
+  await chatLoad();
+  
+  // Se tem shared storage, fazer sincronização periódica
   if(hasShared) setInterval(chatLoad, 4000);
+  
+  // Se tem Supabase, fazer sincronização periódica também para garantir mensagens novas
+  if(okSupa && supa) setInterval(chatLoad, 5000);
 }
 
 /* ---------- BACKGROUND ---------- */
@@ -5921,7 +6123,18 @@ function renderTalents(){
   const wrap=el('talent-branches'); wrap.innerHTML='';
   for(const [bkey,info] of Object.entries(BRANCH_INFO)){
     const branch=document.createElement('div'); branch.className='tal-branch';
-    branch.innerHTML='<h3>'+info.nm+'</h3>';
+    
+    // Atualizar nome do header baseado na classe
+    let branchName = info.nm;
+    if(hasClass() && bkey === 'fury'){
+      const classAbil = classData().atkAbility;
+      branchName = '⚔ FÚRIA → ' + ABILITIES[classAbil].nm;
+    } else if(hasClass() && bkey === 'bul'){
+      const classAbil = classData().defAbility;
+      branchName = '🛡 BALUARTE → ' + ABILITIES[classAbil].nm;
+    }
+    
+    branch.innerHTML='<h3>'+branchName+'</h3>';
     const chain=document.createElement('div'); chain.className='tal-chain';
     info.order.forEach((tid,idx)=>{
       const t=TALENT_BY_ID[tid]; if(!t) return;
@@ -5936,18 +6149,27 @@ function renderTalents(){
       else if(unlocked && (S.mastery||0)>=t.cost) cls+=' available';
       else if(!unlocked) cls+=' locked';
       node.className=cls;
-      // Nome da skill pode mudar com classe (mas não IRA)
+      
+      // Nome da skill muda com classe
       let skillName = t.nm;
-      if(isMagic && hasClass()){
+      const currentClass = playerClass();
+      
+      if(hasClass()){
         if(tid==='corte'){
           const classAbil = classData().atkAbility;
           skillName = ABILITIES[classAbil].nm;
         }else if(tid==='esquiva'){
           const classAbil = classData().defAbility;
           skillName = ABILITIES[classAbil].nm;
+        } else {
+          // Outras skills também mudam de nome com a classe
+          skillName = getSkillNameByClass(tid, currentClass);
         }
-        // tid==='ira': nunca muda, mantém o nome original
+      } else {
+        // Sem classe, usar nomes padrão de Knight
+        skillName = getSkillNameByClass(tid, 'knight');
       }
+      
       const rankTxt=isMagic?(maxed?'✓ DESTRAVADA':'🔒 custo '+t.cost):rank+'/'+maxR;
       const desc = talentDesc(tid);
       node.innerHTML='<div class="tn">'+skillName+'</div><div class="td">'+desc+'</div><div class="tr">'+rankTxt+'</div>';
@@ -6383,6 +6605,11 @@ function confirmClassChange(key){
   S.abilCd[cls.atkAbility]=0;
   S.abilCd[cls.defAbility]=0;
   closeModal('modal-class');
+  
+  // ✅ Re-renderizar maestria com novos nomes de skills
+  renderTalents();
+  // ✅ Atualizar sprite do personagem
+  updatePlayerSprite();
   
   const toastMsg = isChanging 
     ? `⚔ CLASSE ALTERADA!<br>${cls.icon} ${cls.nm}<br>Suas magias foram atualizadas!`
