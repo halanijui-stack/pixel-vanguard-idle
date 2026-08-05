@@ -38,38 +38,6 @@ body{
 
 canvas{image-rendering:pixelated;}
 
-/* Event Buffs Display */
-.event-buff-icon {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  padding: 1.5px 3px;
-  border-radius: 1px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid #ff3333;
-  transition: all 0.2s;
-  cursor: pointer;
-  min-width: 21px;
-}
-
-.event-buff-icon:hover {
-  background: rgba(255,255,255,0.15);
-  border-color: #ffaa00;
-  transform: scale(1.2);
-  box-shadow: 0 0 3px rgba(255,51,51,0.6);
-}
-
-.event-time {
-  font-size: 3px;
-  color: #ffff00;
-  white-space: nowrap;
-  text-shadow: 0 0 1px #000;
-  font-weight: bold;
-  letter-spacing: -0.5px;
-}
-
 /* ---------- BACKGROUNDS ---------- */
 .bg{position:absolute;inset:0;z-index:0;transition:opacity .8s;overflow:hidden;background-repeat:no-repeat;background-size:cover;}
 /* névoa/vinheta suave por cima de todos para dar profundidade */
@@ -1304,11 +1272,6 @@ canvas{image-rendering:pixelated;}
   <div id="battle-strip">
     <div class="strip-title">AUTO-BATTLE ACTIVE</div>
     <div id="strip-inner"></div>
-  </div>
-
-  <!-- EVENT BUFFS ICONS - CANTO SUPERIOR ESQUERDO -->
-  <div id="event-buffs-container" style="display:none;position:absolute;top:110px;left:40px;width:auto;background:transparent;border:none;padding:0;text-align:center;z-index:50;">
-    <div id="event-buffs-inner" style="display:flex;gap:3px;align-items:center;justify-content:flex-start;flex-wrap:wrap;"></div>
   </div>
 
   <!-- PARTY -->
@@ -2586,21 +2549,7 @@ function rollEnemyRarity(){
   // A cada stage passado, +1% de chance de o inimigo ser acima de Comum.
   // Peso total = 1000. Transfere 10 de peso (1%) do Comum para as raridades
   // superiores por stage, distribuído na proporção original entre elas.
-  let bonus = Math.min(760, (S.stage-1)*10); // até no máx ~76% extra (Comum não zera)
-  
-  // Aplicar evento de raridade do Supabase se ativo
-  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['rarity']) {
-    const now = new Date();
-    if(window.ACTIVE_GAME_EVENTS['rarity'].expiresAt > now) {
-      bonus += window.ACTIVE_GAME_EVENTS['rarity'].percentage * 10; // +10% de peso por % de evento
-    }
-  }
-  
-  // Fallback para evento local
-  if(!bonus && gameEvents.gr.active && gameEvents.gr.endsAt > Date.now()) {
-    bonus += gameEvents.gr.bonus * 10;
-  }
-  
+  const bonus = Math.min(760, (S.stage-1)*10); // até no máx ~76% extra (Comum não zera)
   const upWeights = ENEMY_RARITIES.slice(1).reduce((s,r)=>s+r.w,0); // 180 (Incomum+)
   let roll = Math.random()*1000;
   // Comum
@@ -2816,7 +2765,6 @@ let S = null;
 let gameEvents = {
   exp: {active:false, bonus:0, endsAt:0},
   drop: {active:false, bonus:0, endsAt:0},
-  gr: {active:false, bonus:0, endsAt:0},
   monsterSpawn: {active:false, bonus:0, endsAt:0},
   monsterGrade: {active:false, bonus:0, endsAt:0},
   monsterSpecific: {}, // { "monster name": {active:bool, bonus:0, endsAt:0} }
@@ -2824,35 +2772,8 @@ let gameEvents = {
   monsterNerf: {active:false, reduction:0, endsAt:0}, // {active:bool, reduction:0-100, endsAt:0}
 };
 
-function expMult(){ 
-  if(boosterActive('exp')) return 1+BOOSTERS.exp.bonus;
-  
-  // Verificar eventos do Supabase primeiro
-  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['exp']) {
-    const now = new Date();
-    if(window.ACTIVE_GAME_EVENTS['exp'].expiresAt > now) {
-      return 1 + (window.ACTIVE_GAME_EVENTS['exp'].percentage / 100);
-    }
-  }
-  
-  // Fallback para eventos locais
-  return gameEvents.exp.active ? 1+gameEvents.exp.bonus/100 : 1;
-}
-
-function dropMult(){ 
-  if(boosterActive('drop')) return 1+BOOSTERS.drop.bonus;
-  
-  // Verificar eventos do Supabase primeiro
-  if(window.ACTIVE_GAME_EVENTS && window.ACTIVE_GAME_EVENTS['drop']) {
-    const now = new Date();
-    if(window.ACTIVE_GAME_EVENTS['drop'].expiresAt > now) {
-      return 1 + (window.ACTIVE_GAME_EVENTS['drop'].percentage / 100);
-    }
-  }
-  
-  // Fallback para eventos locais
-  return gameEvents.drop.active ? 1+gameEvents.drop.bonus/100 : 1;
-}
+function expMult(){ return boosterActive('exp') ? 1+BOOSTERS.exp.bonus : (gameEvents.exp.active ? 1+gameEvents.exp.bonus/100 : 1); }
+function dropMult(){ return boosterActive('drop') ? 1+BOOSTERS.drop.bonus : (gameEvents.drop.active ? 1+gameEvents.drop.bonus/100 : 1); }
 
 function isEventActive(eventType){
   return gameEvents[eventType] && gameEvents[eventType].active && gameEvents[eventType].endsAt > Date.now();
@@ -2904,76 +2825,7 @@ function getMonsterNerfReduction(){
 function getMonsterSpawnChanceMultiplier(monsterName){
   const event = gameEvents.spawnChance[monsterName?.toLowerCase()];
   if(!event || !event.active || event.endsAt <= Date.now()) return 1;
-  return event.chance / 100;
-}
-
-// Salvar eventos em localStorage
-function saveGameEvents(){
-  try {
-    localStorage.setItem('PV_GAME_EVENTS', JSON.stringify({
-      exp: gameEvents.exp,
-      drop: gameEvents.drop,
-      gr: gameEvents.gr,
-      monsterNerf: gameEvents.monsterNerf
-    }));
-  } catch(e){}
-}
-
-// Restaurar eventos do localStorage
-function restoreGameEvents(){
-  try {
-    const saved = localStorage.getItem('PV_GAME_EVENTS');
-    if(!saved) return;
-    const data = JSON.parse(saved);
-    const now = Date.now();
-    
-    // Restaurar se ainda estiverem ativos
-    if(data.exp && data.exp.active && data.exp.endsAt > now) gameEvents.exp = data.exp;
-    if(data.drop && data.drop.active && data.drop.endsAt > now) gameEvents.drop = data.drop;
-    if(data.gr && data.gr.active && data.gr.endsAt > now) gameEvents.gr = data.gr;
-    if(data.monsterNerf && data.monsterNerf.active && data.monsterNerf.endsAt > now) gameEvents.monsterNerf = data.monsterNerf;
-  } catch(e){}
-}
-
-// Renderizar ícones de eventos
-function renderEventBuffs(){
-  const container = el('event-buffs-container');
-  const inner = el('event-buffs-inner');
-  if(!container || !inner) return;
-  
-  const now = Date.now();
-  const active = [];
-  
-  // Verificar eventos
-  if(gameEvents.monsterNerf.active && gameEvents.monsterNerf.endsAt > now){
-    active.push({type: 'nerf', label: 'MOB', symbol: '⚡', end: gameEvents.monsterNerf.endsAt});
-  }
-  if(gameEvents.exp.active && gameEvents.exp.endsAt > now){
-    active.push({type: 'exp', label: 'XP', symbol: '✦', end: gameEvents.exp.endsAt});
-  }
-  if(gameEvents.drop.active && gameEvents.drop.endsAt > now){
-    active.push({type: 'drop', label: 'DROP', symbol: '◆', end: gameEvents.drop.endsAt});
-  }
-  if(gameEvents.gr.active && gameEvents.gr.endsAt > now){
-    active.push({type: 'gr', label: 'RARE', symbol: '★', end: gameEvents.gr.endsAt});
-  }
-  
-  if(active.length === 0){
-    container.style.display = 'none';
-    return;
-  }
-  
-  container.style.display = 'block';
-  inner.innerHTML = active.map(e => {
-    const rem = Math.max(0, e.end - now);
-    const h = Math.floor(rem / 3600000);
-    const m = Math.floor((rem % 3600000) / 60000);
-    const time = h > 0 ? `${h}h${m}` : `${m}m`;
-    return `<div class="event-buff-icon" title="${e.label} (${time})" style="color:#ff3333;font-weight:bold;font-size:6px;">
-      ${e.symbol}
-      <div class="event-time">${time}</div>
-    </div>`;
-  }).join('');
+  return event.chance / 100; // chance é em %, retorna multiplicador
 }
 
 function getEventHoursRemaining(eventType){
@@ -3008,9 +2860,7 @@ function triggerEvent(type, bonus, hours){
   gameEvents[type].bonus = bonus;
   gameEvents[type].endsAt = Date.now() + (hours * 3600000);
   
-  saveGameEvents();
   announceEvent(type, bonus, hours);
-  renderEventBuffs();
   save();
   toast(`✨ EVENTO ATIVADO!<br>${type.toUpperCase()} +${bonus}% por ${hours}h`);
 }
@@ -3026,8 +2876,6 @@ function triggerMonsterEvent(monsterName, bonus, hours){
   };
   
   announceEvent('', bonus, hours, monsterName);
-  saveGameEvents();
-  renderEventBuffs();
   save();
   toast(`✨ EVENTO ATIVADO!<br>${monsterName.toUpperCase()} +${bonus}% por ${hours}h`);
 }
@@ -3043,8 +2891,6 @@ function triggerSpawnChance(monsterName, chance, hours){
   };
   
   announceSpawnChance(monsterName, chance / 100, hours);
-  saveGameEvents();
-  renderEventBuffs();
   save();
   toast(`✨ CHANCE ATIVADA!<br>${monsterName.toUpperCase()} ${chance}% por ${hours}h`);
 }
@@ -3186,217 +3032,7 @@ function renderSettings(){
 const SUPABASE_URL = 'https://aeghxfcoxjknsqgmtrin.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2h4ZmNveGprbnNxZ210cmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2ODE3MDksImV4cCI6MjEwMDI1NzcwOX0.4GiW7gswQrkl1SpGH8i227o0HeonokInpBPW8mJSAk8';
 let supaAuth=null;  // cliente Supabase para autenticação
-
-// ========== SISTEMA DE EVENTOS DO SUPABASE ==========
-window.ACTIVE_GAME_EVENTS = {}; // Armazena eventos ativos em memória
-
-// Trigger Admin Event - Cria novo evento no Supabase
-// Mensagens customizadas para cada tipo de evento
-function getEventMessage(eventType, percentage, durationHours) {
-  const nomeEvento = {
-    'exp': 'Experiência',
-    'drop': 'Drop de Itens',
-    'rarity': 'Raridade de Monstros',
-    'mob_nerf': 'Enfraquecimento de Monstros'
-  }[eventType] || eventType;
-  
-  const sinal = eventType === 'mob_nerf' ? '-' : '+';
-  
-  return `✨ Algo mudou em nosso mundo e ${sinal}${percentage}% de ${nomeEvento}! Aproveitem guerreiros, vocês têm ${durationHours} horas para caçar ao máximo!`;
-}
-
-async function triggerAdminEvent(eventType, percentage, durationHours) {
-  if (percentage < 1 || percentage > 100) {
-    console.log("❌ A porcentagem deve ser entre 1% e 100%");
-    return;
-  }
-  if (durationHours < 1 || durationHours > 168) {
-    console.log("❌ A duração deve ser entre 1h e 168h");
-    return;
-  }
-  
-  const startsAt = new Date();
-  const endsAt = new Date(startsAt.getTime() + (durationHours * 60 * 60 * 1000));
-  
-  // Desativa eventos antigos do mesmo tipo para não encavalar
-  await supa.from('game_events')
-    .update({ active: false })
-    .eq('event_type', eventType);
-  
-  // Insere o novo evento
-  const { error } = await supa
-    .from('game_events')
-    .insert({
-      event_type: eventType,
-      bonus_percentage: percentage,
-      duration_hours: durationHours,
-      starts_at: startsAt.toISOString(),
-      ends_at: endsAt.toISOString(),
-      active: true
-    });
-  
-  if (error) {
-    console.error("Erro ao salvar evento no Supabase:", error.message);
-    toast("❌ Erro ao salvar evento!");
-  } else {
-    console.log(`✅ Evento ${eventType} ativado com sucesso!`);
-    
-    // Anunciar evento no chat em amarelo
-    const eventMsg = getEventMessage(eventType, percentage, durationHours);
-    chatPersist({
-      type: 'event',
-      nick: 'ADM-SOUL',  // ✅ Adicionar nick para a mensagem ser enviada corretamente
-      msg: eventMsg,
-      ts: Date.now()
-    });
-    
-    // Recarrega eventos para refletir mudança imediatamente
-    await loadActiveEvents();
-  }
-}
-
-// Load Active Events - Carrega eventos ativos do Supabase
-async function loadActiveEvents() {
-  if (!supa) return;
-  
-  const now = new Date().toISOString();
-  const { data, error } = await supa
-    .from('game_events')
-    .select('*')
-    .eq('active', true)
-    .gt('ends_at', now);
-  
-  if (error) {
-    console.error("Erro ao carregar eventos:", error.message);
-    return;
-  }
-  
-  window.ACTIVE_GAME_EVENTS = {};
-  if (data) {
-    data.forEach(ev => {
-      window.ACTIVE_GAME_EVENTS[ev.event_type] = {
-        percentage: ev.bonus_percentage,
-        expiresAt: new Date(ev.ends_at)
-      };
-      
-      // IMPORTANTE: Também atualizar gameEvents localmente para compatibilidade
-      if(ev.event_type === 'exp') {
-        gameEvents.exp.active = true;
-        gameEvents.exp.bonus = ev.bonus_percentage;
-        gameEvents.exp.endsAt = new Date(ev.ends_at).getTime();
-      } else if(ev.event_type === 'drop') {
-        gameEvents.drop.active = true;
-        gameEvents.drop.bonus = ev.bonus_percentage;
-        gameEvents.drop.endsAt = new Date(ev.ends_at).getTime();
-      } else if(ev.event_type === 'rarity') {
-        gameEvents.gr.active = true;
-        gameEvents.gr.bonus = ev.bonus_percentage;
-        gameEvents.gr.endsAt = new Date(ev.ends_at).getTime();
-      } else if(ev.event_type === 'mob_nerf') {
-        gameEvents.monsterNerf.active = true;
-        gameEvents.monsterNerf.reduction = ev.bonus_percentage;
-        gameEvents.monsterNerf.endsAt = new Date(ev.ends_at).getTime();
-      }
-    });
-    console.log("⚡ Eventos ativos carregados:", window.ACTIVE_GAME_EVENTS);
-    saveGameEvents(); // Salvar gameEvents atualizado
-    renderActiveEvents();
-  }
-}
-
-// Render Active Events - Renderiza os ícones dos eventos na interface
-function renderActiveEvents() {
-  const container = el('event-buffs-container');
-  if (!container) return;
-  
-  const now = new Date();
-  const activeEvents = [];
-  
-  // Coleta eventos ativos
-  for (const [eventType, eventData] of Object.entries(window.ACTIVE_GAME_EVENTS)) {
-    if (eventData.expiresAt > now) {
-      activeEvents.push({ type: eventType, data: eventData });
-    }
-  }
-  
-  if (activeEvents.length === 0) {
-    container.style.display = 'none';
-    return;
-  }
-  
-  container.style.display = 'block';
-  const inner = el('event-buffs-inner');
-  if (!inner) return;
-  
-  inner.innerHTML = activeEvents.map(evt => {
-    const timeLeft = Math.max(0, evt.data.expiresAt - now);
-    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    const time = hours > 0 ? `${hours}h${minutes}` : `${minutes}m`;
-    
-    const icons = {
-      'exp': { icon: '⚡', color: '#ffff00', name: 'XP' },
-      'drop': { icon: '📦', color: '#7ac74f', name: 'DROP' },
-      'rarity': { icon: '✨', color: '#b06fe8', name: 'RARITY' },
-      'mob_nerf': { icon: '🛡️', color: '#ff5e5e', name: 'MOB NERF' }
-    };
-    
-    const info = icons[evt.type] || { icon: '🔥', color: '#fff', name: evt.type };
-    
-    return `<div class="event-buff-icon" title="${info.name} ${evt.data.percentage}%">
-      <span style="font-size:12px;">${info.icon}</span>
-      <span style="font-size:5px; color:${info.color}; font-weight:bold;">+${evt.data.percentage}%</span>
-      <span class="event-time" style="color:${info.color};">${time}</span>
-    </div>`;
-  }).join('');
-}
-
-// Sincronizar eventos a cada 10 segundos
-setInterval(() => {
-  renderActiveEvents();
-}, 10000);
-
-// Subscribe to Game Events - Real-time listener para mudanças de eventos
-function subscribeToGameEvents() {
-  if (!supa) {
-    console.log('Supabase não disponível para real-time');
-    return;
-  }
-  
-  console.log('📡 Inscrito em eventos em tempo real...');
-  
-  supa
-    .channel('game-events-channel')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'game_events' },
-      async (payload) => {
-        console.log('⚡ Mudança de evento detectada!', payload);
-        
-        // Recarrega os eventos na memória local de todos os jogadores
-        await loadActiveEvents();
-        renderActiveEvents();
-        
-        // Se for INSERT (novo evento), log de notificação
-        if(payload.eventType === 'INSERT') {
-          const evt = payload.new;
-          const nomeEvento = {
-            'exp': 'Experiência',
-            'drop': 'Drop de Itens',
-            'rarity': 'Raridade de Monstros',
-            'mob_nerf': 'Enfraquecimento de Monstros'
-          }[evt.event_type] || evt.event_type;
-          
-          const sinal = evt.event_type === 'mob_nerf' ? '-' : '+';
-          
-          console.log(`✅ Novo evento: ${nomeEvento} ${sinal}${evt.bonus_percentage}% por ${evt.duration_hours}h`);
-        }
-      }
-    )
-    .subscribe();
-}
-
-// Inicializar cliente Supabase
+// Inicializa cliente Supabase
 async function supaAuthInit(){
   try{
     supaAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -4072,7 +3708,21 @@ function spawnMonster(){
 const el = id=>document.getElementById(id);
 function setFill(id, pct){ el(id).style.transform=`scaleX(${Math.max(0,Math.min(1,pct))})`; }
 function updateMonsterNerfIndicator(){
-  // Barra vermelha removida - eventos aparecem apenas nos ícones laterais
+  const nerfDiv = el('monster-nerf-indicator') || document.createElement('div');
+  if(!nerfDiv.id) {
+    nerfDiv.id = 'monster-nerf-indicator';
+    nerfDiv.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#ff3333;color:white;padding:8px 16px;border-radius:4px;font-weight:bold;text-shadow:0 0 4px #000;z-index:1000;display:none;';
+    document.body.appendChild(nerfDiv);
+  }
+  
+  const reduction = getMonsterNerfReduction();
+  if(reduction > 0 && gameEvents.monsterNerf.endsAt > Date.now()){
+    const remaining = Math.max(0, Math.ceil((gameEvents.monsterNerf.endsAt - Date.now()) / 1000 / 60));
+    nerfDiv.textContent = `🔴 NERF -${reduction}% (${remaining}m)`;
+    nerfDiv.style.display = 'block';
+  } else {
+    nerfDiv.style.display = 'none';
+  }
 }
 
 function updBars(){
@@ -4099,7 +3749,6 @@ function updBars(){
   
   // Update monster nerf indicator
   updateMonsterNerfIndicator();
-  renderEventBuffs();
   el('ui-vip').textContent=S.vip;
   // indicador de boosters ativos no plate VIP
   const bTags=[];
@@ -4313,85 +3962,12 @@ function updateChatCD(){
     if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
   }
 }
-async function sendChat(){
+function sendChat(){
   const inp=el('chat-input');
   const msg=inp.value.trim();
   if(!msg || !S) return;
   
-  // Comando para ver eventos ativos
-  if(msg === '/eventos' || msg === '/events'){
-    const now = Date.now();
-    let txt = '🎉 EVENTOS ATIVOS 🎉\n\n';
-    let hasAny = false;
-    
-    // Mostrar eventos do Supabase
-    for (const [eventType, eventData] of Object.entries(window.ACTIVE_GAME_EVENTS)) {
-      if (eventData.expiresAt > now) {
-        const rem = eventData.expiresAt - now;
-        const h = Math.floor(rem / (1000 * 60 * 60));
-        const m = Math.floor((rem % (1000 * 60 * 60)) / (1000 * 60));
-        
-        const typeLabel = {
-          'exp': 'XP',
-          'drop': 'DROP',
-          'rarity': 'RARIDADE',
-          'mob_nerf': 'MOB NERF'
-        };
-        
-        const label = typeLabel[eventType] || eventType.toUpperCase();
-        const symbol = eventType === 'mob_nerf' ? '-' : '+';
-        txt += `${label} ${symbol}${eventData.percentage}%\nTempo: ${h}h ${m}m\n\n`;
-        hasAny = true;
-      }
-    }
-    
-    if(gameEvents.monsterNerf.active && gameEvents.monsterNerf.endsAt > now){
-      const rem = gameEvents.monsterNerf.endsAt - now;
-      const h = Math.floor(rem / 3600000);
-      const m = Math.floor((rem % 3600000) / 60000);
-      txt += `MOB NERF -${gameEvents.monsterNerf.reduction}%\nTempo: ${h}h ${m}m\n\n`;
-      hasAny = true;
-    }
-    
-    if(gameEvents.exp.active && gameEvents.exp.endsAt > now){
-      const rem = gameEvents.exp.endsAt - now;
-      const h = Math.floor(rem / 3600000);
-      const m = Math.floor((rem % 3600000) / 60000);
-      txt += `XP +${gameEvents.exp.bonus}%\nTempo: ${h}h ${m}m\n\n`;
-      hasAny = true;
-    }
-    
-    if(gameEvents.drop.active && gameEvents.drop.endsAt > now){
-      const rem = gameEvents.drop.endsAt - now;
-      const h = Math.floor(rem / 3600000);
-      const m = Math.floor((rem % 3600000) / 60000);
-      txt += `DROP +${gameEvents.drop.bonus}%\nTempo: ${h}h ${m}m\n\n`;
-      hasAny = true;
-    }
-    
-    if(gameEvents.gr.active && gameEvents.gr.endsAt > now){
-      const rem = gameEvents.gr.endsAt - now;
-      const h = Math.floor(rem / 3600000);
-      const m = Math.floor((rem % 3600000) / 60000);
-      txt += `RARIDADE +${gameEvents.gr.bonus}%\nTempo: ${h}h ${m}m\n\n`;
-      hasAny = true;
-    }
-    
-    toast(hasAny ? txt : '❌ Sem eventos ativos');
-    inp.value='';
-    return;
-  }
-  
-  // Comando para recarregar eventos (admin)
-  if(msg === '/reload eventos' && isAdminSoul()){
-    restoreGameEvents();
-    await loadActiveEvents();
-    renderEventBuffs();
-    toast('✅ Eventos recarregados do servidor!');
-    inp.value='';
-    return;
-  }
-  
+  // Comandos ADM-SOUL
   if(msg.startsWith('/event ') && isAdminSoul()){
     handleEventCommand(msg.substring(7).trim());
     inp.value='';
@@ -4424,86 +4000,121 @@ async function sendChat(){
   cdTimer=setInterval(updateChatCD,500);
 }
 
-async function handleLowMobCommand(args){
+function handleLowMobCommand(args){
+  // Parse: /low mob 10% in 1 hours ou /low mob 50% in 24 hours
   const parts = args.split(/\s+/);
-  if(parts.length < 3){
-    return toast('Formato: /low mob 50% in 12<br>Range: 1-100%, 1-168h');
+  if(parts.length < 4){
+    return toast('Formato: /low mob <10%/25%/50%/70%/100%> in <1~24> hours<br>Exemplo: /low mob 50% in 12 hours');
   }
   
-  let pct = parts[0];
-  if(pct.endsWith('%')) pct = pct.slice(0, -1);
-  pct = parseInt(pct);
+  // Parse percentage
+  let reduction = parts[0];
+  if(reduction.endsWith('%')) reduction = reduction.slice(0, -1);
+  reduction = parseInt(reduction);
   
-  if(parts[1].toLowerCase() !== 'in') return toast('Use: /low mob 50% in 12');
+  // Parse "in"
+  if(parts[1].toLowerCase() !== 'in'){
+    return toast('Use: /low mob 50% in 12 hours');
+  }
   
-  let hrs = parseInt(parts[2]);
+  // Parse hours
+  let hours = parseInt(parts[2]);
   
-  if(isNaN(pct) || isNaN(hrs)) return toast('Valores inválidos');
-  if(pct < 1 || pct > 100) return toast('1% a 100%');
-  if(hrs < 1 || hrs > 168) return toast('1 a 168 horas');
+  if(isNaN(reduction) || isNaN(hours)){
+    return toast('Valores inválidos. Use: /low mob 50% in 12 hours');
+  }
   
-  // Salvar no Supabase (novo sistema) - já envia mensagem de evento
-  await triggerAdminEvent('mob_nerf', pct, hrs);
+  // Validar percentage e horas
+  const validReductions = [10, 25, 50, 70, 100];
   
-  // Também manter localmente para compatibilidade
-  gameEvents.monsterNerf.active = true;
-  gameEvents.monsterNerf.reduction = pct;
-  gameEvents.monsterNerf.endsAt = Date.now() + (hrs * 3600000);
-  saveGameEvents();
+  if(!validReductions.includes(reduction)){
+    return toast('Reductions válidas: 10%, 25%, 50%, 70%, 100%');
+  }
+  if(hours < 1 || hours > 24){
+    return toast('Horas válidas: 1 a 24');
+  }
   
-  updateMonsterNerfIndicator();
-  renderEventBuffs();
-  toast(`✅ MOB NERF -${pct}% por ${hrs}h`);
+  triggerMonsterNerf(reduction, hours);
 }
 
 function triggerMonsterNerf(reduction, hours){
+  const now = Date.now();
   gameEvents.monsterNerf.active = true;
   gameEvents.monsterNerf.reduction = reduction;
-  gameEvents.monsterNerf.endsAt = Date.now() + (hours * 3600 * 1000);
-  saveGameEvents();
-  const msg = `🌙 Monstros estão ${reduction}% mais fracos! por ${hours}h 🔥`;
-  chatPersist({type:'event', nick: 'ADM-SOUL', msg, ts:Date.now()});
+  gameEvents.monsterNerf.endsAt = now + (hours * 3600 * 1000);
+  
+  // Salvar no localStorage para persistir após reload
+  saveMonsterNerf();
+  
+  // Mensagem especial em amarelo para os "Lunáticos do Pixel"
+  const msg = `🌙 Hoje nós caçaremos como Lunáticos do Pixel! Monstros estão ${reduction}% mais fracos agora! por ${hours}h Peguem eles! 🔥`;
+  chatPersist({type:'event', msg, ts: now});
+  
+  // Atualizar indicador visual
   updateMonsterNerfIndicator();
-  renderEventBuffs();
 }
 
-async function handleEventCommand(args){
+function handleEventCommand(args){
+  // Parse: /event exp/xp 10 in 24 ou /event gr 50 in 168 ou /event gold goblin 100 in 24
   const parts = args.split(/\s+/);
   if(parts.length < 4){
-    return toast('Formato: /event exp 50 in 12<br>/event drop 75 in 24<br>/event gr 30 in 48');
+    return toast('Formato: /event <tipo> <bonus%> in <horas><br>ou /event <monstro> <bonus%> in <horas>');
   }
   
-  const type = parts[0].toLowerCase();
-  let bonus = parts[1];
-  if(bonus.endsWith('%')) bonus = bonus.slice(0, -1);
-  bonus = parseInt(bonus);
+  // Verificar se é um evento de monstro específico
+  // Monstros conhecidos: "gold goblin", "slime boss", "demonio", "lorde do sangue", "crítico", etc
+  const knownMonsters = ['gold', 'slime', 'demonio', 'lorde', 'critico', 'goblin', 'boss'];
+  const firstArg = parts[0].toLowerCase();
   
-  if(parts[2].toLowerCase() !== 'in') return toast('Use: /event exp 50 in 12');
+  let isMonsterEvent = false;
+  let monsterName = '';
+  let bonusIdx = 1;
+  let inIdx = -1;
   
-  let hrs = parseInt(parts[3]);
+  // Verificar se começa com nome de monstro (pode ter 2 palavras como "gold goblin")
+  if(knownMonsters.includes(firstArg)){
+    isMonsterEvent = true;
+    monsterName = parts[0];
+    // Se houver segunda palavra de monstro (ex: "gold goblin")
+    if(parts.length > 4 && knownMonsters.includes(parts[1].toLowerCase())){
+      monsterName += ' ' + parts[1];
+      bonusIdx = 2;
+    }
+  }
   
-  if(isNaN(bonus) || isNaN(hrs)) return toast('Valores inválidos');
-  if(bonus < 1 || bonus > 100) return toast('1% a 100%');
-  if(hrs < 1 || hrs > 168) return toast('1 a 168 horas');
+  const bonus = parseInt(parts[bonusIdx]);
+  inIdx = parts.indexOf('in');
+  const hours = parseInt(parts[inIdx+1]);
   
-  let eventType = null;
-  if(type === 'exp' || type === 'xp') eventType = 'exp';
-  else if(type === 'drop') eventType = 'drop';
-  else if(type === 'gr' || type === 'grade' || type === 'rarity') eventType = 'rarity';
-  else return toast('Tipos: exp, xp, drop, gr');
+  if(isNaN(bonus) || isNaN(hours) || inIdx < 0){
+    return toast('Formato: /event exp 50 in 24<br>ou /event gold goblin 100 in 24');
+  }
   
-  // Salvar no Supabase (novo sistema) - já envia mensagem de evento
-  await triggerAdminEvent(eventType, bonus, hrs);
+  // Validar bonus e horas permitidas
+  const validBonuses = [10, 20, 30, 50, 100, 200, 500, 1000];
+  const validHours = [24, 48, 72, 96, 120, 144, 168];
   
-  // Também manter localmente para compatibilidade
-  gameEvents[eventType].active = true;
-  gameEvents[eventType].bonus = bonus;
-  gameEvents[eventType].endsAt = Date.now() + (hrs * 3600000);
-  saveGameEvents();
+  if(!validBonuses.includes(bonus)){
+    return toast('Bonus válidos: 10%, 20%, 30%, 50%, 100%, 200%, 500%, 1000%');
+  }
+  if(!validHours.includes(hours)){
+    return toast('Horas válidas: 24, 48, 72, 96, 120, 144, 168');
+  }
   
-  const labels = {exp: 'XP', drop: 'DROP', rarity: 'RARIDADE'};
-  renderEventBuffs();
-  toast(`✅ ${labels[eventType]} +${bonus}% por ${hrs}h`);
+  if(isMonsterEvent){
+    // Evento de monstro específico
+    triggerMonsterEvent(monsterName, bonus, hours);
+  }else{
+    // Evento de sistema (exp, drop, etc)
+    let eventType;
+    if(firstArg==='exp' || firstArg==='xp') eventType = 'exp';
+    else if(firstArg==='drop') eventType = 'drop';
+    else if(firstArg==='monster' || firstArg==='elite') eventType = 'monsterSpawn';
+    else if(firstArg==='gr' || firstArg==='grade') eventType = 'monsterGrade';
+    else return toast('Tipos válidos: exp, xp, drop, monster, elite, gr, grade');
+    
+    triggerEvent(eventType, bonus, hours);
+  }
 }
 
 function handleChanceCommand(args){
@@ -4561,12 +4172,6 @@ async function initChat(){
   el('chat-input').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
   // tenta Supabase primeiro
   const okSupa = await supaInit();
-  
-  // ATIVAR SISTEMA DE EVENTOS EM TEMPO REAL
-  if(okSupa && typeof subscribeToGameEvents === 'function') {
-    subscribeToGameEvents();
-  }
-  
   if(okSupa){ return; } // realtime cuida de tudo
   // fallbacks
   if(!hasShared && typeof BroadcastChannel!=='undefined'){
@@ -6090,7 +5695,7 @@ function ensureEquipped(){
 /* global S, el, supaAuth, marketTab, sellTarget, openSellPanel, cancelListing, buyListing, drawSprite, eqBase, eqName, eqInstValue, currentLanguage, TRANSLATIONS, t */
 "use strict";
 
-async function startGame(){
+function startGame(){
   el('topbar').style.display='';
   el('game').style.display='flex';
   el('login').style.display='none';
@@ -6132,19 +5737,11 @@ async function startGame(){
   applyI18n();
   spawnMonster();
   
-  // Inicializar Supabase ANTES de carregar eventos
-  initChat();
-  
-  // Restaurar eventos ativos
-  restoreGameEvents();
+  // Restaurar e atualizar o indicador do nerf ao fazer login
   restoreMonsterNerf();
-  
-  // Carregar eventos do Supabase (agora com supa inicializado)
-  await loadActiveEvents();
-  
   updateMonsterNerfIndicator();
-  renderEventBuffs();
   
+  initChat();
   renderAbilityBar();
   updTicketBtn();
   if((S.mastery||0)>0){ const dot=el('mastery-dot'); if(dot) dot.style.display='block'; }
@@ -6152,10 +5749,6 @@ async function startGame(){
   /* marketTick removido — mercado é agora real com Supabase */
   setInterval(updateAbilityCooldowns, 500); // atualiza recargas das magias
    setInterval(save, 5000);
-  setInterval(() => {
-    updateMonsterNerfIndicator();
-    renderEventBuffs();
-  }, 10000);
 
 // Regeneração de HP do Pet a cada 1 segundo
   setInterval(() => {
@@ -6235,7 +5828,7 @@ el('btn-start').onclick = async () => {
   }
   
   save();
-  await startGame();
+  startGame();
 };
 el('nick').addEventListener('keydown',e=>{ if(e.key==='Enter') el('password').focus(); });
 el('password').addEventListener('keydown',e=>{ if(e.key==='Enter') el('btn-start').onclick(); });
@@ -7346,12 +6939,9 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   
   // Restaurar monster nerf do localStorage ao carregar página
-  setTimeout(async () => {
+  setTimeout(() => {
     restoreMonsterNerf();
-    restoreGameEvents();
-    await loadActiveEvents();
     updateMonsterNerfIndicator();
-    renderEventBuffs();
   }, 500);
 });
 </script>
