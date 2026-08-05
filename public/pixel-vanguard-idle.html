@@ -341,9 +341,6 @@ canvas{image-rendering:pixelated;}
 #chatlog .alert-lend{color:#ff8c1a;text-shadow:0 0 4px #ff8c1a55;word-break:break-word;}
 #chatlog .alert-pixel{color:#ffd75e;text-shadow:0 0 6px #ffd75e88;word-break:break-word;}
 #chatlog .alert-reaper{color: #ff2222; /* Vermelho vibrante (ou a cor exata que você preferir para o Reaper) */font-weight: bold;}
-#chatlog .alert-synth-buff{color:#5eb3ff;text-shadow:0 0 6px #5eb3ff88;word-break:break-word;font-weight:bold;}
-#chatlog .alert-synth-fail{color:#1a5a8f;text-shadow:0 0 6px #1a5a8f88;word-break:break-word;font-weight:bold;}
-#chatlog .alert-synth-orb{color:#ffd700;text-shadow:0 0 8px #ffd70088, 0 0 16px #ff6b9d88;word-break:break-word;font-weight:bold;}
 #chat-input-row{display:flex;gap:5px;margin-top:6px;}
 #chat-input{
   flex:1;min-width:0;font-family:inherit;font-size:8px;padding:7px;
@@ -4282,101 +4279,37 @@ async function supaSend(entry){
   }catch(e){ console.warn('Supabase send erro:', e.message); return false; }
 }
 
-// Otimização: Controle de polling para evitar sobrecarregar Supabase
-let lastChatLoadTime = 0;
-let chatLoadDebounceTimer = null;
-
-// Função auxiliar para mesclar entradas sem duplicar
-function mergeEntries(existing, newEntries){
-  const timestamps = new Set(existing.map(e => e.ts));
-  const merged = [...existing];
-  newEntries.forEach(entry => {
-    if(!timestamps.has(entry.ts)){
-      merged.push(entry);
-    }
-  });
-  return merged.slice(-CHAT_MAX);
-}
-
 async function chatLoad(){
-  // Sempre carregar do localStorage PRIMEIRO, mesmo com Supabase
+  if(supaReady) return; // realtime já mantém sincronizado
   if(hasShared){
     try{
       const r=await window.storage.get(CHAT_KEY,true);
-      const cached = r&&r.value ? JSON.parse(r.value) : [];
-      if(cached.length > 0){
-        chatCache = cached;
-      }
+      chatCache = r&&r.value ? JSON.parse(r.value) : [];
     }catch(e){ /* chave ainda não existe */ }
   }
-  
-  // Se Supabase está pronto, sincronizar APENAS mensagens novas
-  if(supaReady && supa) {
-    try{
-      const lastMsg = chatCache.length > 0 ? chatCache[chatCache.length - 1] : null;
-      const lastTimestamp = lastMsg ? lastMsg.ts : 0;
-      
-      // Buscar apenas mensagens DEPOIS da última conhecida
-      const { data, error } = await supa
-        .from('messages')
-        .select('*')
-        .gt('created_at', new Date(lastTimestamp).toISOString()) // Apenas novas
-        .order('created_at', {ascending:true})
-        .limit(CHAT_MAX);
-        
-      if(!error && data && data.length > 0){
-        const newEntries = data.map(rowToEntry);
-        chatCache = mergeEntries(chatCache, newEntries);
-      }
-    }catch(e){ console.warn('Sincronizar chat falhou:', e.message); }
-  }
-  
   renderChat();
 }
-
-// Função de debounce para chatLoad - máximo 1x a cada 6 segundos
-async function chatLoadDebounced(){
-  clearTimeout(chatLoadDebounceTimer);
-  chatLoadDebounceTimer = setTimeout(() => {
-    const now = Date.now();
-    if(now - lastChatLoadTime >= 6000){  // 6 segundos
-      lastChatLoadTime = now;
-      chatLoad();
-    }
-  }, 1000);
-}
 async function chatPersist(entry){
-  // 1. Salvar LOCALMENTE primeiro (persistência garantida)
+  // Supabase: envia e deixa o realtime devolver (não duplica localmente)
+  if(supa){
+    const ok=await supaSend(entry);
+    if(ok) return;               // realtime vai inserir na tela
+    // se falhar, cai no modo local abaixo
+  }
   chatCache.push(entry);
   if(chatCache.length>CHAT_MAX) chatCache=chatCache.slice(-CHAT_MAX);
-  
-  // 2. Salvar no localStorage/shared storage
+  renderChat();
   if(hasShared){
     try{
       let msgs=[];
-      try{ 
-        const r=await window.storage.get(CHAT_KEY,true); 
-        msgs=r&&r.value?JSON.parse(r.value):[]; 
-      }catch(e){}
+      try{ const r=await window.storage.get(CHAT_KEY,true); msgs=r&&r.value?JSON.parse(r.value):[]; }catch(e){}
       msgs.push(entry);
       if(msgs.length>CHAT_MAX) msgs=msgs.slice(-CHAT_MAX);
       chatCache=msgs;
       await window.storage.set(CHAT_KEY, JSON.stringify(msgs), true);
-    }catch(e){
-      console.warn('Erro ao salvar no storage:', e.message);
-    }
-  }
-  
-  // 3. Renderizar na tela IMEDIATAMENTE
-  renderChat();
-  
-  // 4. Enviar para Supabase em background (sem bloquear)
-  if(supa){
-    supaSend(entry).catch(e => {
-      console.warn('Falha ao enviar para Supabase:', e.message);
-    });
-  } else if(chatChannel){
-    // Fallback: usar BroadcastChannel
+      renderChat();
+    }catch(e){}
+  }else if(chatChannel){
     chatChannel.postMessage(entry);
   }
 }
@@ -4404,12 +4337,6 @@ function renderChat(){
     }else if(m.type==='synth'){
       const cls = m.rar==='PixelMaster' ? 'alert-pixel' : 'alert-lend';
       d.innerHTML=`<span class="${cls}">[${esc(m.nick)}] sintetizou com sucesso [${esc(m.item)}] [${rarLabel(m.rar)}]</span>`;
-    }else if(m.type==='synth-buff'){
-      d.innerHTML=`<span class="alert-synth-buff">${esc(m.msg)}</span>`;
-    }else if(m.type==='synth-fail'){
-      d.innerHTML=`<span class="alert-synth-fail">${esc(m.msg)}</span>`;
-    }else if(m.type==='synth-orb'){
-      d.innerHTML=`<span class="alert-synth-orb">${esc(m.msg)}</span>`;
     }else{
       const me = S && m.nick===S.nick && !adminClass;
       const nickCls = adminClass || (me ? 'me' : '');
@@ -4535,12 +4462,6 @@ async function sendChat(){
     return;
   }
   
-  if(msg.startsWith('/sintetizador ') && isAdminSoul()){
-    handleSynthCommand(msg.substring(13).trim());
-    inp.value='';
-    return;
-  }
-  
   const since=Date.now()-lastChatSent;
   if(since<CHAT_COOLDOWN){
     const remain=Math.ceil((CHAT_COOLDOWN-since)/1000);
@@ -4585,87 +4506,6 @@ async function handleLowMobCommand(args){
   updateMonsterNerfIndicator();
   renderEventBuffs();
   toast(`✅ MOB NERF -${pct}% por ${hrs}h`);
-}
-
-async function handleSynthCommand(args){
-  const parts = args.split(/\s+/);
-  if(parts.length < 3){
-    return toast('Formato: /sintetizador 50% in 30<br>Ou: /sintetizador ORB in 30<br>Range: 1-100%, 1-60s');
-  }
-  
-  let pct = parts[0].toUpperCase();
-  let isOrb = false;
-  
-  // Verificar se é ORB (modo impossível falhar)
-  if(pct === 'ORB'){
-    isOrb = true;
-  }else{
-    // Parse normal com %
-    if(pct.endsWith('%')) pct = pct.slice(0, -1);
-    pct = parseInt(pct);
-    
-    if(isNaN(pct)) return toast('Valores inválidos');
-    if(pct < 1 || pct > 100) return toast('1% a 100%');
-  }
-  
-  if(parts[1].toLowerCase() !== 'in') return toast('Use: /sintetizador 50% in 30 ou /sintetizador ORB in 30');
-  
-  let secs = parseInt(parts[2]);
-  
-  if(isNaN(secs)) return toast('Valores inválidos');
-  if(secs < 1 || secs > 60) return toast('1 a 60 segundos');
-  
-  // Raridades do jogo
-  const rarities = ['Comum', 'Incomum', 'Raro', 'Épico', 'Lendário', 'PixelMaster', 'PixelReaper'];
-  
-  // Chances base de sucesso (aproximadas do jogo)
-  const baseSynthChances = {
-    'Comum': 99,
-    'Incomum': 95,
-    'Raro': 85,
-    'Épico': 70,
-    'Lendário': 40,
-    'PixelMaster': 20,
-    'PixelReaper': 5
-  };
-  
-  if(isOrb){
-    // Modo ORB - 100% de sucesso em tudo
-    let msg = `✨ [ADM-SOUL] ORB DO DESTINO ATIVADO! 🌟✨\n`;
-    msg += '╔═══════════════════════════════╗\n';
-    msg += '║ SINTETIZADOR: 100% GARANTIDO! ║\n';
-    msg += '╠═══════════════════════════════╣\n';
-    
-    rarities.forEach(rarity => {
-      msg += `║ ${rarity.padEnd(15)}: 🎯 100% ║\n`;
-    });
-    
-    msg += '╚═══════════════════════════════╝\n';
-    msg += '🔮 NADA PODE FALHAR AGORA! 🔮';
-    
-    chatPersist({type:'synth-orb', nick:'ADM-SOUL', msg, ts:Date.now()});
-    toast(`✅ ORB ativado! Tudo sintetiza com 100% por ${secs}s`);
-  }else if(pct === 100){
-    // Mensagem de falha em azul escuro
-    const msg = '⚠️ [ADM-SOUL] Algo aconteceu com o Sintetizador e eu acho que é uma falha na capacidade de recusar a sintetização! É melhor ser RÁPIDO e verificar!';
-    chatPersist({type:'synth-fail', nick:'ADM-SOUL', msg, ts:Date.now()});
-    toast(`✅ Alerta de FALHA TOTAL enviado por ${secs}s`);
-  }else{
-    // Mensagem de buff em azul claro - mostrar melhora percentual para cada raridade
-    let msg = `⚡ [ADM-SOUL] SINTETIZADOR +${pct}% 🔧\n`;
-    msg += '═════════════════════════════\n';
-    
-    rarities.forEach(rarity => {
-      const baseChance = baseSynthChances[rarity];
-      const improvedChance = Math.min(100, baseChance + (baseChance * pct / 100));
-      const improvement = Math.round(improvedChance - baseChance);
-      msg += `${rarity}: ${baseChance}% → ${improvedChance.toFixed(1)}% (+${improvement}%)\n`;
-    });
-    
-    msg += '═════════════════════════════';
-    chatPersist({type:'synth-buff', nick:'ADM-SOUL', msg, ts:Date.now()});
-    toast(`✅ Buff de Sintetizador +${pct}% ativado por ${secs}s`);
-  }
 }
 
 function triggerMonsterNerf(reduction, hours){
@@ -4771,8 +4611,7 @@ function announceSynth(itemName, rarity){
 async function initChat(){
   el('chat-send').onclick=sendChat;
   el('chat-input').addEventListener('keydown',e=>{ if(e.key==='Enter') sendChat(); });
-  
-  // Tenta Supabase primeiro
+  // tenta Supabase primeiro
   const okSupa = await supaInit();
   
   // ATIVAR SISTEMA DE EVENTOS EM TEMPO REAL
@@ -4780,25 +4619,14 @@ async function initChat(){
     subscribeToGameEvents();
   }
   
-  // NÃO retornar! Sempre configurar fallbacks
-  // Configurar BroadcastChannel se não houver shared storage
+  if(okSupa){ return; } // realtime cuida de tudo
+  // fallbacks
   if(!hasShared && typeof BroadcastChannel!=='undefined'){
     chatChannel=new BroadcastChannel(CHAT_KEY);
-    chatChannel.onmessage=e=>{ 
-      chatCache.push(e.data); 
-      if(chatCache.length>CHAT_MAX)chatCache=chatCache.slice(-CHAT_MAX); 
-      renderChat(); 
-    };
+    chatChannel.onmessage=e=>{ chatCache.push(e.data); if(chatCache.length>CHAT_MAX)chatCache=chatCache.slice(-CHAT_MAX); renderChat(); };
   }
-  
-  // Carregar histórico e sincronizar (APENAS UMA VEZ no init)
-  await chatLoad();
-  
-  // Se tem shared storage, fazer sincronização periódica COM DEBOUNCE (máx 1x a cada 6s)
-  if(hasShared) setInterval(chatLoadDebounced, 8000);  // Tenta a cada 8s, mas debounce faz só cada 6s
-  
-  // Se tem Supabase, fazer sincronização periódica LIGHT (apenas novas mensagens)
-  if(okSupa && supa) setInterval(chatLoadDebounced, 10000);  // Tenta a cada 10s
+  chatLoad();
+  if(hasShared) setInterval(chatLoad, 4000);
 }
 
 /* ---------- BACKGROUND ---------- */
