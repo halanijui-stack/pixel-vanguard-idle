@@ -2777,51 +2777,7 @@ const CLASSES = {
   }
 };
 
-// Mapeamento de nomes de skills para cada classe
-const SKILL_NAMES_BY_CLASS = {
-  knight: {
-    f1: 'Lâmina Afiada', f2: 'Golpe Pesado', f3: 'Precisão Letal', f4: 'Sede de Sangue',
-    b1: 'Pele de Ferro', b2: 'Vigor', b3: 'Muralha Viva', b4: 'Constituição',
-    i1: 'Reflexos', i2: 'Fluxo de Mana', i3: 'Ritmo de Batalha', i4: 'Fúria Acelerada',
-    s1: 'Toque Vampírico', s2: 'Ceifador', s3: 'Sanguessuga', s4: 'Vampiro Ancião', s5: 'Lorde do Sangue',
-    c1: 'Treino Básico', c2: 'Resistência', c3: 'Fôlego', c4: 'Agilidade',
-    c5: 'Força Bruta', c6: 'Couraça', c9: 'Maestria de Batalha', c10: 'Resistência Mágica',
-    c13: 'Instinto Selvagem', c14: 'Alma Blindada',
-  },
-  berserker: {
-    f1: 'Lâmina de Fúria', f2: 'Golpe Brutal', f3: 'Precisão Selvagem', f4: 'Sede Insaciável',
-    b1: 'Pele Endurecida', b2: 'Vigor Feroz', b3: 'Muralha de Ferro', b4: 'Constituição Bestial',
-    i1: 'Reflexos Apurados', i2: 'Fluxo Rúnico', i3: 'Ritmo Desenfrenado', i4: 'Fúria Irreprimível',
-    s1: 'Toque Sanguinário', s2: 'Ceifador Implacável', s3: 'Sanguessuga Feroz', s4: 'Vampiro da Batalha', s5: 'Lorde da Carnificina',
-    c1: 'Treino Marcial', c2: 'Resistência Bruta', c3: 'Fôlego Selvagem', c4: 'Agilidade Bestial',
-    c5: 'Força Desmedida', c6: 'Endurecimento', c9: 'Maestria de Combate', c10: 'Resistência Rúnica',
-    c13: 'Instinto de Predador', c14: 'Corpo Blindado',
-  },
-  paladino: {
-    f1: 'Lâmina Consagrada', f2: 'Golpe Sagrado', f3: 'Precisão Divina', f4: 'Sede Purificadora',
-    b1: 'Pele Abençoada', b2: 'Vigor Celestial', b3: 'Muralha Sagrada', b4: 'Constituição Divina',
-    i1: 'Reflexos Celestiais', i2: 'Fluxo Sagrado', i3: 'Ritmo Protetor', i4: 'Fúria Justeira',
-    s1: 'Toque Purificador', s2: 'Ceifador Sagrado', s3: 'Sanguessuga Divina', s4: 'Vampiro Abençoado', s5: 'Lorde da Redenção',
-    c1: 'Treino Sagrado', c2: 'Resistência Divina', c3: 'Fôlego Celestial', c4: 'Agilidade Protetor',
-    c5: 'Força Consagrada', c6: 'Proteção Divina', c9: 'Maestria Sagrada', c10: 'Resistência Celestial',
-    c13: 'Instinto Protetor', c14: 'Armadura Divina',
-  },
-  mago: {
-    f1: 'Lâmina Arcana', f2: 'Golpe Mágico', f3: 'Precisão Mística', f4: 'Sede Arcana',
-    b1: 'Pele Etérea', b2: 'Vigor Mágico', b3: 'Muralha Arcana', b4: 'Constituição Mística',
-    i1: 'Reflexos Místicos', i2: 'Fluxo Arcano', i3: 'Ritmo Mágico', i4: 'Fúria Arcana',
-    s1: 'Toque Mágico', s2: 'Ceifador Místico', s3: 'Sanguessuga Arcana', s4: 'Vampiro Mágico', s5: 'Lorde da Magia',
-    c1: 'Treino Mágico', c2: 'Resistência Mística', c3: 'Fôlego Arcano', c4: 'Agilidade Mágica',
-    c5: 'Força Arcana', c6: 'Proteção Mágica', c9: 'Maestria Arcana', c10: 'Resistência Mágica Apurada',
-    c13: 'Instinto Mágico', c14: 'Armadura Etérea',
-  }
-};
-
-function getSkillNameByClass(skillId, classType) {
-  if (!classType) classType = 'knight';
-  const names = SKILL_NAMES_BY_CLASS[classType];
-  return (names && names[skillId]) || SKILL_NAMES_BY_CLASS.knight[skillId] || skillId;
-}
+// Runtime: bônus do Mago de Batalha (próximo impacto dobrado)
 let arcaneEmpowered = false;
 // Runtime: Égide ativa
 let egideUntil = 0;
@@ -2852,14 +2808,6 @@ function effectiveDefAbil(){
 // Lista de habilidades ativas do jogador
 function activeAbilList(){
   return [effectiveAtkAbil(), 'ira', effectiveDefAbil()];
-}
-
-// Função para re-renderizar o sprite do personagem (chamada ao trocar classe)
-function updatePlayerSprite() {
-  const playerClass = S.playerClass || 'knight';
-  const spriteToUse = (SPR[playerClass] || SPR_IMG_SRC[playerClass]) ? playerClass : 'knight';
-  drawSprite(el('knight-cv'), spriteToUse);
-  console.log(`🎨 Sprite do personagem atualizado: ${spriteToUse}`);
 }
 
 /* ---------- ESTADO ---------- */
@@ -5973,18 +5921,7 @@ function renderTalents(){
   const wrap=el('talent-branches'); wrap.innerHTML='';
   for(const [bkey,info] of Object.entries(BRANCH_INFO)){
     const branch=document.createElement('div'); branch.className='tal-branch';
-    
-    // Atualizar nome do header baseado na classe
-    let branchName = info.nm;
-    if(hasClass() && bkey === 'fury'){
-      const classAbil = classData().atkAbility;
-      branchName = '⚔ FÚRIA → ' + ABILITIES[classAbil].nm;
-    } else if(hasClass() && bkey === 'bul'){
-      const classAbil = classData().defAbility;
-      branchName = '🛡 BALUARTE → ' + ABILITIES[classAbil].nm;
-    }
-    
-    branch.innerHTML='<h3>'+branchName+'</h3>';
+    branch.innerHTML='<h3>'+info.nm+'</h3>';
     const chain=document.createElement('div'); chain.className='tal-chain';
     info.order.forEach((tid,idx)=>{
       const t=TALENT_BY_ID[tid]; if(!t) return;
@@ -5999,27 +5936,18 @@ function renderTalents(){
       else if(unlocked && (S.mastery||0)>=t.cost) cls+=' available';
       else if(!unlocked) cls+=' locked';
       node.className=cls;
-      
-      // Nome da skill muda com classe
+      // Nome da skill pode mudar com classe (mas não IRA)
       let skillName = t.nm;
-      const currentClass = playerClass();
-      
-      if(hasClass()){
+      if(isMagic && hasClass()){
         if(tid==='corte'){
           const classAbil = classData().atkAbility;
           skillName = ABILITIES[classAbil].nm;
         }else if(tid==='esquiva'){
           const classAbil = classData().defAbility;
           skillName = ABILITIES[classAbil].nm;
-        } else {
-          // Outras skills também mudam de nome com a classe
-          skillName = getSkillNameByClass(tid, currentClass);
         }
-      } else {
-        // Sem classe, usar nomes padrão de Knight
-        skillName = getSkillNameByClass(tid, 'knight');
+        // tid==='ira': nunca muda, mantém o nome original
       }
-      
       const rankTxt=isMagic?(maxed?'✓ DESTRAVADA':'🔒 custo '+t.cost):rank+'/'+maxR;
       const desc = talentDesc(tid);
       node.innerHTML='<div class="tn">'+skillName+'</div><div class="td">'+desc+'</div><div class="tr">'+rankTxt+'</div>';
@@ -6455,11 +6383,6 @@ function confirmClassChange(key){
   S.abilCd[cls.atkAbility]=0;
   S.abilCd[cls.defAbility]=0;
   closeModal('modal-class');
-  
-  // ✅ Re-renderizar maestria com novos nomes de skills
-  renderTalents();
-  // ✅ Atualizar sprite do personagem
-  updatePlayerSprite();
   
   const toastMsg = isChanging 
     ? `⚔ CLASSE ALTERADA!<br>${cls.icon} ${cls.nm}<br>Suas magias foram atualizadas!`
