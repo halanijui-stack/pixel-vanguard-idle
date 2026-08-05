@@ -4282,6 +4282,10 @@ async function supaSend(entry){
   }catch(e){ console.warn('Supabase send erro:', e.message); return false; }
 }
 
+// Otimização: Controle de polling para evitar sobrecarregar Supabase
+let lastChatLoadTime = 0;
+let chatLoadDebounceTimer = null;
+
 // Função auxiliar para mesclar entradas sem duplicar
 function mergeEntries(existing, newEntries){
   const timestamps = new Set(existing.map(e => e.ts));
@@ -4306,22 +4310,40 @@ async function chatLoad(){
     }catch(e){ /* chave ainda não existe */ }
   }
   
-  // Se Supabase está pronto, sincronizar mensagens novas
+  // Se Supabase está pronto, sincronizar APENAS mensagens novas
   if(supaReady && supa) {
     try{
+      const lastMsg = chatCache.length > 0 ? chatCache[chatCache.length - 1] : null;
+      const lastTimestamp = lastMsg ? lastMsg.ts : 0;
+      
+      // Buscar apenas mensagens DEPOIS da última conhecida
       const { data, error } = await supa
-        .from('messages').select('*')
+        .from('messages')
+        .select('*')
+        .gt('created_at', new Date(lastTimestamp).toISOString()) // Apenas novas
         .order('created_at', {ascending:true})
         .limit(CHAT_MAX);
-      if(!error && data){
+        
+      if(!error && data && data.length > 0){
         const newEntries = data.map(rowToEntry);
-        // Mesclar sem duplicar
         chatCache = mergeEntries(chatCache, newEntries);
       }
     }catch(e){ console.warn('Sincronizar chat falhou:', e.message); }
   }
   
   renderChat();
+}
+
+// Função de debounce para chatLoad - máximo 1x a cada 6 segundos
+async function chatLoadDebounced(){
+  clearTimeout(chatLoadDebounceTimer);
+  chatLoadDebounceTimer = setTimeout(() => {
+    const now = Date.now();
+    if(now - lastChatLoadTime >= 6000){  // 6 segundos
+      lastChatLoadTime = now;
+      chatLoad();
+    }
+  }, 1000);
 }
 async function chatPersist(entry){
   // 1. Salvar LOCALMENTE primeiro (persistência garantida)
@@ -4769,14 +4791,14 @@ async function initChat(){
     };
   }
   
-  // Carregar histórico e sincronizar
+  // Carregar histórico e sincronizar (APENAS UMA VEZ no init)
   await chatLoad();
   
-  // Se tem shared storage, fazer sincronização periódica
-  if(hasShared) setInterval(chatLoad, 4000);
+  // Se tem shared storage, fazer sincronização periódica COM DEBOUNCE (máx 1x a cada 6s)
+  if(hasShared) setInterval(chatLoadDebounced, 8000);  // Tenta a cada 8s, mas debounce faz só cada 6s
   
-  // Se tem Supabase, fazer sincronização periódica também para garantir mensagens novas
-  if(okSupa && supa) setInterval(chatLoad, 5000);
+  // Se tem Supabase, fazer sincronização periódica LIGHT (apenas novas mensagens)
+  if(okSupa && supa) setInterval(chatLoadDebounced, 10000);  // Tenta a cada 10s
 }
 
 /* ---------- BACKGROUND ---------- */
